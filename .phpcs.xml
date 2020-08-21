@@ -1,6 +1,25 @@
 <?xml version="1.0"?>
 <ruleset>
-	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki" />
+	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
+		<!--
+		  - It's generally incorrect to add doc comments to overridden methods.
+		  - Use of @inheritDoc or any other such text breaks Doxygen's automatic
+		  - documentation inheritance.
+		  - For methods that are not overriding something, this rule is correct,
+		  - but there is apparently no way to select only those methods.
+		  -->
+		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic" />
+		<!-- Libraries cannot use wfShellEscapeArg() -->
+		<exclude name="MediaWiki.Usage.ForbiddenFunctions.escapeshellarg" />
+		<!-- I don't get this rule. This library does not replace all usages of proc_open(). -->
+		<exclude name="MediaWiki.Usage.ForbiddenFunctions.proc_open" />
+		<!-- Seems harmless -->
+		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
+		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.SingleSpaceBeforeSingleLineComment" />
+		<!-- Mostly doing integration tests -->
+		<exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers" />
+	</rule>
 	<file>.</file>
 	<arg name="extensions" value="php" />
 	<arg name="encoding" value="UTF-8" />
