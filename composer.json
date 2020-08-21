@@ -1,0 +1,40 @@
+{
+	"name": "wikimedia/shellbox",
+	"version": "0.0.2",
+	"description": "Library and server for containerized shell execution",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Tim Starling"
+		},
+		{
+			"name": "Kunal Mehta"
+		},
+		{
+			"name": "Max Semenik"
+		}
+	],
+	"require": {
+		"php": ">=7.2",
+		"ext-hash": "*",
+		"ext-json": "*",
+		"guzzlehttp/psr7": "~1.6.1",
+		"psr/log": "~1.1.3",
+		"monolog/monolog": "~1.25.3"
+	},
+	"require-dev": {
+		"guzzlehttp/guzzle": "~6.5.4",
+		"phpunit/phpunit": "^8.5",
+		"psy/psysh": "~0.10.4"
+	},
+	"autoload": {
+		"psr-4": {
+			"Shellbox\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4":{
+			"Shellbox\\Tests\\": "tests/"
+		}
+	}
+}

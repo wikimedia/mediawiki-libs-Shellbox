@@ -1,0 +1,13 @@
+<!-- disable result caching due to permission errors -->
+<phpunit cacheResult="false">
+<filter>
+	<whitelist>
+		<directory>src</directory>
+	</whitelist>
+</filter>
+<testsuites>
+	<testsuite name="tests">
+		<directory>tests</directory>
+	</testsuite>
+</testsuites>
+</phpunit>
