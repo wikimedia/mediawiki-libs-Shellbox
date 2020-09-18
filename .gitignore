@@ -7,3 +7,4 @@ tags
 /.phpunit.result.cache
 /config/config.json
 /config/test-config.json
+Dockerfile
