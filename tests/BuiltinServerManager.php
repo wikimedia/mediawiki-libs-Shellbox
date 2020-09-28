@@ -51,11 +51,16 @@ class BuiltinServerManager {
 
 		// Start the server
 		$wdPath = $this->getTempDirManager()->prepareBasePath();
+
 		$cmd = Shellbox::escape(
 			PHP_BINARY,
 			'-S', "localhost:{$this->port}",
 			'-t', $wdPath
 		);
+
+		$xdebugArgs = $this->getXDebugArgs();
+		$cmd .= ' ' . Shellbox::escape( $xdebugArgs );
+
 		if ( PHP_OS_FAMILY !== 'Windows' ) {
 			$cmd = "exec $cmd";
 		}
@@ -180,5 +185,24 @@ class BuiltinServerManager {
 	 */
 	public function getTempDirManager() {
 		return $this->tempDirManager;
+	}
+
+	/**
+	 * Get xdebug settings to pass on to child process.
+	 * @return string[]
+	 */
+	private function getXDebugArgs() {
+		$settings = [
+			'xdebug.remote_enable', 'xdebug.remote_handler', 'xdebug.remote_mode',
+			'xdebug.remote_host', 'xdebug.remote_port',
+		];
+		$args = [];
+
+		foreach ( $settings as $name ) {
+			$value = ini_get( $name );
+			$args[] = "-d$name=$value";
+		}
+
+		return $args;
 	}
 }

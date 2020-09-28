@@ -25,7 +25,10 @@ class TestHttpClient implements HttpClientInterface {
 		if ( $this->coverCallback ) {
 			$request = $request->withHeader( 'X-Shellbox-Cover', '1' );
 		}
-		$guzzleClient = new GuzzleHttp\Client( [ 'timeout' => 5 ] );
+
+		// Disable timeout while debugging
+		$xdebug = boolval( ini_get( 'xdebug.remote_enable' ) );
+		$guzzleClient = new GuzzleHttp\Client( [ 'timeout' => $xdebug ? 0 : 5 ] );
 		try {
 			$response = $guzzleClient->send(
 				$request->withHeader( 'User-Agent', 'Shellbox test client' )
