@@ -24,4 +24,5 @@
 	<arg name="extensions" value="php" />
 	<arg name="encoding" value="UTF-8" />
 	<exclude-pattern>vendor</exclude-pattern>
+	<exclude-pattern>src/ShellParser/PEGParser.php</exclude-pattern>
 </ruleset>
