@@ -37,6 +37,8 @@ class Server {
 	 */
 	private static $defaultConfig = [
 		'allowedActions' => [ 'call', 'shell' ],
+		'allowedRoutes' => null,
+		'routeSpecs' => [],
 		'useSystemd' => null,
 		'useBashWrapper' => null,
 		'useFirejail' => null,

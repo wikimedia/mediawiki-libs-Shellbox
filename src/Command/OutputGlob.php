@@ -54,14 +54,13 @@ abstract class OutputGlob extends OutputEntity {
 	 * This is used on the server side to create a placeholder object for globs
 	 * based on a specification received from the client. Because the content is
 	 * never actually populated, it's not necessary to distinguish between the
-	 * different glob types. OutputGlobToString is used because it doesn't
-	 * require any additional constructor parameters.
+	 * different glob types.
 	 *
 	 * @param array $data
-	 * @return OutputGlobToString
+	 * @return OutputGlobPlaceholder
 	 */
 	public static function newFromClientData( array $data ) {
-		return new OutputGlobToString( $data['prefix'], $data['extension'] );
+		return new OutputGlobPlaceholder( $data['prefix'], $data['extension'] );
 	}
 
 	/**

@@ -33,7 +33,7 @@ class LocalBoxedExecutor extends BoxedExecutor {
 		$this->logger = new NullLogger;
 	}
 
-	public function execute( BoxedCommand $command ) {
+	public function executeValid( BoxedCommand $command ) {
 		$command = $this->applyBoxConfig( $command );
 		$this->createInputFiles( $command );
 		$this->prepareOutputDirectories( $command );

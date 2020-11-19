@@ -16,5 +16,40 @@
 	"useBashWrapper": null,
 	"useFirejail": null,
 	"firejailPath": "/usr/bin/firejail",
-	"firejailProfile": null
+	"firejailProfile": null,
+	"routeSpecs": {
+		"example-echo": {
+			"__": "echo abc",
+			"inputFiles": {},
+			"outputFiles": {},
+			"options": {
+				"wallTimeLimit": { "allow": [ "float", "integer" ] }
+			},
+			"argv": [
+				"echo",
+				{ "allow": "literal" }
+			]
+		},
+		"example-redirect": {
+			"__": "echo a > b 2>&1",
+			"inputFiles": {},
+			"shellFeatures": [
+				"redirect"
+			],
+			"argv": [
+				"echo",
+				{ "allow": "literal" }
+			]
+		},
+		"example-file": {
+			"__": "cat input",
+			"inputFiles": {
+				"input": {}
+			},
+			"argv": [
+				"cat",
+				"input"
+			]
+		}
+	}
 }

@@ -22,6 +22,8 @@
 	use WikiPEG\InternalError;
 	// @phan-file-suppress PhanUnusedGotoLabel
 	// @phan-file-suppress PhanNoopSwitchCases
+	// @phan-file-suppress PhanTypeMismatchArgument
+	// @phan-file-suppress PhanTypeComparisonFromArray
 }
 
 /*

@@ -23,4 +23,14 @@ abstract class InputFile {
 	 * @return StreamInterface|string
 	 */
 	abstract public function getStreamOrString();
+
+	/**
+	 * Get an InputFile object to represent a file already created by the server.
+	 *
+	 * @param array $data
+	 * @return InputFilePlaceholder
+	 */
+	public static function newFromClientData( $data ) {
+		return new InputFilePlaceholder;
+	}
 }

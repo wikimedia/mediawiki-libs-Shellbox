@@ -6,6 +6,8 @@ namespace Shellbox\ShellParser;
 	use WikiPEG\InternalError;
 	// @phan-file-suppress PhanUnusedGotoLabel
 	// @phan-file-suppress PhanNoopSwitchCases
+	// @phan-file-suppress PhanTypeMismatchArgument
+	// @phan-file-suppress PhanTypeComparisonFromArray
 
 
 class PEGParser extends \WikiPEG\PEGParserBase {
@@ -354,6 +356,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   private function a33($term) {
   
   		if ( $term === null ) {
+  			// Phan is convinced $term may be null, not sure how
   			return [];
   		} else {
   			return $term;

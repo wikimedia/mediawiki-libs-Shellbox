@@ -223,6 +223,12 @@ class Shellbox {
 	 * @throws ShellboxError
 	 */
 	public static function normalizePath( $path ) {
+		$windowsReservedNames = [
+			'CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4',
+			'COM5', 'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3',
+			'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'
+		];
+
 		if ( DIRECTORY_SEPARATOR === '\\' ) {
 			$path = str_replace( '\\', '/', $path );
 		}
@@ -233,8 +239,13 @@ class Shellbox {
 			if ( $component === ''
 				|| $component === '.'
 				|| $component === '..'
+				|| substr( $component, -1 ) === ':'
 			) {
 				throw new ShellboxError( "Invalid relative file path \"$path\"" );
+			}
+			$firstPart = substr( $component, 0, strcspn( $component, '.' ) );
+			if ( in_array( strtoupper( $firstPart ), $windowsReservedNames ) ) {
+				throw new ShellboxError( "Relative path contains Windows reserved name" );
 			}
 		}
 		return $path;

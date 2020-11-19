@@ -190,6 +190,10 @@ class BoxedCommand extends Command {
 	 * @return array
 	 */
 	public function getClientData() {
+		$inputFiles = [];
+		foreach ( $this->inputFiles as $name => $file ) {
+			$inputFiles[$name] = [];
+		}
 		$outputFiles = [];
 		foreach ( $this->outputFiles as $name => $file ) {
 			$outputFiles[$name] = $file->getClientData();
@@ -202,7 +206,7 @@ class BoxedCommand extends Command {
 		return
 			[
 				'routeName' => $this->routeName,
-				'inputFiles' => array_keys( $this->inputFiles ),
+				'inputFiles' => $inputFiles,
 				'outputFiles' => $outputFiles,
 				'outputGlobs' => $outputGlobs
 			] + parent::getClientData();
@@ -219,6 +223,14 @@ class BoxedCommand extends Command {
 			switch ( $name ) {
 				case 'routeName':
 					$this->routeName = $value;
+					break;
+
+				case 'inputFiles':
+					$this->inputFiles = [];
+					foreach ( $value as $fileName => $fileData ) {
+						$this->inputFiles[$fileName] =
+							InputFile::newFromClientData( $fileData );
+					}
 					break;
 
 				case 'outputFiles':

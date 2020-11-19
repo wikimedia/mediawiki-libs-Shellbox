@@ -13,7 +13,7 @@ namespace Shellbox\Command;
  * @internal
  */
 class ServerBoxedExecutor extends LocalBoxedExecutor {
-	public function execute( BoxedCommand $command ) {
+	public function executeValid( BoxedCommand $command ) {
 		$command = $this->applyBoxConfig( $command );
 		$this->prepareOutputDirectories( $command );
 		$result = new ServerBoxedResult;

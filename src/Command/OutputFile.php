@@ -59,7 +59,15 @@ abstract class OutputFile extends OutputEntity {
 		return [];
 	}
 
+	/**
+	 * This is used to create a placeholder object for use on the server side.
+	 * It doesn't need to actually be functional since the server is responsible
+	 * for reading output files.
+	 *
+	 * @param array $data
+	 * @return OutputFilePlaceholder
+	 */
 	public static function newFromClientData( $data ) {
-		return new OutputFileToString;
+		return new OutputFilePlaceholder;
 	}
 }

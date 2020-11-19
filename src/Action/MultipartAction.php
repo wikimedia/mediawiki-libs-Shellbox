@@ -32,6 +32,8 @@ abstract class MultipartAction {
 	private $headers;
 	/** @var LoggerInterface */
 	protected $logger;
+	/** @var string[] */
+	private $inputFiles = [];
 
 	private const COPY_BUFFER_SIZE = 65536;
 
@@ -244,6 +246,7 @@ abstract class MultipartAction {
 		$path = $this->tempDirManager->preparePath( $fileName );
 		$file = FileUtils::openOutputFile( $path );
 		$multipartReader->copyPartToStream( Utils::streamFor( $file ) );
+		$this->inputFiles[] = $fileName;
 	}
 
 	/**
@@ -293,5 +296,14 @@ abstract class MultipartAction {
 		while ( !$multipartStream->eof() ) {
 			echo $multipartStream->read( self::COPY_BUFFER_SIZE );
 		}
+	}
+
+	/**
+	 * Get the names of the received files, relative to the temporary directory
+	 *
+	 * @return string[]
+	 */
+	protected function getReceivedFileNames() {
+		return $this->inputFiles;
 	}
 }

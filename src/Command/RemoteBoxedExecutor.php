@@ -36,7 +36,7 @@ class RemoteBoxedExecutor extends BoxedExecutor {
 		$this->logger = $logger;
 	}
 
-	public function execute( BoxedCommand $command ) {
+	public function executeValid( BoxedCommand $command ) {
 		$parts = [ [
 			'name' => 'json-data',
 			'headers' => [
