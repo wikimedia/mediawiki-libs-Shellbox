@@ -44,7 +44,8 @@ class ShellAction extends MultipartAction {
 			'useSystemd' => $this->getConfig( 'useSystemd' ),
 			'useBashWrapper' => $this->getConfig( 'useBashWrapper' ),
 			'useFirejail' => $this->getConfig( 'useFirejail' ),
-			'firejailPath' => $this->getConfig( 'firejailPath' )
+			'firejailPath' => $this->getConfig( 'firejailPath' ),
+			'firejailProfile' => $this->getConfig( 'firejailProfile' )
 		] );
 
 		$executor = new ServerBoxedExecutor( $unboxedExecutor, $this->tempDirManager );

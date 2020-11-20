@@ -15,5 +15,6 @@
 	"useSystemd": null,
 	"useBashWrapper": null,
 	"useFirejail": null,
-	"firejailPath": "/usr/bin/firejail"
+	"firejailPath": "/usr/bin/firejail",
+	"firejailProfile": null
 }
