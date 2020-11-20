@@ -2,10 +2,10 @@
 
 namespace Shellbox\Command;
 
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\StreamInterface;
 use Shellbox\FileUtils;
 use Shellbox\Multipart\MultipartReader;
-use function GuzzleHttp\Psr7\copy_to_stream;
 
 /**
  * Encapsulation of an output file that is copied to a stream
@@ -19,7 +19,7 @@ class OutputFileToStream extends OutputFile {
 	}
 
 	public function copyFromFile( $sourcePath ) {
-		copy_to_stream( FileUtils::openInputFileStream( $sourcePath ), $this->stream );
+		Utils::copyToStream( FileUtils::openInputFileStream( $sourcePath ), $this->stream );
 		$this->received = true;
 	}
 
