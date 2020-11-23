@@ -3,6 +3,7 @@
 namespace Shellbox\Action;
 
 use GuzzleHttp\Psr7\MultipartStream;
+use GuzzleHttp\Psr7\Utils;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Shellbox\FileUtils;
@@ -12,7 +13,6 @@ use Shellbox\Server;
 use Shellbox\Shellbox;
 use Shellbox\ShellboxError;
 use Shellbox\TempDirManager;
-use function GuzzleHttp\Psr7\stream_for;
 
 /**
  * Base class for actions that share a specific input/output protocol.
@@ -188,7 +188,7 @@ abstract class MultipartAction {
 
 		$inputFile = FileUtils::openInputFile( 'php://input' );
 		$multipartReader = new MultipartReader(
-			stream_for( $inputFile ),
+			Utils::streamFor( $inputFile ),
 			$boundary,
 			$this->getConfig( 'secretKey' ) );
 		$preamble = $multipartReader->readPreamble();
@@ -243,7 +243,7 @@ abstract class MultipartAction {
 		$fileName = Shellbox::normalizePath( $headers['content-disposition']['filename'] );
 		$path = $this->tempDirManager->preparePath( $fileName );
 		$file = FileUtils::openOutputFile( $path );
-		$multipartReader->copyPartToStream( stream_for( $file ) );
+		$multipartReader->copyPartToStream( Utils::streamFor( $file ) );
 	}
 
 	/**
@@ -285,7 +285,7 @@ abstract class MultipartAction {
 						'Content-Type' => 'application/octet-stream',
 						'Content-Disposition' => "attachment; name=\"$name\""
 					],
-					'contents' => stream_for( $stream )
+					'contents' => Utils::streamFor( $stream )
 				];
 			}
 		}

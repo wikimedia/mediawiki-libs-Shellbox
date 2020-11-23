@@ -2,8 +2,8 @@
 
 namespace Shellbox;
 
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\StreamInterface;
-use function GuzzleHttp\Psr7\stream_for;
 
 /**
  * Throwing wrappers for file functions
@@ -89,7 +89,7 @@ class FileUtils {
 	 * @throws ShellboxError
 	 */
 	public static function openInputFileStream( $path ) {
-		return stream_for( self::openInputFile( $path ) );
+		return Utils::streamFor( self::openInputFile( $path ) );
 	}
 
 	/**
@@ -100,7 +100,7 @@ class FileUtils {
 	 * @throws ShellboxError
 	 */
 	public static function openOutputFileStream( $path ) {
-		return stream_for( self::openOutputFile( $path ) );
+		return Utils::streamFor( self::openOutputFile( $path ) );
 	}
 
 	/**
