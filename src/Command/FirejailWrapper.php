@@ -18,14 +18,21 @@ class FirejailWrapper extends Wrapper {
 	/**
 	 * @var string The path to firejail
 	 */
-	private $firejail;
+	private $binaryPath;
 
 	/**
-	 * @param string $firejailBinaryPath The path to firejail
+	 * @var string The path to the profile file
 	 */
-	public function __construct( $firejailBinaryPath ) {
+	private $profilePath;
+
+	/**
+	 * @param string $binaryPath The path to firejail
+	 * @param string $profilePath The path to the profile file
+	 */
+	public function __construct( $binaryPath, $profilePath ) {
 		parent::__construct();
-		$this->firejail = $firejailBinaryPath;
+		$this->binaryPath = $binaryPath;
+		$this->profilePath = $profilePath;
 	}
 
 	public function wrap( Command $command ) {
@@ -41,12 +48,12 @@ class FirejailWrapper extends Wrapper {
 
 		// quiet has to come first to prevent firejail from adding
 		// any output.
-		$cmd = [ $this->firejail, '--quiet' ];
+		$cmd = [ $this->binaryPath, '--quiet' ];
 		// Use a profile that allows people to add local overrides
 		// if their system is setup in an incompatible manner. Also it
 		// prevents any default profiles from running.
 		// FIXME: Doesn't actually override command-line switches?
-		$cmd[] = '--profile=' . __DIR__ . '/firejail.profile';
+		$cmd[] = '--profile=' . $this->profilePath;
 
 		$whitelistedPaths = $command->getAllowedPaths();
 		// Whitelist our own sources

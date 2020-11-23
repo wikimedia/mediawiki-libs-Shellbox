@@ -109,6 +109,7 @@ class UnboxedExecutor {
 	 *   - useBashWrapper: If true, limit.sh will be used
 	 *   - useFirejail: If true, firejail will be used
 	 *   - firejailPath: The path to the firejail binary
+	 *   - firejailProfile: The path to the firejail profile
 	 *   - cgroup: A writable cgroup path which can be used for manual memory
 	 *     limiting
 	 */
@@ -128,7 +129,8 @@ class UnboxedExecutor {
 		}
 		if ( !empty( $config['useFirejail'] ) ) {
 			$this->addWrapper( new FirejailWrapper(
-				$config['firejailPath'] ?? '/usr/bin/firejail'
+				$config['firejailPath'] ?? '/usr/bin/firejail',
+				$config['firejailProfile'] ?? __DIR__ . '/firejail.profile'
 			) );
 		}
 		if ( $useSystemd ) {

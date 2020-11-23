@@ -20,6 +20,7 @@ class Shellbox {
 	 *   - useBashWrapper: If true, limit.sh will be used
 	 *   - useFirejail: If true, firejail will be used
 	 *   - firejailPath: The path to the firejail binary
+	 *   - firejailProfile: The path to the firejail profile
 	 *   - cgroup: A writable cgroup path which can be used for manual memory
 	 *     limiting
 	 * @param LoggerInterface|null $logger
@@ -52,6 +53,7 @@ class Shellbox {
 	 *   - useBashWrapper: If true, limit.sh will be used
 	 *   - useFirejail: If true, firejail will be used
 	 *   - firejailPath: The path to the firejail binary
+	 *   - firejailProfile: The path to the firejail profile
 	 *   - cgroup: A writable cgroup path which can be used for manual memory
 	 *     limiting
 	 * @param LoggerInterface|null $logger
