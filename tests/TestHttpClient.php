@@ -3,12 +3,11 @@
 namespace Shellbox\Tests;
 
 use GuzzleHttp;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Shellbox\HttpClientInterface;
+use Shellbox\GuzzleHttpClient;
 
-class TestHttpClient implements HttpClientInterface {
+class TestHttpClient extends GuzzleHttpClient {
 	/** @var callable|null */
 	private $coverCallback;
 
@@ -21,25 +20,15 @@ class TestHttpClient implements HttpClientInterface {
 		$this->coverCallback = $coverCallback;
 	}
 
-	public function send( RequestInterface $request ): ResponseInterface {
+	protected function modifyRequest( RequestInterface $request ): RequestInterface {
 		if ( $this->coverCallback ) {
 			$request = $request->withHeader( 'X-Shellbox-Cover', '1' );
 		}
+		$request = $request->withHeader( 'User-Agent', 'Shellbox test client' );
+		return $request;
+	}
 
-		// Disable timeout while debugging
-		$xdebug = boolval( ini_get( 'xdebug.remote_enable' ) );
-		$guzzleClient = new GuzzleHttp\Client( [ 'timeout' => $xdebug ? 0 : 5 ] );
-		try {
-			$response = $guzzleClient->send(
-				$request->withHeader( 'User-Agent', 'Shellbox test client' )
-			);
-		} catch ( RequestException $e ) {
-			if ( $e->getResponse() ) {
-				$response = $e->getResponse();
-			} else {
-				throw $e;
-			}
-		}
+	protected function modifyResponse( ResponseInterface $response ): ResponseInterface {
 		$header = $response->getHeader( 'X-Shellbox-Cover' );
 		if ( $this->coverCallback && isset( $header[0] )
 			&& preg_match( '/^[0-9a-z]+$/', $header[0] )
@@ -47,5 +36,10 @@ class TestHttpClient implements HttpClientInterface {
 			( $this->coverCallback )( $header[0] );
 		}
 		return $response;
+	}
+
+	protected function createClient( RequestInterface $request ) {
+		$xdebug = boolval( ini_get( 'xdebug.remote_enable' ) );
+		return new GuzzleHttp\Client( [ 'timeout' => $xdebug ? 0 : 5 ] );
 	}
 }
