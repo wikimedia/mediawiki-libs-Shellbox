@@ -409,7 +409,5 @@ class UnboxedExecutor {
 		if ( $command->getIncludeStderr() ) {
 			$command->unsafeCommand( $command->getCommandString() . ' 2>&1' );
 		}
-		$command->environment( $command->getEnvironment() +
-			[ 'SB_PHP' => PHP_BINDIR . '/php' ] );
 	}
 }
