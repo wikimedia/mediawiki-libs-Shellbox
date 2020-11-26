@@ -41,6 +41,7 @@ class Server {
 		'useBashWrapper' => null,
 		'useFirejail' => null,
 		'firejailPath' => null,
+		'firejailProfile' => null,
 		'logFile' => false,
 		'jsonLogFile' => false,
 		'logToStderr' => false,
