@@ -13,7 +13,7 @@ class WindowsWrapper extends Wrapper {
 		// This solves some shell parsing issues, see T207248.
 		// This should be unnecessary in PHP 8.0+.
 		$command->unsafeCommand(
-			'cmd /s "' . $command->getCommandString() . '"'
+			'cmd /s /c "' . $command->getCommandString() . '"'
 		);
 		$command->procOpenOptions( [ 'bypass_shell' => true ] );
 	}
