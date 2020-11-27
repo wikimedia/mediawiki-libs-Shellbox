@@ -191,8 +191,9 @@ class UnboxedExecutor {
 		$cmd = $command->getCommandString();
 		$options = $command->getProcOpenOptions();
 
+		$combinedEnvironment = $command->getEnvironment() + getenv();
 		$env = [];
-		foreach ( $command->getEnvironment() as $name => $value ) {
+		foreach ( $combinedEnvironment as $name => $value ) {
 			$env[] = "$name=$value";
 		}
 		$pipes = null;
@@ -362,16 +363,6 @@ class UnboxedExecutor {
 			$this->logger->warning( "$logMsg: {command}", [ 'command' => $cmd ] );
 		}
 
-		// @phan-suppress-next-line PhanImpossibleCondition
-		if ( $buffers[2] && $command->getLogStderr() ) {
-			$this->logger->error( "Error running {command}: {error}", [
-				'command' => $cmd,
-				'error' => $buffers[2],
-				'exitcode' => $retval,
-				'exception' => new ShellboxError( 'Shell error' ),
-			] );
-		}
-
 		if ( $this->stdoutPath !== null ) {
 			$stdout = FileUtils::getContents( $this->stdoutPath );
 		} else {
@@ -384,6 +375,14 @@ class UnboxedExecutor {
 		}
 		if ( $stderr !== '' && $command->getForwardStderr() ) {
 			fwrite( STDERR, $stderr );
+		}
+		if ( $stderr !== '' && $command->getLogStderr() ) {
+			$this->logger->error( "Error running {command}: {error}", [
+				'command' => $cmd,
+				'error' => $stderr,
+				'exitcode' => $retval,
+				'exception' => new ShellboxError( 'Shell error' ),
+			] );
 		}
 
 		return ( new UnboxedResult )

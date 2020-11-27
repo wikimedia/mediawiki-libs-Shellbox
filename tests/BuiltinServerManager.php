@@ -61,8 +61,12 @@ class BuiltinServerManager {
 		$xdebugArgs = $this->getXDebugArgs();
 		$cmd .= ' ' . Shellbox::escape( $xdebugArgs );
 
-		if ( PHP_OS_FAMILY !== 'Windows' ) {
+		if ( PHP_OS_FAMILY === 'Windows' ) {
+			$cmd = "cmd /s /c \"$cmd\"";
+			$options = [ 'bypass_shell' => true ];
+		} else {
 			$cmd = "exec $cmd";
+			$options = [];
 		}
 
 		$this->outputFile = fopen(
@@ -72,7 +76,7 @@ class BuiltinServerManager {
 			2 => $this->outputFile
 		];
 		$pipes = [];
-		$this->proc = proc_open( $cmd, $desc, $pipes, $wdPath );
+		$this->proc = proc_open( $cmd, $desc, $pipes, $wdPath, null, $options );
 		if ( !$this->proc ) {
 			throw new \RuntimeException( "Unable to create server process" );
 		}
@@ -91,10 +95,23 @@ class BuiltinServerManager {
 				usleep( $sleepInterval );
 				$sleepInterval *= 2;
 			}
-		} while ( !$started && microtime( true ) < $startTime + 10 );
+			$procStatus = proc_get_status( $this->proc );
+			if ( $procStatus['pid'] ) {
+				$this->pid = $procStatus['pid'];
+			}
+		} while ( !$started && microtime( true ) < $startTime + 10 && $procStatus['running'] );
 		if ( !$started ) {
-			$this->stop();
-			throw new \RuntimeException( "Gave up waiting for server to start" );
+			if ( !$procStatus['running'] ) {
+				// phpcs:ignore Generic.PHP.NoSilencedErrors
+				$stdout = @file_get_contents( $this->getTempDirManager()->getPath( 'server-out' ) );
+				throw new \RuntimeException( "CLI server exited with " .
+					"status \"{$procStatus['exitcode']}\": $stdout\n" );
+			} else {
+				if ( $this->pid ) {
+					$this->stop();
+				}
+				throw new \RuntimeException( "Gave up waiting for server to start." );
+			}
 		}
 
 		$this->checkIfRunning();
@@ -163,9 +180,15 @@ class BuiltinServerManager {
 				throw new \RuntimeException( 'Can\'t kill the server if we don\'t know its PID' );
 			}
 			if ( PHP_OS_FAMILY === 'Windows' ) {
-				Shellbox::createUnboxedExecutor()->createCommand()
-					->params( 'taskkill', '/pid', $this->pid )
+				$result = Shellbox::createUnboxedExecutor()->createCommand()
+					->params( 'taskkill', '/pid', $this->pid, '/f' )
+					->includeStderr()
 					->execute();
+				if ( $result->getExitCode() ) {
+					throw new \RuntimeException( "taskkill failed with status " .
+						"\"{$result->getExitCode()}\": {$result->getStdout()}" );
+				}
+
 			} elseif ( function_exists( 'posix_kill' ) ) {
 				posix_kill( $this->pid, SIGTERM );
 			} else {

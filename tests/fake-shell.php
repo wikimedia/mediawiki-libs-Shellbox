@@ -70,7 +70,7 @@ function fakeShellMain( $argv ) {
 			exit( 0 );
 
 		case 'env':
-			foreach ( $_ENV as $name => $value ) {
+			foreach ( getenv() as $name => $value ) {
 				echo "$name=$value\n";
 			}
 			exit( 0 );
