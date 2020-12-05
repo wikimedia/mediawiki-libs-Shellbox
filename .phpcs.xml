@@ -16,7 +16,6 @@
 		<exclude name="MediaWiki.Usage.ForbiddenFunctions.proc_open" />
 		<!-- Seems harmless -->
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
-		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.SingleSpaceBeforeSingleLineComment" />
 		<!-- Mostly doing integration tests -->
 		<exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers" />
 	</rule>
