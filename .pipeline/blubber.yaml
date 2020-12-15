@@ -1,0 +1,82 @@
+version: v4
+base: docker-registry.wikimedia.org/php7.2-fpm:0.1.1
+
+lives:
+  as: "composer"
+  in: /srv/app
+
+runs:
+  # www-data has uid/gid 33
+  uid: 33
+  gid: 33
+  # We want to use the run user even in development.
+  insecurely: false
+
+variants:
+  build:
+    # Build is the base composer build for production deployments.
+    base: docker-registry.wikimedia.org/releng/composer-php72:latest
+    php:
+      requirements: [composer.json, composer.lock]
+      production: true
+  # Test is directly used for CI, but also to build the base for the dev env image
+  test:
+    copies: [local]
+    base: docker-registry.wikimedia.org/releng/composer-php72:latest
+    php:
+      requirements: [composer.json, composer.lock]
+      production: false
+    entrypoint: [composer, test]
+  dev:
+    copies: [test]
+    builder:
+      requirements:
+        # Copy the entrypoint
+        - from: local
+          source: .pipeline/entrypoint
+          destination: index.php
+        # Copy the sample configuration
+        - from: local
+          source: config/config.sample.json
+          destination: config/config.json
+      # Make sure the file can only be read, but not modified
+      # by the running user
+      command:
+        - "chmod 0444 /srv/app/config/config.json"
+    runs:
+      environment:
+        PHP__opcache__enable: "0"
+        FPM__pm__max_children: "4"
+        FPM__log_level: notice
+        PHP__display_errors: "stderr"
+        PHP__error_log: "/dev/stdout"
+        PHP__apc__shm_size: "150M"
+        PHP__error_reporting: "E_ALL"
+
+  prod:
+    builder:
+      requirements:
+        # Copy the vendor directory from build
+        - from: build
+          source: /srv/app/vendor
+          destination: /srv/app/vendor
+        # Copy the code (not the tests)
+        - from: local
+          source: src
+          destination: src
+        # Copy the entrypoint
+        - from: local
+          source: .pipeline/entrypoint
+          destination: index.php
+      command:
+        - "mkdir configuration"
+  score:
+    copies: [prod]
+    apt:
+      packages:
+        - lilypond
+        - imagemagick
+        - ghostscript
+        - fluidsynth
+        - fluid-soundfont-gs
+        - fluid-soundfont-gm

@@ -1,0 +1,13 @@
+pipelines:
+  test:
+    blubberfile: blubber.yaml
+    stages:
+      - name: test
+  publish:
+    blubberfile: blubber.yaml
+    stages:
+      - name: score
+        build: score
+        publish:
+          image:
+            tags: [score]
