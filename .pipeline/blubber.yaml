@@ -37,7 +37,7 @@ variants:
           destination: index.php
         # Copy the sample configuration
         - from: local
-          source: config/config.sample.json
+          source: config/dev-config.json
           destination: config/config.json
       # Make sure the file can only be read, but not modified
       # by the running user

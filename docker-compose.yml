@@ -1,0 +1,21 @@
+version: "3"
+volumes:
+  fcgi_socket: {}
+services:
+  httpd:
+    image: "docker-registry.wikimedia.org/httpd-fcgi:latest"
+    ports:
+      - "8080:8080"
+    volumes:
+      - fcgi_socket:/run/shared/:rw
+    environment:
+      FCGI_MODE: FCGI_UNIX
+  fcgi:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - fcgi_socket:/run/shared/:rw
+      - ./src:/srv/app/src:ro
+    environment:
+      FCGI_MODE: FCGI_UNIX
