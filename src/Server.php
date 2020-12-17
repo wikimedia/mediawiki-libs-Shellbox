@@ -105,6 +105,9 @@ class Server {
 		if ( $action === 'healthz' ) {
 			$this->showHealth();
 			return;
+		} elseif ( $action === 'spec' ) {
+			$this->showSpec();
+			return;
 		}
 
 		if ( $this->validateAction( $action ) ) {
@@ -318,6 +321,14 @@ class Server {
 			'__' => 'Shellbox running',
 			'pid' => getmypid()
 		] );
+	}
+
+	/**
+	 * spec action
+	 */
+	private function showSpec() {
+		header( 'Content-Type: application/json' );
+		echo file_get_contents( __DIR__ . '/spec.json' );
 	}
 
 	/**
