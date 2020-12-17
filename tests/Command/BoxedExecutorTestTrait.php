@@ -20,7 +20,7 @@ trait BoxedExecutorTestTrait {
 	 * @return array
 	 */
 	private function getFakeShellParams() {
-		return [ PHP_BINARY, dirname( __DIR__ ) . '/fake-shell.php' ];
+		return [ PHP_BINARY, '-d', 'variables_order=EGPCS', dirname( __DIR__ ) . '/fake-shell.php' ];
 	}
 
 	abstract protected function createExecutor( LoggerInterface $logger = null ): BoxedExecutor;

@@ -22,6 +22,7 @@
 		"test": [
 			"@lint",
 			"@phpcs",
+			"@phpunit",
 			"@phan"
 		],
 		"fix": [

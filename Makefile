@@ -14,7 +14,7 @@ Dockerfile.test:
 	touch .testimage
 
 test: .testimage
-	docker run -v $(CURDIR)/src:/srv/app/src --rm shellbox-test:local
+	docker run -v $(CURDIR)/src:/srv/app/src -v $(CURDIR)/tests:/srv/app/tests --rm shellbox-test:local
 
 run: Dockerfile.dev
 	docker-compose up

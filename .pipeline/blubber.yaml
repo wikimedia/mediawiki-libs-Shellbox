@@ -26,7 +26,15 @@ variants:
     php:
       requirements: [composer.json, composer.lock]
       production: false
+    runs:
+      insecurely: true
     entrypoint: [composer, test]
+  test-php73:
+    includes: [test]
+    base: docker-registry.wikimedia.org/releng/composer-php73:latest
+  test-php74:
+    includes: [test]
+    base: docker-registry.wikimedia.org/releng/composer-php74:latest
   dev:
     copies: [test]
     builder:
