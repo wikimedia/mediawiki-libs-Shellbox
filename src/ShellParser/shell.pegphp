@@ -42,16 +42,26 @@
 
 	/**
 	 * Combine arrays and non-array items into a single flat array.
+	 *
 	 * @param array|Node|string|null ...$items
 	 * @return array
+	 * @phan-return array<Node|string>
 	 */
 	private function merge( ...$items ) {
-		foreach ( $items as &$item ) {
-			if ( !is_array( $item ) ) {
-				$item = [ $item ];
+		if ( !$items ) {
+			return [];
+		}
+		$mergeArgs = [];
+		foreach ( $items as $item ) {
+			if ( $item !== null ) {
+				if ( !is_array( $item ) ) {
+					$mergeArgs[] = [ $item ];
+				} else {
+					$mergeArgs[] = $item;
+				}
 			}
 		}
-		return array_merge( ...$items );
+		return array_merge( ...$mergeArgs );
 	}
 }
 
@@ -76,26 +86,34 @@ complete_commands =
 
 complete_command =
 	OWS
-	list: list
-	separator_op?
+	list: (
+		nodes: (
+			item: and_or
+			separator: $separator_op
+			{
+				if ( $separator && $separator[0] === '&' ) {
+					return $this->node( 'background', $item );
+				} else {
+					return $item;
+				}
+			}
+		)+
+		last: and_or?
+		{
+			if ( $last ) {
+                $nodes[] = $last;
+            }
+            if ( count( $nodes ) > 1 ) {
+                return $this->node( 'list', $nodes );
+            } else {
+                return $nodes[0];
+            }
+		}
+		/
+		and_or
+	)
 {
 	return $this->node( 'complete_command', $list );
-}
-
-list =
-	first: and_or
-	rest: (
-		separator_op contents:and_or
-		{
-			return $contents;
-		}
-	)*
-{
-	if ( $rest ) {
-		return $this->node( 'list', $this->merge( $first, $rest ) );
-	} else {
-		return $first;
-	}
 }
 
 and_or =
@@ -149,9 +167,9 @@ command =
 	{
 		if ( $r !== null ) {
 			return $this->merge( $c, $r );
-        } else {
-            return $c;
-        }
+		} else {
+			return $c;
+		}
 	}
 
 compound_command =
@@ -170,23 +188,36 @@ subshell =
 }
 
 compound_list =
-	linebreak term:term separator?
-{
-	return $term;
-}
-
-term =
-	first: and_or
-	rest: (
-		separator
-		contents: and_or
+	linebreak
+	terms:(
+		term: and_or
+		separator: $separator
 		{
-			return $contents;
+			if ( $separator && $separator[0] === '&' ) {
+				return $this->node( 'background', $term );
+			} else {
+				return $term;
+			}
 		}
-	)*
-{
-	return $this->merge( $first, $rest );
-}
+	)+
+	last: and_or?
+	{
+		if ( $last ) {
+			$terms[] = $last;
+		}
+		return $terms;
+	}
+	/
+	linebreak
+	term: and_or
+	{
+		if ( $term === null ) {
+			// Phan is convinced $term may be null, not sure how
+			return [];
+		} else {
+			return $term;
+		}
+	}
 
 for_clause =
 	(
@@ -379,7 +410,7 @@ simple_command =
 	{
 		$contents = [ $prefix, $word ];
 		if ( $suffix !== null ) {
-			$contents[] = $suffix;
+			$contents = array_merge( $contents, $suffix );
 		}
 		return $this->node( 'simple_command', $contents );
 	}
@@ -391,7 +422,7 @@ simple_command =
 	{
 		$contents = [ $name ];
 		if ( $suffix ) {
-			$contents[] = $suffix;
+			$contents = array_merge( $contents, $suffix );
 		}
 		return $this->node( 'simple_command', $contents );
 	}
@@ -419,13 +450,10 @@ cmd_prefix =
 }
 
 cmd_suffix =
-	contents: (
+	(
 		io_redirect
 		/ WORD
 	)+
-{
-	return $this->node( 'cmd_suffix', $contents );
-}
 
 redirect_list =
 	io_redirect+
@@ -488,7 +516,7 @@ io_here =
 	// the parser is structured.
 	throw new UnimplementedError( 'heredoc is not implemented' );
 	// For phan
-	return $this->node( $op, '' );
+	return $this->node( 'io_here', '' );
 }
 
 here_end =
@@ -608,7 +636,8 @@ double_quoted_part =
 		dquoted_escape
 		/ backquote_expansion
 		/ dollar_expansion
-		/ $[^"`$]+
+		/ "\\"
+		/ $[^"`$\\]+
 	)*
 	'"'
 {

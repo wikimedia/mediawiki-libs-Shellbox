@@ -13,10 +13,12 @@ class PEGParserTest extends ShellboxTestCase {
 		return [
 			[ '', '<program></program>' ],
 			[ 'a', '<program><complete_command><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></complete_command></program>' ],
+			[ 'a b c', '<program><complete_command><simple_command><word><unquoted_literal>a</unquoted_literal></word><word><unquoted_literal>b</unquoted_literal></word><word><unquoted_literal>c</unquoted_literal></word></simple_command></complete_command></program>' ],
 			[ 'a # |b', '<program><complete_command><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></complete_command></program>' ],
 			[ '"a"', '<program><complete_command><simple_command><word><double_quote>a</double_quote></word></simple_command></complete_command></program>' ],
 			[ "'a'", '<program><complete_command><simple_command><word><single_quote>a</single_quote></word></simple_command></complete_command></program>' ],
 			[ "'a'\''a'", '<program><complete_command><simple_command><word><single_quote>a</single_quote><bare_escape>\'</bare_escape><single_quote>a</single_quote></word></simple_command></complete_command></program>' ],
+			[ '"a\"\b"', '<program><complete_command><simple_command><word><double_quote>a<dquoted_escape>&quot;</dquoted_escape>\b</double_quote></word></simple_command></complete_command></program>' ],
 			[ '\a', '<program><complete_command><simple_command><word><bare_escape>a</bare_escape></word></simple_command></complete_command></program>' ],
 			[ '`cmd`', '<program><complete_command><simple_command><word><backquote>cmd</backquote></word></simple_command></complete_command></program>' ],
 			[ '`a \`b\` c`', '<program><complete_command><simple_command><word><backquote>a <double_backquote>b</double_backquote> c</backquote></word></simple_command></complete_command></program>' ],
@@ -66,15 +68,15 @@ class PEGParserTest extends ShellboxTestCase {
 			[ '"$(")', 'SyntaxError' ],
 			[ '"$(")"', 'SyntaxError' ],
 
-			[ 'cmd>out', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><cmd_suffix><io_redirect><output><word><unquoted_literal>out</unquoted_literal></word></output></io_redirect></cmd_suffix></simple_command></complete_command></program>' ],
-			[ 'cmd >out <in', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><cmd_suffix><io_redirect><output><word><unquoted_literal>out</unquoted_literal></word></output></io_redirect><io_redirect><input><word><unquoted_literal>in</unquoted_literal></word></input></io_redirect></cmd_suffix></simple_command></complete_command></program>' ],
-			[ 'cmd 2>&1', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><cmd_suffix><io_redirect><io_subject>2</io_subject><duplicate_output><word><unquoted_literal>1</unquoted_literal></word></duplicate_output></io_redirect></cmd_suffix></simple_command></complete_command></program>' ],
-			[ 'cmd 2>out', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><cmd_suffix><io_redirect><io_subject>2</io_subject><output><word><unquoted_literal>out</unquoted_literal></word></output></io_redirect></cmd_suffix></simple_command></complete_command></program>' ],
+			[ 'cmd>out', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><io_redirect><output><word><unquoted_literal>out</unquoted_literal></word></output></io_redirect></simple_command></complete_command></program>' ],
+			[ 'cmd >out <in', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><io_redirect><output><word><unquoted_literal>out</unquoted_literal></word></output></io_redirect><io_redirect><input><word><unquoted_literal>in</unquoted_literal></word></input></io_redirect></simple_command></complete_command></program>' ],
+			[ 'cmd 2>&1', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><io_redirect><io_subject>2</io_subject><duplicate_output><word><unquoted_literal>1</unquoted_literal></word></duplicate_output></io_redirect></simple_command></complete_command></program>' ],
+			[ 'cmd 2>out', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><io_redirect><io_subject>2</io_subject><output><word><unquoted_literal>out</unquoted_literal></word></output></io_redirect></simple_command></complete_command></program>' ],
 			[ '>out cmd', '<program><complete_command><simple_command><cmd_prefix><io_redirect><output><word><unquoted_literal>out</unquoted_literal></word></output></io_redirect></cmd_prefix><word><unquoted_literal>cmd</unquoted_literal></word></simple_command></complete_command></program>' ],
-			[ 'cmd>>out', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><cmd_suffix><io_redirect><append_output><word><unquoted_literal>out</unquoted_literal></word></append_output></io_redirect></cmd_suffix></simple_command></complete_command></program>' ],
-			[ 'cmd <& f', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><cmd_suffix><io_redirect><duplicate_input><word><unquoted_literal>f</unquoted_literal></word></duplicate_input></io_redirect></cmd_suffix></simple_command></complete_command></program>' ],
-			[ 'cmd >& f', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><cmd_suffix><io_redirect><duplicate_output><word><unquoted_literal>f</unquoted_literal></word></duplicate_output></io_redirect></cmd_suffix></simple_command></complete_command></program>' ],
-			[ 'cmd >| f', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><cmd_suffix><io_redirect><clobber><word><unquoted_literal>f</unquoted_literal></word></clobber></io_redirect></cmd_suffix></simple_command></complete_command></program>' ],
+			[ 'cmd>>out', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><io_redirect><append_output><word><unquoted_literal>out</unquoted_literal></word></append_output></io_redirect></simple_command></complete_command></program>' ],
+			[ 'cmd <& f', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><io_redirect><duplicate_input><word><unquoted_literal>f</unquoted_literal></word></duplicate_input></io_redirect></simple_command></complete_command></program>' ],
+			[ 'cmd >& f', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><io_redirect><duplicate_output><word><unquoted_literal>f</unquoted_literal></word></duplicate_output></io_redirect></simple_command></complete_command></program>' ],
+			[ 'cmd >| f', '<program><complete_command><simple_command><word><unquoted_literal>cmd</unquoted_literal></word><io_redirect><clobber><word><unquoted_literal>f</unquoted_literal></word></clobber></io_redirect></simple_command></complete_command></program>' ],
 
 			[ '(a)', '<program><complete_command><subshell><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></subshell></complete_command></program>' ],
 			[ 'a; (b;c)', '<program><complete_command><list><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command><subshell><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command><simple_command><word><unquoted_literal>c</unquoted_literal></word></simple_command></subshell></list></complete_command></program>' ],
@@ -87,6 +89,12 @@ class PEGParserTest extends ShellboxTestCase {
 			[ 'a && b | c', '<program><complete_command><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command><and_if><pipeline><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command><simple_command><word><unquoted_literal>c</unquoted_literal></word></simple_command></pipeline></and_if></complete_command></program>' ],
 			[ 'a | b && c', '<program><complete_command><pipeline><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command></pipeline><and_if><simple_command><word><unquoted_literal>c</unquoted_literal></word></simple_command></and_if></complete_command></program>' ],
 
+			[ 'a&', '<program><complete_command><background><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></background></complete_command></program>' ],
+			[ 'a&b', '<program><complete_command><list><background><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></background><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command></list></complete_command></program>' ],
+			[ 'a&b&&c', '<program><complete_command><list><background><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></background><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command><and_if><simple_command><word><unquoted_literal>c</unquoted_literal></word></simple_command></and_if></list></complete_command></program>' ],
+			[ 'a&b&', '<program><complete_command><list><background><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></background><background><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command></background></list></complete_command></program>' ],
+			[ 'a&b;', '<program><complete_command><list><background><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></background><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command></list></complete_command></program>' ],
+
 			[ '{ a; }', '<program><complete_command><brace_group><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></brace_group></complete_command></program>' ],
 			[ "{ a\n}", '<program><complete_command><brace_group><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></brace_group></complete_command></program>' ],
 			[ '{ a }' , 'SyntaxError' ],
@@ -97,6 +105,8 @@ class PEGParserTest extends ShellboxTestCase {
 			[ 'for p; do b; done', '<program><complete_command><for>p<do><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command></do></for></complete_command></program>' ],
 			[ 'for a do b done', 'SyntaxError' ],
 			[ 'esac', 'SyntaxError' ],
+			[ 'for p in a; do b & done', '<program><complete_command><for>p<in><word><unquoted_literal>a</unquoted_literal></word></in><do><background><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command></background></do></for></complete_command></program>' ],
+			[ 'for p in a; do b & c & done', '<program><complete_command><for>p<in><word><unquoted_literal>a</unquoted_literal></word></in><do><background><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command></background><background><simple_command><word><unquoted_literal>c</unquoted_literal></word></simple_command></background></do></for></complete_command></program>' ],
 			[ '
 				case w in
 					p1)
