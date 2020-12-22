@@ -59,7 +59,9 @@ class BuiltinServerManager {
 		);
 
 		$xdebugArgs = $this->getXDebugArgs();
-		$cmd .= ' ' . Shellbox::escape( $xdebugArgs );
+		if ( $xdebugArgs ) {
+			$cmd .= ' ' . Shellbox::escape( $xdebugArgs );
+		}
 
 		if ( PHP_OS_FAMILY === 'Windows' ) {
 			$cmd = "cmd /s /c \"$cmd\"";
@@ -215,11 +217,14 @@ class BuiltinServerManager {
 	 * @return string[]
 	 */
 	private function getXDebugArgs() {
+		if ( !extension_loaded( 'xdebug' ) ) {
+			return [];
+		}
 		$settings = [
 			'xdebug.remote_enable', 'xdebug.remote_handler', 'xdebug.remote_mode',
 			'xdebug.remote_host', 'xdebug.remote_port',
 		];
-		$args = [];
+		$args = [ '-dzend_extension=xdebug.so' ];
 
 		foreach ( $settings as $name ) {
 			$value = ini_get( $name );
