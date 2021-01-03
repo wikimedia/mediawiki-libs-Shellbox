@@ -61,6 +61,7 @@ function fakeShellMain( $argv ) {
 				$argv[] = 'php://stdin';
 			}
 			foreach ( $argv as $arg ) {
+				// @phan-suppress-next-line SecurityCheck-PathTraversal
 				$stream = FileUtils::openInputFileStream( $arg );
 				while ( !$stream->eof() ) {
 					echo $stream->read( 4096 );

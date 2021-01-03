@@ -7,12 +7,17 @@ $cfg['directory_list'] = [
 	'vendor',
 	'tests'
 ];
+
 $cfg['exclude_analysis_directory_list'][] = 'vendor';
+
+// Default excludes phpunit/php-code-coverage, which is needed here
 $cfg['exclude_file_regex'] = '@/vendor/(phan|mediawiki|php-parallel-lint)/@';
-$cfg['suppress_issue_types'] = [
+
+$cfg['suppress_issue_types'] = array_merge( $cfg['suppress_issue_types'], [
 	// It's a library, methods don't have to be called
 	'PhanUnreferencedPublicMethod',
 	// It means internal to Shellbox
 	'PhanAccessMethodInternal',
-];
+] );
+
 return $cfg;

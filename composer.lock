@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a8ad164699c3ff98a98dfd83f2169d61",
+    "content-hash": "d3af49f89800dbfa43bb5ce8fb69ea20",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -968,32 +968,37 @@
         },
         {
             "name": "mediawiki/mediawiki-phan-config",
-            "version": "0.10.4",
+            "version": "0.10.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/mediawiki-tools-phan.git",
-                "reference": "96ca8f482f2b60ace40342620feaabd3cbf22b7c"
+                "reference": "4bb1607bb41dd00b83ee81f7a4deb7889be16ac1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-tools-phan/zipball/96ca8f482f2b60ace40342620feaabd3cbf22b7c",
-                "reference": "96ca8f482f2b60ace40342620feaabd3cbf22b7c",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-tools-phan/zipball/4bb1607bb41dd00b83ee81f7a4deb7889be16ac1",
+                "reference": "4bb1607bb41dd00b83ee81f7a4deb7889be16ac1",
                 "shasum": ""
             },
             "require": {
-                "mediawiki/phan-taint-check-plugin": "3.0.4",
-                "phan/phan": "3.0.3",
+                "mediawiki/phan-taint-check-plugin": "3.2.1",
+                "phan/phan": "3.2.6",
                 "php": ">=7.2.0"
             },
             "require-dev": {
-                "mediawiki/mediawiki-codesniffer": "31.0.0",
+                "mediawiki/mediawiki-codesniffer": "34.0.0",
                 "mediawiki/minus-x": "1.1.0",
-                "ockcyp/covers-validator": "1.2.0",
+                "ockcyp/covers-validator": "1.3.1",
                 "php-parallel-lint/php-console-highlighter": "0.5.0",
                 "php-parallel-lint/php-parallel-lint": "1.2.0",
                 "phpunit/phpunit": "^8.5"
             },
             "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MediaWikiPhanConfig\\": "src/"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
@@ -1006,29 +1011,29 @@
             ],
             "description": "Standard MediaWiki phan configuration",
             "homepage": "https://www.mediawiki.org/wiki/Continuous_integration/Phan",
-            "time": "2020-11-17T19:02:56+00:00"
+            "time": "2020-12-14T15:30:53+00:00"
         },
         {
             "name": "mediawiki/phan-taint-check-plugin",
-            "version": "3.0.4",
+            "version": "3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/phan-taint-check-plugin.git",
-                "reference": "b7fe7132e0eb2eb1c4b812f70af7f69204bc47e2"
+                "reference": "4bc471bd790644398a6749eedd7a841e9a759bd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/phan-taint-check-plugin/zipball/b7fe7132e0eb2eb1c4b812f70af7f69204bc47e2",
-                "reference": "b7fe7132e0eb2eb1c4b812f70af7f69204bc47e2",
+                "url": "https://api.github.com/repos/wikimedia/phan-taint-check-plugin/zipball/4bc471bd790644398a6749eedd7a841e9a759bd6",
+                "reference": "4bc471bd790644398a6749eedd7a841e9a759bd6",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "phan/phan": "3.0.3",
-                "php": "^7.2.0"
+                "phan/phan": "3.2.6",
+                "php": "^7.2.0 | ^8.0.0"
             },
             "require-dev": {
-                "mediawiki/mediawiki-codesniffer": "31.0.0",
+                "mediawiki/mediawiki-codesniffer": "34.0.0",
                 "mediawiki/minus-x": "1.1.0",
                 "php-parallel-lint/php-console-highlighter": "0.5.0",
                 "php-parallel-lint/php-parallel-lint": "1.2.0",
@@ -1042,6 +1047,11 @@
                 "scripts/seccheck-generic"
             ],
             "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SecurityCheckPlugin\\": "src"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
@@ -1065,20 +1075,20 @@
                 "static",
                 "taint"
             ],
-            "time": "2020-11-17T18:44:20+00:00"
+            "time": "2020-12-14T11:11:43+00:00"
         },
         {
             "name": "microsoft/tolerant-php-parser",
-            "version": "v0.0.20",
+            "version": "v0.0.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoft/tolerant-php-parser.git",
-                "reference": "c5e2bf5d8c9f4f27eef1370bd39ea2d1f374eeb4"
+                "reference": "1d76657e3271754515ace52501d3e427eca42ad0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoft/tolerant-php-parser/zipball/c5e2bf5d8c9f4f27eef1370bd39ea2d1f374eeb4",
-                "reference": "c5e2bf5d8c9f4f27eef1370bd39ea2d1f374eeb4",
+                "url": "https://api.github.com/repos/microsoft/tolerant-php-parser/zipball/1d76657e3271754515ace52501d3e427eca42ad0",
+                "reference": "1d76657e3271754515ace52501d3e427eca42ad0",
                 "shasum": ""
             },
             "require": {
@@ -1106,7 +1116,7 @@
                 }
             ],
             "description": "Tolerant PHP-to-AST parser designed for IDE usage scenarios",
-            "time": "2020-02-18T02:57:19+00:00"
+            "time": "2020-09-13T17:29:12+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -1210,16 +1220,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.10.3",
+            "version": "v4.10.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "dbe56d23de8fcb157bbc0cfb3ad7c7de0cfb0984"
+                "reference": "c6d052fc58cb876152f89f532b95a8d7907e7f0e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/dbe56d23de8fcb157bbc0cfb3ad7c7de0cfb0984",
-                "reference": "dbe56d23de8fcb157bbc0cfb3ad7c7de0cfb0984",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/c6d052fc58cb876152f89f532b95a8d7907e7f0e",
+                "reference": "c6d052fc58cb876152f89f532b95a8d7907e7f0e",
                 "shasum": ""
             },
             "require": {
@@ -1258,20 +1268,20 @@
                 "parser",
                 "php"
             ],
-            "time": "2020-12-03T17:45:45+00:00"
+            "time": "2020-12-20T10:01:03+00:00"
         },
         {
             "name": "phan/phan",
-            "version": "3.0.3",
+            "version": "3.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phan/phan.git",
-                "reference": "b15141e68e1eb954aba9e30d3875ad91af6ac951"
+                "reference": "e14110d4bef8643562b02a4003015c2c0dcc9fe4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phan/phan/zipball/b15141e68e1eb954aba9e30d3875ad91af6ac951",
-                "reference": "b15141e68e1eb954aba9e30d3875ad91af6ac951",
+                "url": "https://api.github.com/repos/phan/phan/zipball/e14110d4bef8643562b02a4003015c2c0dcc9fe4",
+                "reference": "e14110d4bef8643562b02a4003015c2c0dcc9fe4",
                 "shasum": ""
             },
             "require": {
@@ -1281,19 +1291,19 @@
                 "ext-json": "*",
                 "ext-tokenizer": "*",
                 "felixfbecker/advanced-json-rpc": "^3.0.4",
-                "microsoft/tolerant-php-parser": "0.0.20",
-                "netresearch/jsonmapper": "^1.6.0|^2.0",
-                "php": "^7.2.0",
-                "sabre/event": "^5.0",
-                "symfony/console": "^2.3|^3.0|^4.0|^5.0",
-                "symfony/polyfill-mbstring": "^1.11.0"
+                "microsoft/tolerant-php-parser": "0.0.23",
+                "netresearch/jsonmapper": "^1.6.0|^2.0|^3.0",
+                "php": "^7.2.0|^8.0.0",
+                "sabre/event": "^5.0.3",
+                "symfony/console": "^3.2|^4.0|^5.0",
+                "symfony/polyfill-mbstring": "^1.11.0",
+                "symfony/polyfill-php80": "^1.20.0"
             },
             "require-dev": {
-                "brianium/paratest": "^4.0.0",
                 "phpunit/phpunit": "^8.5.0"
             },
             "suggest": {
-                "ext-ast": "Needed for parsing ASTs (unless --use-fallback-parser is used). 1.0.1+ is needed, 1.0.6+ is recommended.",
+                "ext-ast": "Needed for parsing ASTs (unless --use-fallback-parser is used). 1.0.1+ is needed, 1.0.8+ is recommended.",
                 "ext-iconv": "Either iconv or mbstring is needed to ensure issue messages are valid utf-8",
                 "ext-igbinary": "Improves performance of polyfill when ext-ast is unavailable",
                 "ext-mbstring": "Either iconv or mbstring is needed to ensure issue messages are valid utf-8",
@@ -1331,7 +1341,7 @@
                 "php",
                 "static"
             ],
-            "time": "2020-06-21T18:38:40+00:00"
+            "time": "2020-11-27T19:39:49+00:00"
         },
         {
             "name": "phar-io/manifest",
