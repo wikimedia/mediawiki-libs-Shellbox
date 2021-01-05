@@ -1,6 +1,5 @@
 {
 	"name" : "wikimedia/shellbox",
-	"version" : "0.0.3",
 	"description" : "Library and server for containerized shell execution",
 	"license" : "MIT",
 	"authors" : [{
