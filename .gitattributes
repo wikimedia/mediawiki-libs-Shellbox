@@ -5,7 +5,10 @@
 Doxyfile export-ignore
 composer.json export-ignore
 .phpcs.xml export-ignore
-phpunit.xml.dist export-ignore
+phpunit.xml export-ignore
 build/ export-ignore
 tests/ export-ignore
 .phan/ export-ignore
+.pipeline/ export-ignore
+docker-compose.yml export-ignore
+Makefile export-ignore
