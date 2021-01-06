@@ -58,4 +58,21 @@ class Node {
 		}
 		return $inner;
 	}
+
+	public function traverse( callable $visitor, ...$args ) {
+		$visitor( $this, ...$args );
+		self::traverseArray( $visitor, $this->contents, ...$args );
+	}
+
+	public static function traverseArray( callable $visitor, $array, ...$args ) {
+		foreach ( $array as $node ) {
+			if ( $node instanceof Node ) {
+				$node->traverse( $visitor, ...$args );
+			} elseif ( is_array( $node ) ) {
+				self::traverseArray( $visitor, $node, ...$args );
+			} else {
+				$visitor( $node, ...$args );
+			}
+		}
+	}
 }

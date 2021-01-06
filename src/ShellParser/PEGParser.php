@@ -25,16 +25,26 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   
   	/**
   	 * Combine arrays and non-array items into a single flat array.
+  	 *
   	 * @param array|Node|string|null ...$items
   	 * @return array
+  	 * @phan-return array<Node|string>
   	 */
   	private function merge( ...$items ) {
-  		foreach ( $items as &$item ) {
-  			if ( !is_array( $item ) ) {
-  				$item = [ $item ];
+  		if ( !$items ) {
+  			return [];
+  		}
+  		$mergeArgs = [];
+  		foreach ( $items as $item ) {
+  			if ( $item !== null ) {
+  				if ( !is_array( $item ) ) {
+  					$mergeArgs[] = [ $item ];
+  				} else {
+  					$mergeArgs[] = $item;
+  				}
   			}
   		}
-  		return array_merge( ...$items );
+  		return array_merge( ...$mergeArgs );
   	}
   
 
@@ -48,12 +58,12 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     2 => ["type" => "class", "value" => "[ \\t\\v\\r\\f]", "description" => "[ \\t\\v\\r\\f]"],
     3 => ["type" => "literal", "value" => "#", "description" => "\"#\""],
     4 => ["type" => "class", "value" => "[^\\n]", "description" => "[^\\n]"],
-    5 => ["type" => "literal", "value" => "&", "description" => "\"&\""],
-    6 => ["type" => "literal", "value" => ";", "description" => "\";\""],
-    7 => ["type" => "literal", "value" => "&&", "description" => "\"&&\""],
-    8 => ["type" => "literal", "value" => "||", "description" => "\"||\""],
-    9 => ["type" => "literal", "value" => ";;", "description" => "\";;\""],
-    10 => ["type" => "literal", "value" => "!", "description" => "\"!\""],
+    5 => ["type" => "literal", "value" => "&&", "description" => "\"&&\""],
+    6 => ["type" => "literal", "value" => "||", "description" => "\"||\""],
+    7 => ["type" => "literal", "value" => "&", "description" => "\"&\""],
+    8 => ["type" => "literal", "value" => ";", "description" => "\";\""],
+    9 => ["type" => "literal", "value" => "!", "description" => "\"!\""],
+    10 => ["type" => "literal", "value" => ";;", "description" => "\";;\""],
     11 => ["type" => "literal", "value" => "|", "description" => "\"|\""],
     12 => ["type" => "class", "value" => "[_a-zA-Z]", "description" => "[_a-zA-Z]"],
     13 => ["type" => "class", "value" => "[_a-zA-Z0-9]", "description" => "[_a-zA-Z0-9]"],
@@ -74,8 +84,8 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     28 => ["type" => "literal", "value" => "'", "description" => "\"'\""],
     29 => ["type" => "class", "value" => "[^']", "description" => "[^']"],
     30 => ["type" => "literal", "value" => "\"", "description" => "\"\\\"\""],
-    31 => ["type" => "class", "value" => "[^\"`\$]", "description" => "[^\"`\$]"],
-    32 => ["type" => "literal", "value" => "\\", "description" => "\"\\\\\""],
+    31 => ["type" => "literal", "value" => "\\", "description" => "\"\\\\\""],
+    32 => ["type" => "class", "value" => "[^\"`\$\\\\]", "description" => "[^\"`\$\\\\]"],
     33 => ["type" => "literal", "value" => "`", "description" => "\"`\""],
     34 => ["type" => "literal", "value" => "\$", "description" => "\"\$\""],
     35 => ["type" => "class", "value" => "[^`\$\\\\]", "description" => "[^`\$\\\\]"],
@@ -125,23 +135,30 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   			return $c;
   		
   }
-  private function a3($list) {
+  private function a3($item, $separator) {
   
-  	return $this->node( 'complete_command', $list );
-  
+  				if ( $separator && $separator[0] === '&' ) {
+  					return $this->node( 'background', $item );
+  				} else {
+  					return $item;
+  				}
+  			
   }
-  private function a4($first, $contents) {
+  private function a4($nodes, $last) {
   
-  			return $contents;
+  			if ( $last ) {
+                  $nodes[] = $last;
+              }
+              if ( count( $nodes ) > 1 ) {
+                  return $this->node( 'list', $nodes );
+              } else {
+                  return $nodes[0];
+              }
   		
   }
-  private function a5($first, $rest) {
+  private function a5($list) {
   
-  	if ( $rest ) {
-  		return $this->node( 'list', $this->merge( $first, $rest ) );
-  	} else {
-  		return $first;
-  	}
+  	return $this->node( 'complete_command', $list );
   
   }
   private function a6($first, $pipeline) {
@@ -186,9 +203,9 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   
   		if ( $r !== null ) {
   			return $this->merge( $c, $r );
-          } else {
-              return $c;
-          }
+  		} else {
+  			return $c;
+  		}
   	
   }
   private function a13($fname, $body) {
@@ -201,7 +218,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   
   		$contents = [ $prefix, $word ];
   		if ( $suffix !== null ) {
-  			$contents[] = $suffix;
+  			$contents = array_merge( $contents, $suffix );
   		}
   		return $this->node( 'simple_command', $contents );
   	
@@ -215,7 +232,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   
   		$contents = [ $name ];
   		if ( $suffix ) {
-  			$contents[] = $suffix;
+  			$contents = array_merge( $contents, $suffix );
   		}
   		return $this->node( 'simple_command', $contents );
   	
@@ -239,37 +256,32 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   	return $this->node( 'word', $parts );
   
   }
-  private function a20($contents) {
-  
-  	return $this->node( 'cmd_suffix', $contents );
-  
-  }
-  private function a21($word) {
+  private function a20($word) {
   
   	return $word;
   
   }
-  private function a22($list) {
+  private function a21($list) {
   
   	return $this->node( 'brace_group', $list );
   
   }
-  private function a23($list) {
+  private function a22($list) {
   
   	return $this->node( 'subshell', $list );
   
   }
-  private function a24($name, $wordlist, $do_group) {
+  private function a23($name, $wordlist, $do_group) {
   
   			return $this->node( 'for', [ $name, $this->node( 'in', $wordlist ?: [] ), $do_group ] );
   		
   }
-  private function a25($name, $do_group) {
+  private function a24($name, $do_group) {
   
   			return $this->node( 'for', [ $name, $do_group ] );
   		
   }
-  private function a26($word, $list_esac) {
+  private function a25($word, $list_esac) {
   
   	if ( is_array( $list_esac ) ) {
   		$list = $list_esac[0];
@@ -279,7 +291,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   	return $this->node( 'case', [ $word, $this->node( 'in', $list ) ] );
   
   }
-  private function a27($condition, $consequent, $else_part) {
+  private function a26($condition, $consequent, $else_part) {
   
   	$contents = [
   		$this->node( 'condition', $condition ),
@@ -291,7 +303,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   	return $this->node( 'if', $contents );
   
   }
-  private function a28($list, $body) {
+  private function a27($list, $body) {
   
   	return $this->node( 'while', [
   		$this->node( 'condition', $list ),
@@ -299,7 +311,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   	] );
   
   }
-  private function a29($list, $body) {
+  private function a28($list, $body) {
   
   	return $this->node( 'until', [
   		$this->node( 'condition', $list ),
@@ -307,7 +319,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   	] );
   
   }
-  private function a30($number, $file_or_here) {
+  private function a29($number, $file_or_here) {
   
   		$contents = [];
   		if ( $number !== null ) {
@@ -317,38 +329,59 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   		return $this->node( 'io_redirect', $contents );
   	
   }
-  private function a31($name, $word) {
+  private function a30($name, $word) {
   
   	return $this->node( 'assignment', [ $this->node( 'name', $name ), $word ] );
   
   }
-  private function a32($term) {
+  private function a31($term, $separator) {
   
-  	return $term;
-  
+  			if ( $separator && $separator[0] === '&' ) {
+  				return $this->node( 'background', $term );
+  			} else {
+  				return $term;
+  			}
+  		
   }
-  private function a33($name) {
+  private function a32($terms, $last) {
+  
+  		if ( $last ) {
+  			$terms[] = $last;
+  		}
+  		return $terms;
+  	
+  }
+  private function a33($term) {
+  
+  		if ( $term === null ) {
+  			return [];
+  		} else {
+  			return $term;
+  		}
+  	
+  }
+  private function a34($name) {
   
   	return $name;
   
   }
-  private function a34($list) {
+  private function a35($list) {
   
   	return $this->node( 'do', $list );
   
   }
-  private function a35($list, $item) {
+  private function a36($list, $item) {
   
   		$list[] = $item;
   		return $list;
   	
   }
-  private function a36($item) {
+  private function a37($item) {
   
   		return [ $item ];
   	
   }
-  private function a37($condition, $consequent, $else_part) {
+  private function a38($condition, $consequent, $else_part) {
   
   		$contents = [
   			$this->node( 'elif_condition', $condition ),
@@ -360,92 +393,92 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   		return $contents;
   	
   }
-  private function a38($alternative) {
+  private function a39($alternative) {
   
   		return [ $this->node( 'else', $alternative ) ];
   	
   }
-  private function a39($filename) {
+  private function a40($filename) {
   
   		return $this->node( 'duplicate_input', $filename );
   	
   }
-  private function a40($filename) {
+  private function a41($filename) {
   
   		return $this->node( 'read_and_write', $filename );
   	
   }
-  private function a41($filename) {
+  private function a42($filename) {
   
   		return $this->node( 'input', $filename );
   	
   }
-  private function a42($filename) {
+  private function a43($filename) {
   
   		return $this->node( 'duplicate_output', $filename );
   	
   }
-  private function a43($filename) {
+  private function a44($filename) {
   
   		return $this->node( 'append_output', $filename );
   	
   }
-  private function a44($filename) {
+  private function a45($filename) {
   
   		return $this->node( 'clobber', $filename );
   	
   }
-  private function a45($filename) {
+  private function a46($filename) {
   
   		return $this->node( 'output', $filename );
   	
   }
-  private function a46() {
+  private function a47() {
    return 'io_here_strip'; 
   }
-  private function a47() {
+  private function a48() {
    return 'io_here'; 
   }
-  private function a48($op, $end) {
+  private function a49($op, $end) {
   
   	// TODO: this is quite complicated to implement, especially given the way
   	// the parser is structured.
   	throw new UnimplementedError( 'heredoc is not implemented' );
   	// For phan
-  	return $this->node( $op, '' );
-  
-  }
-  private function a49($contents) {
-  
-  	return $this->node( 'single_quote', $contents );
+  	return $this->node( 'io_here', '' );
   
   }
   private function a50($contents) {
   
-  	return $this->node( 'double_quote', $contents );
+  	return $this->node( 'single_quote', $contents );
   
   }
   private function a51($contents) {
   
+  	return $this->node( 'double_quote', $contents );
+  
+  }
+  private function a52($contents) {
+  
   	return $this->node( 'bare_escape', $contents );
   
   }
-  private function a52($parts) {
+  private function a53($parts) {
   
   	return $this->node( 'backquote', $parts );
   
   }
-  private function a53($contents) {
+  private function a54($contents) {
   
   	return $contents;
   
   }
-  private function a54($plain) {
+  private function a55($plain) {
   
   	return $this->node( 'unquoted_literal', $plain );
   
   }
-  private function a55($pattern, $list) {
+  private function a56($pattern, $list) {
   
   		return $this->node( 'case_item', [
   			$pattern,
@@ -453,57 +486,57 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   		] );
   	
   }
-  private function a56($pattern) {
+  private function a57($pattern) {
   
   		return $this->node( 'case_item', $pattern );
   	
   }
-  private function a57($pattern) {
+  private function a58($pattern) {
   
   		return $this->node( 'case_item', [ $pattern ] );
   	
   }
-  private function a58($contents) {
+  private function a59($contents) {
   
   	return $this->node( 'dquoted_escape', $contents );
   
   }
-  private function a59($contents) {
+  private function a60($contents) {
   
   	return $this->node( 'backquoted_escape', $contents );
   
   }
-  private function a60($parts) {
+  private function a61($parts) {
   
   	return $this->node( 'double_backquote', $parts );
   
   }
-  private function a61($contents) {
+  private function a62($contents) {
   
   	return $this->node( 'special_parameter', $contents );
   
   }
-  private function a62($contents) {
+  private function a63($contents) {
   
   	return $this->node( 'positional_parameter', $contents );
   
   }
-  private function a63($words) {
+  private function a64($words) {
   
   	return $this->node( 'arithmetic_expansion', $words );
   
   }
-  private function a64($command) {
+  private function a65($command) {
   
   	return $this->node( 'command_expansion', $command );
   
   }
-  private function a65($name) {
+  private function a66($name) {
   
   	return $this->node( 'named_parameter', $name );
   
   }
-  private function a66($first, $rest) {
+  private function a67($first, $rest) {
   
   	$patterns = [ $first ];
   	foreach ( $rest as $pattern ) {
@@ -512,7 +545,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   	return $this->node( 'case_pattern', $patterns );
   
   }
-  private function a67($parameter, $operator, $word) {
+  private function a68($parameter, $operator, $word) {
   
   	$names = [
   		':-' => 'use_default',
@@ -534,17 +567,17 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   	return $this->node( $names[$operator], [ $parameter, $word ?? '' ] );
   
   }
-  private function a68($parameter) {
+  private function a69($parameter) {
   
   	return $this->node( 'string_length', $parameter );
   
   }
-  private function a69($parameter) {
+  private function a70($parameter) {
   
   	return $this->node( 'braced_parameter_expansion', $parameter );
   
   }
-  private function a70($parameter) {
+  private function a71($parameter) {
   
   	return $this->node( 'positional_parameter', $parameter );
   
@@ -552,7 +585,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
 
   // generated
   private function parseprogram($silence) {
-    $key = json_encode([212, $this->currPos]);
+    $key = json_encode([208, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -603,7 +636,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardlinebreak($silence) {
-    $key = json_encode([293, $this->currPos]);
+    $key = json_encode([285, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -621,7 +654,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsecomplete_commands($silence) {
-    $key = json_encode([214, $this->currPos]);
+    $key = json_encode([210, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -670,7 +703,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardnewline_list($silence) {
-    $key = json_encode([291, $this->currPos]);
+    $key = json_encode([283, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -694,7 +727,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsecomplete_command($silence, $boolParams) {
-    $key = json_encode([216, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([212, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -710,22 +743,79 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       $r1 = self::$FAILED;
       goto seq_1;
     }
-    $r5 = $this->parselist($silence, $boolParams);
+    // start choice_1
+    $p6 = $this->currPos;
+    // start seq_2
+    $p7 = $this->currPos;
+    $r8 = [];
+    for (;;) {
+      $p10 = $this->currPos;
+      // start seq_3
+      $p11 = $this->currPos;
+      $r12 = $this->parseand_or($silence, $boolParams);
+      // item <- $r12
+      if ($r12===self::$FAILED) {
+        $r9 = self::$FAILED;
+        goto seq_3;
+      }
+      $p14 = $this->currPos;
+      $r13 = $this->discardseparator_op($silence);
+      // separator <- $r13
+      if ($r13!==self::$FAILED) {
+        $r13 = substr($this->input, $p14, $this->currPos - $p14);
+      } else {
+        $r13 = self::$FAILED;
+        $this->currPos = $p11;
+        $r9 = self::$FAILED;
+        goto seq_3;
+      }
+      // free $p14
+      $r9 = true;
+      seq_3:
+      if ($r9!==self::$FAILED) {
+        $this->savedPos = $p10;
+        $r9 = $this->a3($r12, $r13);
+        $r8[] = $r9;
+      } else {
+        break;
+      }
+      // free $p11
+    }
+    if (count($r8) === 0) {
+      $r8 = self::$FAILED;
+    }
+    // nodes <- $r8
+    if ($r8===self::$FAILED) {
+      $r5 = self::$FAILED;
+      goto seq_2;
+    }
+    // free $r9
+    $r9 = $this->parseand_or($silence, $boolParams);
+    if ($r9===self::$FAILED) {
+      $r9 = null;
+    }
+    // last <- $r9
+    $r5 = true;
+    seq_2:
+    if ($r5!==self::$FAILED) {
+      $this->savedPos = $p6;
+      $r5 = $this->a4($r8, $r9);
+      goto choice_1;
+    }
+    // free $p7
+    $r5 = $this->parseand_or($silence, $boolParams);
+    choice_1:
     // list <- $r5
     if ($r5===self::$FAILED) {
       $this->currPos = $p3;
       $r1 = self::$FAILED;
       goto seq_1;
     }
-    $r6 = $this->discardseparator_op($silence);
-    if ($r6===self::$FAILED) {
-      $r6 = null;
-    }
     $r1 = true;
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a3($r5);
+      $r1 = $this->a5($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -734,7 +824,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardNEWLINE($silence) {
-    $key = json_encode([421, $this->currPos]);
+    $key = json_encode([413, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -768,7 +858,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardOWS($silence) {
-    $key = json_encode([369, $this->currPos]);
+    $key = json_encode([361, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -837,89 +927,8 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $this->cache[$key] = $cached;
     return $r2;
   }
-  private function parselist($silence, $boolParams) {
-    $key = json_encode([218, $this->currPos, $boolParams & 0x1]);
-    $cached = $this->cache[$key] ?? null;
-      if ($cached) {
-        $this->currPos = $cached['nextPos'];
-  
-        return $cached['result'];
-      }
-  
-    $p2 = $this->currPos;
-    // start seq_1
-    $p3 = $this->currPos;
-    $r4 = $this->parseand_or($silence, $boolParams);
-    // first <- $r4
-    if ($r4===self::$FAILED) {
-      $r1 = self::$FAILED;
-      goto seq_1;
-    }
-    $r5 = [];
-    for (;;) {
-      $p7 = $this->currPos;
-      // start seq_2
-      $p8 = $this->currPos;
-      $r9 = $this->discardseparator_op($silence);
-      if ($r9===self::$FAILED) {
-        $r6 = self::$FAILED;
-        goto seq_2;
-      }
-      $r10 = $this->parseand_or($silence, $boolParams);
-      // contents <- $r10
-      if ($r10===self::$FAILED) {
-        $this->currPos = $p8;
-        $r6 = self::$FAILED;
-        goto seq_2;
-      }
-      $r6 = true;
-      seq_2:
-      if ($r6!==self::$FAILED) {
-        $this->savedPos = $p7;
-        $r6 = $this->a4($r4, $r10);
-        $r5[] = $r6;
-      } else {
-        break;
-      }
-      // free $p8
-    }
-    // rest <- $r5
-    // free $r6
-    $r1 = true;
-    seq_1:
-    if ($r1!==self::$FAILED) {
-      $this->savedPos = $p2;
-      $r1 = $this->a5($r4, $r5);
-    }
-    // free $p3
-    $cached = ['nextPos' => $this->currPos, 'result' => $r1];
-  
-    $this->cache[$key] = $cached;
-    return $r1;
-  }
-  private function discardseparator_op($silence) {
-    $key = json_encode([295, $this->currPos]);
-    $cached = $this->cache[$key] ?? null;
-      if ($cached) {
-        $this->currPos = $cached['nextPos'];
-  
-        return $cached['result'];
-      }
-  
-    // start choice_1
-    $r1 = $this->discardAND($silence);
-    if ($r1!==self::$FAILED) {
-      goto choice_1;
-    }
-    $r1 = $this->discardSEMI($silence);
-    choice_1:
-    $cached = ['nextPos' => $this->currPos, 'result' => $r1];
-  
-    $this->cache[$key] = $cached;
-    return $r1;
-  }
   private function parseand_or($silence, $boolParams) {
-    $key = json_encode([220, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([214, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1019,8 +1028,8 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $this->cache[$key] = $cached;
     return $r1;
   }
-  private function discardAND($silence) {
-    $key = json_encode([355, $this->currPos]);
+  private function discardseparator_op($silence) {
+    $key = json_encode([287, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1028,91 +1037,20 @@ class PEGParser extends \WikiPEG\PEGParserBase {
         return $cached['result'];
       }
   
-    // start seq_1
-    $p1 = $this->currPos;
-    $p3 = $this->currPos;
-    $r4 = $this->discardAND_IF(true);
-    if ($r4 === self::$FAILED) {
-      $r4 = false;
-    } else {
-      $r4 = self::$FAILED;
-      $this->currPos = $p3;
-      $r2 = self::$FAILED;
-      goto seq_1;
+    // start choice_1
+    $r1 = $this->discardAND($silence);
+    if ($r1!==self::$FAILED) {
+      goto choice_1;
     }
-    // free $p3
-    if (($this->input[$this->currPos] ?? null) === "&") {
-      $this->currPos++;
-      $r5 = "&";
-    } else {
-      if (!$silence) {$this->fail(5);}
-      $r5 = self::$FAILED;
-      $this->currPos = $p1;
-      $r2 = self::$FAILED;
-      goto seq_1;
-    }
-    $r6 = $this->discardOWS($silence);
-    if ($r6===self::$FAILED) {
-      $this->currPos = $p1;
-      $r2 = self::$FAILED;
-      goto seq_1;
-    }
-    $r2 = true;
-    seq_1:
-    // free $r2,$p1
-    $cached = ['nextPos' => $this->currPos, 'result' => $r2];
+    $r1 = $this->discardSEMI($silence);
+    choice_1:
+    $cached = ['nextPos' => $this->currPos, 'result' => $r1];
   
     $this->cache[$key] = $cached;
-    return $r2;
-  }
-  private function discardSEMI($silence) {
-    $key = json_encode([357, $this->currPos]);
-    $cached = $this->cache[$key] ?? null;
-      if ($cached) {
-        $this->currPos = $cached['nextPos'];
-  
-        return $cached['result'];
-      }
-  
-    // start seq_1
-    $p1 = $this->currPos;
-    $p3 = $this->currPos;
-    $r4 = $this->discardDSEMI(true);
-    if ($r4 === self::$FAILED) {
-      $r4 = false;
-    } else {
-      $r4 = self::$FAILED;
-      $this->currPos = $p3;
-      $r2 = self::$FAILED;
-      goto seq_1;
-    }
-    // free $p3
-    if (($this->input[$this->currPos] ?? null) === ";") {
-      $this->currPos++;
-      $r5 = ";";
-    } else {
-      if (!$silence) {$this->fail(6);}
-      $r5 = self::$FAILED;
-      $this->currPos = $p1;
-      $r2 = self::$FAILED;
-      goto seq_1;
-    }
-    $r6 = $this->discardOWS($silence);
-    if ($r6===self::$FAILED) {
-      $this->currPos = $p1;
-      $r2 = self::$FAILED;
-      goto seq_1;
-    }
-    $r2 = true;
-    seq_1:
-    // free $r2,$p1
-    $cached = ['nextPos' => $this->currPos, 'result' => $r2];
-  
-    $this->cache[$key] = $cached;
-    return $r2;
+    return $r1;
   }
   private function parsepipeline($silence, $boolParams) {
-    $key = json_encode([222, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([216, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1148,7 +1086,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardAND_IF($silence) {
-    $key = json_encode([301, $this->currPos]);
+    $key = json_encode([293, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1162,7 +1100,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       $r3 = "&&";
       $this->currPos += 2;
     } else {
-      if (!$silence) {$this->fail(7);}
+      if (!$silence) {$this->fail(5);}
       $r3 = self::$FAILED;
       $r2 = self::$FAILED;
       goto seq_1;
@@ -1182,7 +1120,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardOR_IF($silence) {
-    $key = json_encode([303, $this->currPos]);
+    $key = json_encode([295, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1196,7 +1134,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       $r3 = "||";
       $this->currPos += 2;
     } else {
-      if (!$silence) {$this->fail(8);}
+      if (!$silence) {$this->fail(6);}
       $r3 = self::$FAILED;
       $r2 = self::$FAILED;
       goto seq_1;
@@ -1215,8 +1153,8 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $this->cache[$key] = $cached;
     return $r2;
   }
-  private function discardDSEMI($silence) {
-    $key = json_encode([305, $this->currPos]);
+  private function discardAND($silence) {
+    $key = json_encode([347, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1226,17 +1164,75 @@ class PEGParser extends \WikiPEG\PEGParserBase {
   
     // start seq_1
     $p1 = $this->currPos;
-    if ($this->currPos >= $this->inputLength ? false : substr_compare($this->input, ";;", $this->currPos, 2, false) === 0) {
-      $r3 = ";;";
-      $this->currPos += 2;
+    $p3 = $this->currPos;
+    $r4 = $this->discardAND_IF(true);
+    if ($r4 === self::$FAILED) {
+      $r4 = false;
     } else {
-      if (!$silence) {$this->fail(9);}
-      $r3 = self::$FAILED;
+      $r4 = self::$FAILED;
+      $this->currPos = $p3;
       $r2 = self::$FAILED;
       goto seq_1;
     }
-    $r4 = $this->discardOWS($silence);
-    if ($r4===self::$FAILED) {
+    // free $p3
+    if (($this->input[$this->currPos] ?? null) === "&") {
+      $this->currPos++;
+      $r5 = "&";
+    } else {
+      if (!$silence) {$this->fail(7);}
+      $r5 = self::$FAILED;
+      $this->currPos = $p1;
+      $r2 = self::$FAILED;
+      goto seq_1;
+    }
+    $r6 = $this->discardOWS($silence);
+    if ($r6===self::$FAILED) {
+      $this->currPos = $p1;
+      $r2 = self::$FAILED;
+      goto seq_1;
+    }
+    $r2 = true;
+    seq_1:
+    // free $r2,$p1
+    $cached = ['nextPos' => $this->currPos, 'result' => $r2];
+  
+    $this->cache[$key] = $cached;
+    return $r2;
+  }
+  private function discardSEMI($silence) {
+    $key = json_encode([349, $this->currPos]);
+    $cached = $this->cache[$key] ?? null;
+      if ($cached) {
+        $this->currPos = $cached['nextPos'];
+  
+        return $cached['result'];
+      }
+  
+    // start seq_1
+    $p1 = $this->currPos;
+    $p3 = $this->currPos;
+    $r4 = $this->discardDSEMI(true);
+    if ($r4 === self::$FAILED) {
+      $r4 = false;
+    } else {
+      $r4 = self::$FAILED;
+      $this->currPos = $p3;
+      $r2 = self::$FAILED;
+      goto seq_1;
+    }
+    // free $p3
+    if (($this->input[$this->currPos] ?? null) === ";") {
+      $this->currPos++;
+      $r5 = ";";
+    } else {
+      if (!$silence) {$this->fail(8);}
+      $r5 = self::$FAILED;
+      $this->currPos = $p1;
+      $r2 = self::$FAILED;
+      goto seq_1;
+    }
+    $r6 = $this->discardOWS($silence);
+    if ($r6===self::$FAILED) {
       $this->currPos = $p1;
       $r2 = self::$FAILED;
       goto seq_1;
@@ -1250,7 +1246,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parseBang($silence) {
-    $key = json_encode([348, $this->currPos]);
+    $key = json_encode([340, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1264,7 +1260,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       $this->currPos++;
       $r3 = "!";
     } else {
-      if (!$silence) {$this->fail(10);}
+      if (!$silence) {$this->fail(9);}
       $r3 = self::$FAILED;
       $r2 = self::$FAILED;
       goto seq_1;
@@ -1284,7 +1280,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parsepipe_sequence($silence, $boolParams) {
-    $key = json_encode([224, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([218, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1349,8 +1345,42 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $this->cache[$key] = $cached;
     return $r1;
   }
+  private function discardDSEMI($silence) {
+    $key = json_encode([297, $this->currPos]);
+    $cached = $this->cache[$key] ?? null;
+      if ($cached) {
+        $this->currPos = $cached['nextPos'];
+  
+        return $cached['result'];
+      }
+  
+    // start seq_1
+    $p1 = $this->currPos;
+    if ($this->currPos >= $this->inputLength ? false : substr_compare($this->input, ";;", $this->currPos, 2, false) === 0) {
+      $r3 = ";;";
+      $this->currPos += 2;
+    } else {
+      if (!$silence) {$this->fail(10);}
+      $r3 = self::$FAILED;
+      $r2 = self::$FAILED;
+      goto seq_1;
+    }
+    $r4 = $this->discardOWS($silence);
+    if ($r4===self::$FAILED) {
+      $this->currPos = $p1;
+      $r2 = self::$FAILED;
+      goto seq_1;
+    }
+    $r2 = true;
+    seq_1:
+    // free $r2,$p1
+    $cached = ['nextPos' => $this->currPos, 'result' => $r2];
+  
+    $this->cache[$key] = $cached;
+    return $r2;
+  }
   private function parseDELIM($silence) {
-    $key = json_encode([370, $this->currPos]);
+    $key = json_encode([362, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1408,7 +1438,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsecommand($silence, $boolParams) {
-    $key = json_encode([226, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([220, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1453,7 +1483,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardPIPE($silence) {
-    $key = json_encode([363, $this->currPos]);
+    $key = json_encode([355, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1499,7 +1529,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parsefunction_definition($silence, $boolParams) {
-    $key = json_encode([264, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([256, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1554,7 +1584,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsesimple_command($silence, $boolParams) {
-    $key = json_encode([272, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([264, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1629,7 +1659,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsecompound_command($silence, $boolParams) {
-    $key = json_encode([228, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([222, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1670,7 +1700,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseredirect_list($silence, $boolParams) {
-    $key = json_encode([280, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([272, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1697,7 +1727,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseNAME($silence) {
-    $key = json_encode([418, $this->currPos]);
+    $key = json_encode([410, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1750,7 +1780,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardLPAREN($silence) {
-    $key = json_encode([365, $this->currPos]);
+    $key = json_encode([357, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1784,7 +1814,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardRPAREN($silence) {
-    $key = json_encode([367, $this->currPos]);
+    $key = json_encode([359, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1818,7 +1848,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parsefunction_body($silence, $boolParams) {
-    $key = json_encode([266, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([258, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1853,7 +1883,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsecmd_prefix($silence, $boolParams) {
-    $key = json_encode([276, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([268, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1893,7 +1923,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseWORD($silence, $boolParams) {
-    $key = json_encode([372, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([364, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1941,7 +1971,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsecmd_suffix($silence, $boolParams) {
-    $key = json_encode([278, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([270, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -1949,39 +1979,32 @@ class PEGParser extends \WikiPEG\PEGParserBase {
         return $cached['result'];
       }
   
-    $p2 = $this->currPos;
-    $r3 = [];
+    $r1 = [];
     for (;;) {
       // start choice_1
-      $r4 = $this->parseio_redirect($silence, $boolParams);
-      if ($r4!==self::$FAILED) {
+      $r2 = $this->parseio_redirect($silence, $boolParams);
+      if ($r2!==self::$FAILED) {
         goto choice_1;
       }
-      $r4 = $this->parseWORD($silence, $boolParams);
+      $r2 = $this->parseWORD($silence, $boolParams);
       choice_1:
-      if ($r4!==self::$FAILED) {
-        $r3[] = $r4;
+      if ($r2!==self::$FAILED) {
+        $r1[] = $r2;
       } else {
         break;
       }
     }
-    if (count($r3) === 0) {
-      $r3 = self::$FAILED;
+    if (count($r1) === 0) {
+      $r1 = self::$FAILED;
     }
-    // contents <- $r3
-    // free $r4
-    $r1 = $r3;
-    if ($r1!==self::$FAILED) {
-      $this->savedPos = $p2;
-      $r1 = $this->a20($r3);
-    }
+    // free $r2
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
   
     $this->cache[$key] = $cached;
     return $r1;
   }
   private function parsecmd_name($silence, $boolParams) {
-    $key = json_encode([274, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([266, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2014,7 +2037,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a21($r6);
+      $r1 = $this->a20($r6);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2023,7 +2046,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsebrace_group($silence) {
-    $key = json_encode([268, $this->currPos]);
+    $key = json_encode([260, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2056,7 +2079,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a22($r5);
+      $r1 = $this->a21($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2065,7 +2088,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsesubshell($silence) {
-    $key = json_encode([230, $this->currPos]);
+    $key = json_encode([224, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2098,7 +2121,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a23($r5);
+      $r1 = $this->a22($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2107,7 +2130,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsefor_clause($silence, $boolParams) {
-    $key = json_encode([236, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([228, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2165,7 +2188,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a24($r5, $r8, $r10);
+      $r1 = $this->a23($r5, $r8, $r10);
       goto choice_1;
     }
     // free $p3
@@ -2199,7 +2222,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_2:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p3;
-      $r1 = $this->a25($r13, $r15);
+      $r1 = $this->a24($r13, $r15);
     }
     // free $p11
     choice_1:
@@ -2209,7 +2232,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsecase_clause($silence, $boolParams) {
-    $key = json_encode([244, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([236, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2318,7 +2341,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a26($r5, $r9);
+      $r1 = $this->a25($r5, $r9);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2327,7 +2350,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseif_clause($silence) {
-    $key = json_encode([256, $this->currPos]);
+    $key = json_encode([248, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2378,7 +2401,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a27($r5, $r7, $r8);
+      $r1 = $this->a26($r5, $r7, $r8);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2387,7 +2410,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsewhile_clause($silence) {
-    $key = json_encode([260, $this->currPos]);
+    $key = json_encode([252, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2421,7 +2444,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a28($r5, $r6);
+      $r1 = $this->a27($r5, $r6);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2430,7 +2453,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseuntil_clause($silence) {
-    $key = json_encode([262, $this->currPos]);
+    $key = json_encode([254, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2464,7 +2487,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a29($r5, $r6);
+      $r1 = $this->a28($r5, $r6);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2473,7 +2496,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseio_redirect($silence, $boolParams) {
-    $key = json_encode([282, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([274, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2506,7 +2529,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a30($r4, $r5);
+      $r1 = $this->a29($r4, $r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2515,7 +2538,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseASSIGNMENT_WORD($silence, $boolParams) {
-    $key = json_encode([416, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([408, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2553,7 +2576,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a31($r4, $r6);
+      $r1 = $this->a30($r4, $r6);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2562,7 +2585,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseword_part($silence, $boolParams) {
-    $key = json_encode([374, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([366, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2599,7 +2622,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardreserved($silence) {
-    $key = json_encode([353, $this->currPos]);
+    $key = json_encode([345, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2676,7 +2699,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardLbrace($silence) {
-    $key = json_encode([345, $this->currPos]);
+    $key = json_encode([337, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2710,7 +2733,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parsecompound_list($silence) {
-    $key = json_encode([232, $this->currPos]);
+    $key = json_encode([226, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2718,6 +2741,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
         return $cached['result'];
       }
   
+    // start choice_1
     $p2 = $this->currPos;
     // start seq_1
     $p3 = $this->currPos;
@@ -2726,31 +2750,93 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       $r1 = self::$FAILED;
       goto seq_1;
     }
-    $r5 = $this->parseterm($silence);
-    // term <- $r5
+    $r5 = [];
+    for (;;) {
+      $p7 = $this->currPos;
+      // start seq_2
+      $p8 = $this->currPos;
+      $r9 = $this->parseand_or($silence, 0x0);
+      // term <- $r9
+      if ($r9===self::$FAILED) {
+        $r6 = self::$FAILED;
+        goto seq_2;
+      }
+      $p11 = $this->currPos;
+      $r10 = $this->discardseparator($silence);
+      // separator <- $r10
+      if ($r10!==self::$FAILED) {
+        $r10 = substr($this->input, $p11, $this->currPos - $p11);
+      } else {
+        $r10 = self::$FAILED;
+        $this->currPos = $p8;
+        $r6 = self::$FAILED;
+        goto seq_2;
+      }
+      // free $p11
+      $r6 = true;
+      seq_2:
+      if ($r6!==self::$FAILED) {
+        $this->savedPos = $p7;
+        $r6 = $this->a31($r9, $r10);
+        $r5[] = $r6;
+      } else {
+        break;
+      }
+      // free $p8
+    }
+    if (count($r5) === 0) {
+      $r5 = self::$FAILED;
+    }
+    // terms <- $r5
     if ($r5===self::$FAILED) {
       $this->currPos = $p3;
       $r1 = self::$FAILED;
       goto seq_1;
     }
-    $r6 = $this->discardseparator($silence);
+    // free $r6
+    $r6 = $this->parseand_or($silence, 0x0);
     if ($r6===self::$FAILED) {
       $r6 = null;
     }
+    // last <- $r6
     $r1 = true;
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a32($r5);
+      $r1 = $this->a32($r5, $r6);
+      goto choice_1;
     }
     // free $p3
+    $p3 = $this->currPos;
+    // start seq_3
+    $p8 = $this->currPos;
+    $r12 = $this->discardlinebreak($silence);
+    if ($r12===self::$FAILED) {
+      $r1 = self::$FAILED;
+      goto seq_3;
+    }
+    $r13 = $this->parseand_or($silence, 0x0);
+    // term <- $r13
+    if ($r13===self::$FAILED) {
+      $this->currPos = $p8;
+      $r1 = self::$FAILED;
+      goto seq_3;
+    }
+    $r1 = true;
+    seq_3:
+    if ($r1!==self::$FAILED) {
+      $this->savedPos = $p3;
+      $r1 = $this->a33($r13);
+    }
+    // free $p8
+    choice_1:
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
   
     $this->cache[$key] = $cached;
     return $r1;
   }
   private function discardRbrace($silence) {
-    $key = json_encode([347, $this->currPos]);
+    $key = json_encode([339, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2784,7 +2870,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardFor($silence) {
-    $key = json_encode([343, $this->currPos]);
+    $key = json_encode([335, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2818,7 +2904,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parsefor_name($silence) {
-    $key = json_encode([238, $this->currPos]);
+    $key = json_encode([230, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2845,7 +2931,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a33($r4);
+      $r1 = $this->a34($r4);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2854,7 +2940,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardfor_case_in($silence) {
-    $key = json_encode([241, $this->currPos]);
+    $key = json_encode([233, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2884,7 +2970,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parsewordlist($silence, $boolParams) {
-    $key = json_encode([242, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([234, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2911,7 +2997,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardsequential_sep($silence) {
-    $key = json_encode([299, $this->currPos]);
+    $key = json_encode([291, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2947,7 +3033,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsedo_group($silence) {
-    $key = json_encode([270, $this->currPos]);
+    $key = json_encode([262, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -2980,7 +3066,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a34($r5);
+      $r1 = $this->a35($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -2989,7 +3075,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardCase($silence) {
-    $key = json_encode([335, $this->currPos]);
+    $key = json_encode([327, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3023,7 +3109,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parsecase_list($silence, $boolParams) {
-    $key = json_encode([248, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([240, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3050,7 +3136,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardEsac($silence) {
-    $key = json_encode([337, $this->currPos]);
+    $key = json_encode([329, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3084,7 +3170,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parsecase_list_ns($silence, $boolParams) {
-    $key = json_encode([246, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([238, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3113,7 +3199,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a35($r4, $r5);
+      $r1 = $this->a36($r4, $r5);
       goto choice_1;
     }
     // free $p3
@@ -3123,7 +3209,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $r1 = $r6;
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p3;
-      $r1 = $this->a36($r6);
+      $r1 = $this->a37($r6);
     }
     choice_1:
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -3132,7 +3218,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardIf($silence) {
-    $key = json_encode([321, $this->currPos]);
+    $key = json_encode([313, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3166,7 +3252,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardThen($silence) {
-    $key = json_encode([323, $this->currPos]);
+    $key = json_encode([315, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3200,7 +3286,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parseelse_part($silence) {
-    $key = json_encode([258, $this->currPos]);
+    $key = json_encode([250, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3246,7 +3332,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a37($r5, $r7, $r8);
+      $r1 = $this->a38($r5, $r7, $r8);
       goto choice_1;
     }
     // free $p3
@@ -3269,7 +3355,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_2:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p3;
-      $r1 = $this->a38($r11);
+      $r1 = $this->a39($r11);
     }
     // free $p9
     choice_1:
@@ -3279,7 +3365,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardFi($silence) {
-    $key = json_encode([329, $this->currPos]);
+    $key = json_encode([321, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3313,7 +3399,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardWhile($silence) {
-    $key = json_encode([339, $this->currPos]);
+    $key = json_encode([331, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3347,7 +3433,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardUntil($silence) {
-    $key = json_encode([341, $this->currPos]);
+    $key = json_encode([333, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3381,7 +3467,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parseIO_NUMBER($silence) {
-    $key = json_encode([422, $this->currPos]);
+    $key = json_encode([414, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3415,7 +3501,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parseio_file($silence, $boolParams) {
-    $key = json_encode([284, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([276, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3443,7 +3529,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a39($r5);
+      $r1 = $this->a40($r5);
       goto choice_1;
     }
     // free $p3
@@ -3466,7 +3552,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_2:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p3;
-      $r1 = $this->a40($r8);
+      $r1 = $this->a41($r8);
       goto choice_1;
     }
     // free $p6
@@ -3489,7 +3575,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_3:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p6;
-      $r1 = $this->a41($r11);
+      $r1 = $this->a42($r11);
       goto choice_1;
     }
     // free $p9
@@ -3512,7 +3598,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_4:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p9;
-      $r1 = $this->a42($r14);
+      $r1 = $this->a43($r14);
       goto choice_1;
     }
     // free $p12
@@ -3535,7 +3621,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_5:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p12;
-      $r1 = $this->a43($r17);
+      $r1 = $this->a44($r17);
       goto choice_1;
     }
     // free $p15
@@ -3558,7 +3644,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_6:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p15;
-      $r1 = $this->a44($r20);
+      $r1 = $this->a45($r20);
       goto choice_1;
     }
     // free $p18
@@ -3581,7 +3667,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_7:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p18;
-      $r1 = $this->a45($r23);
+      $r1 = $this->a46($r23);
     }
     // free $p21
     choice_1:
@@ -3591,7 +3677,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseio_here($silence, $boolParams) {
-    $key = json_encode([286, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([278, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3607,14 +3693,14 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $r4 = $this->discardDLESSDASH($silence);
     if ($r4!==self::$FAILED) {
       $this->savedPos = $p5;
-      $r4 = $this->a46();
+      $r4 = $this->a47();
       goto choice_1;
     }
     $p6 = $this->currPos;
     $r4 = $this->discardDLESS($silence);
     if ($r4!==self::$FAILED) {
       $this->savedPos = $p6;
-      $r4 = $this->a47();
+      $r4 = $this->a48();
     }
     choice_1:
     // op <- $r4
@@ -3633,7 +3719,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a48($r4, $r7);
+      $r1 = $this->a49($r4, $r7);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -3642,7 +3728,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsesingle_quoted_part($silence) {
-    $key = json_encode([376, $this->currPos]);
+    $key = json_encode([368, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3699,7 +3785,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a49($r5);
+      $r1 = $this->a50($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -3708,7 +3794,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsedouble_quoted_part($silence) {
-    $key = json_encode([378, $this->currPos]);
+    $key = json_encode([370, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3743,15 +3829,23 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       if ($r6!==self::$FAILED) {
         goto choice_1;
       }
+      if (($this->input[$this->currPos] ?? null) === "\\") {
+        $this->currPos++;
+        $r6 = "\\";
+        goto choice_1;
+      } else {
+        if (!$silence) {$this->fail(31);}
+        $r6 = self::$FAILED;
+      }
       $p7 = $this->currPos;
       $r6 = self::$FAILED;
       for (;;) {
-        if (strcspn($this->input, "\"`\$", $this->currPos, 1) !== 0) {
+        if (strcspn($this->input, "\"`\$\\", $this->currPos, 1) !== 0) {
           $r8 = self::consumeChar($this->input, $this->currPos);
           $r6 = true;
         } else {
           $r8 = self::$FAILED;
-          if (!$silence) {$this->fail(31);}
+          if (!$silence) {$this->fail(32);}
           break;
         }
       }
@@ -3785,7 +3879,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a50($r5);
+      $r1 = $this->a51($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -3794,7 +3888,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsebare_escape_sequence($silence) {
-    $key = json_encode([382, $this->currPos]);
+    $key = json_encode([374, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3809,7 +3903,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       $this->currPos++;
       $r4 = "\\";
     } else {
-      if (!$silence) {$this->fail(32);}
+      if (!$silence) {$this->fail(31);}
       $r4 = self::$FAILED;
       $r1 = self::$FAILED;
       goto seq_1;
@@ -3829,7 +3923,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a51($r5);
+      $r1 = $this->a52($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -3838,7 +3932,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsebackquote_expansion($silence) {
-    $key = json_encode([384, $this->currPos]);
+    $key = json_encode([376, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3886,7 +3980,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
         $r6 = "\\";
         goto choice_1;
       } else {
-        if (!$silence) {$this->fail(32);}
+        if (!$silence) {$this->fail(31);}
         $r6 = self::$FAILED;
       }
       $p7 = $this->currPos;
@@ -3931,7 +4025,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a52($r5);
+      $r1 = $this->a53($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -3940,7 +4034,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsedollar_expansion($silence) {
-    $key = json_encode([390, $this->currPos]);
+    $key = json_encode([382, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -3993,7 +4087,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a53($r5);
+      $r1 = $this->a54($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -4002,7 +4096,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseplain_part($silence, $boolParams) {
-    $key = json_encode([414, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([406, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4090,7 +4184,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $r1 = $r3;
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a54($r3);
+      $r1 = $this->a55($r3);
     }
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
   
@@ -4098,7 +4192,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardElse($silence) {
-    $key = json_encode([325, $this->currPos]);
+    $key = json_encode([317, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4132,7 +4226,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardElif($silence) {
-    $key = json_encode([327, $this->currPos]);
+    $key = json_encode([319, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4166,7 +4260,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardDo($silence) {
-    $key = json_encode([331, $this->currPos]);
+    $key = json_encode([323, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4200,7 +4294,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardDone($silence) {
-    $key = json_encode([333, $this->currPos]);
+    $key = json_encode([325, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4234,7 +4328,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardBang($silence) {
-    $key = json_encode([349, $this->currPos]);
+    $key = json_encode([341, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4248,7 +4342,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       $this->currPos++;
       $r3 = "!";
     } else {
-      if (!$silence) {$this->fail(10);}
+      if (!$silence) {$this->fail(9);}
       $r3 = self::$FAILED;
       $r2 = self::$FAILED;
       goto seq_1;
@@ -4268,7 +4362,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardIn($silence) {
-    $key = json_encode([351, $this->currPos]);
+    $key = json_encode([343, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4302,7 +4396,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardDELIM($silence) {
-    $key = json_encode([371, $this->currPos]);
+    $key = json_encode([363, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4356,68 +4450,8 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $this->cache[$key] = $cached;
     return $r1;
   }
-  private function parseterm($silence) {
-    $key = json_encode([234, $this->currPos]);
-    $cached = $this->cache[$key] ?? null;
-      if ($cached) {
-        $this->currPos = $cached['nextPos'];
-  
-        return $cached['result'];
-      }
-  
-    $p2 = $this->currPos;
-    // start seq_1
-    $p3 = $this->currPos;
-    $r4 = $this->parseand_or($silence, 0x0);
-    // first <- $r4
-    if ($r4===self::$FAILED) {
-      $r1 = self::$FAILED;
-      goto seq_1;
-    }
-    $r5 = [];
-    for (;;) {
-      $p7 = $this->currPos;
-      // start seq_2
-      $p8 = $this->currPos;
-      $r9 = $this->discardseparator($silence);
-      if ($r9===self::$FAILED) {
-        $r6 = self::$FAILED;
-        goto seq_2;
-      }
-      $r10 = $this->parseand_or($silence, 0x0);
-      // contents <- $r10
-      if ($r10===self::$FAILED) {
-        $this->currPos = $p8;
-        $r6 = self::$FAILED;
-        goto seq_2;
-      }
-      $r6 = true;
-      seq_2:
-      if ($r6!==self::$FAILED) {
-        $this->savedPos = $p7;
-        $r6 = $this->a4($r4, $r10);
-        $r5[] = $r6;
-      } else {
-        break;
-      }
-      // free $p8
-    }
-    // rest <- $r5
-    // free $r6
-    $r1 = true;
-    seq_1:
-    if ($r1!==self::$FAILED) {
-      $this->savedPos = $p2;
-      $r1 = $this->a8($r4, $r5);
-    }
-    // free $p3
-    $cached = ['nextPos' => $this->currPos, 'result' => $r1];
-  
-    $this->cache[$key] = $cached;
-    return $r1;
-  }
   private function discardseparator($silence) {
-    $key = json_encode([297, $this->currPos]);
+    $key = json_encode([289, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4453,7 +4487,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsecase_item($silence, $boolParams) {
-    $key = json_encode([252, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([244, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4505,7 +4539,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a55($r5, $r7);
+      $r1 = $this->a56($r5, $r7);
       goto choice_1;
     }
     // free $p3
@@ -4551,7 +4585,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_2:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p3;
-      $r1 = $this->a56($r12);
+      $r1 = $this->a57($r12);
     }
     // free $p10
     choice_1:
@@ -4561,7 +4595,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsecase_item_ns($silence, $boolParams) {
-    $key = json_encode([250, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([242, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4601,7 +4635,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a55($r5, $r7);
+      $r1 = $this->a56($r5, $r7);
       goto choice_1;
     }
     // free $p3
@@ -4635,7 +4669,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_2:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p3;
-      $r1 = $this->a57($r10);
+      $r1 = $this->a58($r10);
     }
     // free $p8
     choice_1:
@@ -4645,7 +4679,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardLESSAND($silence) {
-    $key = json_encode([311, $this->currPos]);
+    $key = json_encode([303, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4679,7 +4713,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardLESSGREAT($silence) {
-    $key = json_encode([315, $this->currPos]);
+    $key = json_encode([307, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4713,7 +4747,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardLESS($silence) {
-    $key = json_encode([359, $this->currPos]);
+    $key = json_encode([351, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4795,7 +4829,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardGREATAND($silence) {
-    $key = json_encode([313, $this->currPos]);
+    $key = json_encode([305, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4829,7 +4863,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardDGREAT($silence) {
-    $key = json_encode([309, $this->currPos]);
+    $key = json_encode([301, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4863,7 +4897,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardCLOBBER($silence) {
-    $key = json_encode([319, $this->currPos]);
+    $key = json_encode([311, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4897,7 +4931,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardGREAT($silence) {
-    $key = json_encode([361, $this->currPos]);
+    $key = json_encode([353, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -4967,7 +5001,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardDLESSDASH($silence) {
-    $key = json_encode([317, $this->currPos]);
+    $key = json_encode([309, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5001,7 +5035,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function discardDLESS($silence) {
-    $key = json_encode([307, $this->currPos]);
+    $key = json_encode([299, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5035,7 +5069,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parsehere_end($silence, $boolParams) {
-    $key = json_encode([288, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([280, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5057,7 +5091,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parsedquoted_escape($silence) {
-    $key = json_encode([380, $this->currPos]);
+    $key = json_encode([372, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5072,7 +5106,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       $this->currPos++;
       $r4 = "\\";
     } else {
-      if (!$silence) {$this->fail(32);}
+      if (!$silence) {$this->fail(31);}
       $r4 = self::$FAILED;
       $r1 = self::$FAILED;
       goto seq_1;
@@ -5091,7 +5125,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a58($r5);
+      $r1 = $this->a59($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -5100,7 +5134,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsebackquoted_escape($silence) {
-    $key = json_encode([386, $this->currPos]);
+    $key = json_encode([378, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5115,7 +5149,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       $this->currPos++;
       $r4 = "\\";
     } else {
-      if (!$silence) {$this->fail(32);}
+      if (!$silence) {$this->fail(31);}
       $r4 = self::$FAILED;
       $r1 = self::$FAILED;
       goto seq_1;
@@ -5135,7 +5169,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a59($r5);
+      $r1 = $this->a60($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -5144,7 +5178,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsedouble_backquote_expansion($silence) {
-    $key = json_encode([388, $this->currPos]);
+    $key = json_encode([380, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5187,7 +5221,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
       $this->currPos++;
       $r7 = "\\";
     } else {
-      if (!$silence) {$this->fail(32);}
+      if (!$silence) {$this->fail(31);}
       $r7 = self::$FAILED;
       $r5 = self::$FAILED;
       goto seq_2;
@@ -5255,7 +5289,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a60($r5);
+      $r1 = $this->a61($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -5264,7 +5298,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsespecial_parameter($silence) {
-    $key = json_encode([392, $this->currPos]);
+    $key = json_encode([384, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5283,7 +5317,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $r1 = $r3;
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a61($r3);
+      $r1 = $this->a62($r3);
     }
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
   
@@ -5291,7 +5325,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseshort_positional_parameter($silence) {
-    $key = json_encode([394, $this->currPos]);
+    $key = json_encode([386, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5311,7 +5345,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $r1 = $r3;
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a62($r3);
+      $r1 = $this->a63($r3);
     }
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
   
@@ -5319,7 +5353,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsebrace_expansion($silence) {
-    $key = json_encode([396, $this->currPos]);
+    $key = json_encode([388, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5370,7 +5404,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a53($r5);
+      $r1 = $this->a54($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -5379,7 +5413,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsearithmetic_expansion($silence) {
-    $key = json_encode([402, $this->currPos]);
+    $key = json_encode([394, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5438,7 +5472,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a63($r6);
+      $r1 = $this->a64($r6);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -5447,7 +5481,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsecommand_expansion($silence) {
-    $key = json_encode([404, $this->currPos]);
+    $key = json_encode([396, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5488,7 +5522,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a64($r5);
+      $r1 = $this->a65($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -5497,7 +5531,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsenamed_parameter($silence) {
-    $key = json_encode([412, $this->currPos]);
+    $key = json_encode([404, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5511,7 +5545,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $r1 = $r3;
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a65($r3);
+      $r1 = $this->a66($r3);
     }
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
   
@@ -5519,7 +5553,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsepattern($silence, $boolParams) {
-    $key = json_encode([254, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([246, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5566,7 +5600,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a66($r4, $r5);
+      $r1 = $this->a67($r4, $r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -5575,7 +5609,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function discardWORD($silence, $boolParams) {
-    $key = json_encode([373, $this->currPos, $boolParams & 0x1]);
+    $key = json_encode([365, $this->currPos, $boolParams & 0x1]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5623,7 +5657,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsebinary_expansion($silence) {
-    $key = json_encode([398, $this->currPos]);
+    $key = json_encode([390, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5725,7 +5759,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a67($r4, $r5, $r11);
+      $r1 = $this->a68($r4, $r5, $r11);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -5734,7 +5768,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsestring_length($silence) {
-    $key = json_encode([400, $this->currPos]);
+    $key = json_encode([392, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5765,7 +5799,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     seq_1:
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a68($r5);
+      $r1 = $this->a69($r5);
     }
     // free $p3
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
@@ -5774,7 +5808,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsebraced_parameter_expansion($silence) {
-    $key = json_encode([406, $this->currPos]);
+    $key = json_encode([398, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5788,7 +5822,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $r1 = $r3;
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a69($r3);
+      $r1 = $this->a70($r3);
     }
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
   
@@ -5796,7 +5830,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parsePIPE($silence) {
-    $key = json_encode([362, $this->currPos]);
+    $key = json_encode([354, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5842,7 +5876,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parseparameter($silence) {
-    $key = json_encode([408, $this->currPos]);
+    $key = json_encode([400, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5867,7 +5901,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r1;
   }
   private function parseOWS($silence) {
-    $key = json_encode([368, $this->currPos]);
+    $key = json_encode([360, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5928,7 +5962,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     return $r2;
   }
   private function parselong_positional_parameter($silence) {
-    $key = json_encode([410, $this->currPos]);
+    $key = json_encode([402, $this->currPos]);
     $cached = $this->cache[$key] ?? null;
       if ($cached) {
         $this->currPos = $cached['nextPos'];
@@ -5961,7 +5995,7 @@ class PEGParser extends \WikiPEG\PEGParserBase {
     $r1 = $r3;
     if ($r1!==self::$FAILED) {
       $this->savedPos = $p2;
-      $r1 = $this->a70($r3);
+      $r1 = $this->a71($r3);
     }
     $cached = ['nextPos' => $this->currPos, 'result' => $r1];
   
