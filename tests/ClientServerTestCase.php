@@ -5,6 +5,7 @@ namespace Shellbox\Tests;
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestResult;
 use PHPUnit\Util\Test as TestUtil;
+use RuntimeException;
 use Shellbox\Client;
 use Shellbox\FileUtils;
 use Shellbox\Shellbox;
@@ -112,7 +113,7 @@ PHP
 			self::$url . "/healthz" );
 		$ctype = $response->getHeaderLine( 'Content-Type' );
 		if ( $ctype !== 'application/json' ) {
-			throw new \RuntimeException( "Invalid healthz response type: $ctype" );
+			throw new RuntimeException( "Invalid healthz response type: $ctype" );
 		}
 		$data = Shellbox::jsonDecode( $response->getBody()->getContents() );
 		self::$server->setPid( $data['pid'] );

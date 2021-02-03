@@ -3,6 +3,7 @@
 namespace Shellbox\Tests;
 
 use GuzzleHttp\Psr7\MultipartStream;
+use RuntimeException;
 use Shellbox\Multipart\MultipartReader;
 use Shellbox\Shellbox;
 use Shellbox\ShellboxError;
@@ -30,7 +31,7 @@ class ClientTest extends ClientServerTestCase {
 	}
 
 	public static function exception() {
-		throw new \RuntimeException( 'eee' );
+		throw new RuntimeException( 'eee' );
 	}
 
 	public function testCallException() {
