@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6d2a99c75a8e8171f73cdb30dae136bc",
+    "content-hash": "edc058747ee8d4fec9f47ca8417ef942",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -809,27 +809,27 @@
         },
         {
             "name": "mediawiki/mediawiki-codesniffer",
-            "version": "v34.0.0",
+            "version": "v35.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/mediawiki-tools-codesniffer.git",
-                "reference": "a7f2480d022e288d9d8b2db827111996bb53e598"
+                "reference": "c305fa16998d742705f9b59358fbb816f524cf9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-tools-codesniffer/zipball/a7f2480d022e288d9d8b2db827111996bb53e598",
-                "reference": "a7f2480d022e288d9d8b2db827111996bb53e598",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-tools-codesniffer/zipball/c305fa16998d742705f9b59358fbb816f524cf9f",
+                "reference": "c305fa16998d742705f9b59358fbb816f524cf9f",
                 "shasum": ""
             },
             "require": {
-                "composer/semver": "^1.5.2|^3.0.1",
+                "composer/semver": "^1.7.2|^3.2.4",
                 "composer/spdx-licenses": "~1.5.2",
                 "ext-mbstring": "*",
                 "php": ">=7.2.0",
                 "squizlabs/php_codesniffer": "3.5.8"
             },
             "require-dev": {
-                "mediawiki/mediawiki-phan-config": "0.10.4",
+                "mediawiki/mediawiki-phan-config": "0.10.6",
                 "mediawiki/minus-x": "1.1.0",
                 "php-parallel-lint/php-console-highlighter": "0.5.0",
                 "php-parallel-lint/php-parallel-lint": "1.2.0",
@@ -851,7 +851,7 @@
                 "codesniffer",
                 "mediawiki"
             ],
-            "time": "2020-12-05T07:12:58+00:00"
+            "time": "2021-01-28T20:56:31+00:00"
         },
         {
             "name": "mediawiki/mediawiki-phan-config",
@@ -2869,16 +2869,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v5.2.2",
+            "version": "v5.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "d62ec79478b55036f65e2602e282822b8eaaff0a"
+                "reference": "89d4b176d12a2946a1ae4e34906a025b7b6b135a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/d62ec79478b55036f65e2602e282822b8eaaff0a",
-                "reference": "d62ec79478b55036f65e2602e282822b8eaaff0a",
+                "url": "https://api.github.com/repos/symfony/console/zipball/89d4b176d12a2946a1ae4e34906a025b7b6b135a",
+                "reference": "89d4b176d12a2946a1ae4e34906a025b7b6b135a",
                 "shasum": ""
             },
             "require": {
@@ -2945,7 +2945,7 @@
                 "console",
                 "terminal"
             ],
-            "time": "2021-01-27T10:15:41+00:00"
+            "time": "2021-01-28T22:06:19+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -3395,7 +3395,7 @@
         },
         {
             "name": "symfony/string",
-            "version": "v5.2.2",
+            "version": "v5.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
@@ -3461,7 +3461,7 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v5.2.2",
+            "version": "v5.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
@@ -3575,12 +3575,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": ""
             },
