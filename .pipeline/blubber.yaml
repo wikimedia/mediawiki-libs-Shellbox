@@ -88,3 +88,4 @@ variants:
         - fluidsynth
         - fluid-soundfont-gs
         - fluid-soundfont-gm
+        - lame
