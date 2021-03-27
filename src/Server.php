@@ -202,7 +202,8 @@ class Server {
 	public function forgetConfig( $name ) {
 		if ( isset( $this->config[$name] ) && is_string( $this->config[$name] ) ) {
 			$conf =& $this->config[$name];
-			for ( $i = 0; $i < strlen( $conf ); $i++ ) {
+			$length = strlen( $conf );
+			for ( $i = 0; $i < $length; $i++ ) {
 				$conf[$i] = ' ';
 			}
 			unset( $conf );
