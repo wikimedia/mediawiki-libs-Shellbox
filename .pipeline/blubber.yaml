@@ -1,5 +1,5 @@
 version: v4
-base: docker-registry.wikimedia.org/php7.2-fpm:0.1.1
+base: docker-registry.wikimedia.org/php7.2-fpm:latest
 
 lives:
   as: "composer"
