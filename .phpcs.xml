@@ -1,27 +1,39 @@
 <?xml version="1.0"?>
 <ruleset>
-	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
-		<!--
-		  - It's generally incorrect to add doc comments to overridden methods.
-		  - Use of @inheritDoc or any other such text breaks Doxygen's automatic
-		  - documentation inheritance.
-		  - For methods that are not overriding something, this rule is correct,
-		  - but there is apparently no way to select only those methods.
-		  -->
-		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected" />
-		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic" />
-		<!-- Libraries cannot use wfShellEscapeArg() -->
-		<exclude name="MediaWiki.Usage.ForbiddenFunctions.escapeshellarg" />
-		<!-- I don't get this rule. This library does not replace all usages of proc_open(). -->
-		<exclude name="MediaWiki.Usage.ForbiddenFunctions.proc_open" />
-		<!-- Seems harmless -->
-		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
-		<!-- Mostly doing integration tests -->
-		<exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers" />
+	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki" />
+
+	<!--
+	  - It's generally incorrect to add doc comments to overridden methods.
+	  - Use of @inheritDoc or any other such text breaks Doxygen's automatic
+	  - documentation inheritance.
+	  - For methods that are not overriding something, this rule is correct,
+	  - but there is apparently no way to select only those methods.
+	  -->
+	<rule ref="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected">
+		<severity>0</severity>
 	</rule>
+	<rule ref="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic">
+		<severity>0</severity>
+	</rule>
+	<!-- Libraries cannot use wfShellEscapeArg() -->
+	<rule ref="MediaWiki.Usage.ForbiddenFunctions.escapeshellarg">
+		<severity>0</severity>
+	</rule>
+	<!-- I don't get this rule. This library does not replace all usages of proc_open(). -->
+	<rule ref="MediaWiki.Usage.ForbiddenFunctions.proc_open">
+		<severity>0</severity>
+	</rule>
+	<!-- Mostly doing integration tests -->
+	<rule ref="MediaWiki.Commenting.MissingCovers.MissingCovers">
+		<severity>0</severity>
+	</rule>
+	<!-- Seems harmless -->
+	<rule ref="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment">
+		<severity>0</severity>
+	</rule>
+
 	<file>.</file>
 	<arg name="extensions" value="php" />
 	<arg name="encoding" value="UTF-8" />
-	<exclude-pattern>vendor</exclude-pattern>
-	<exclude-pattern>src/ShellParser/PEGParser.php</exclude-pattern>
+	<exclude-pattern type="relative">^src/ShellParser/PEGParser\.php</exclude-pattern>
 </ruleset>
