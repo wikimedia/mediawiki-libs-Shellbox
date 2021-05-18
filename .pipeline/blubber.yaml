@@ -76,8 +76,6 @@ variants:
         - from: local
           source: .pipeline/entrypoint
           destination: index.php
-      command:
-        - "mkdir configuration"
   score:
     copies: [prod]
     apt:
