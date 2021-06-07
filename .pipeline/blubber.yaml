@@ -62,20 +62,19 @@ variants:
         PHP__error_reporting: "E_ALL"
 
   prod:
-    builder:
-      requirements:
-        # Copy the vendor directory from build
-        - from: build
-          source: /srv/app/vendor
-          destination: /srv/app/vendor
-        # Copy the code (not the tests)
-        - from: local
-          source: src
-          destination: src
-        # Copy the entrypoint
-        - from: local
-          source: .pipeline/entrypoint
-          destination: index.php
+    copies:
+      # the vendor directory from build
+      - from: build
+        source: /srv/app/vendor
+        destination: /srv/app/vendor
+      # the code (not the tests) from the build context
+      - from: local
+        source: src
+        destination: src
+      # the entrypoint, also from the build context
+      - from: local
+        source: .pipeline/entrypoint
+        destination: index.php
   score:
     copies: [prod]
     apt:
