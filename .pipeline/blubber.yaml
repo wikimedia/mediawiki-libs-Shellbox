@@ -79,7 +79,9 @@ variants:
     copies: [prod]
     apt:
       packages:
-        - lilypond
+        - lilypond/buster-backports
+        # Help apt use the right version of -data
+        - lilypond-data/buster-backports
         - imagemagick
         - ghostscript
         - fluidsynth
