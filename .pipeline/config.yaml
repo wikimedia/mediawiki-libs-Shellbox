@@ -8,6 +8,13 @@ pipelines:
   publish:
     blubberfile: blubber.yaml
     stages:
+      # Plain Shellbox with just PHP for RPC
+      - name: php-rpc
+        build: prod
+        publish:
+          image:
+            tags: [php-rpc]
+      # Shellbox with Score packages
       - name: score
         build: score
         publish:
