@@ -5,7 +5,7 @@ namespace Wikimedia\Shellbox\Tests\ShellParser;
 use Shellbox\ShellParser\PEGParser;
 use Shellbox\ShellParser\UnimplementedError;
 use Shellbox\Tests\ShellboxTestCase;
-use WikiPEG\SyntaxError;
+use Wikimedia\WikiPEG\SyntaxError;
 
 // phpcs:disable Generic.Files.LineLength.TooLong
 class PEGParserTest extends ShellboxTestCase {
