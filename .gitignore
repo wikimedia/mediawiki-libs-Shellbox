@@ -1,11 +1,12 @@
-*~
-.*.swp
-tags
-/vendor
+/coverage/
+/doc/
+/vendor/
 /.idea
 /.phpunit.result.cache
+
+# Shellbox-specific
 /config/config.json
 /config/test-config.json
-Dockerfile*
-.testimage
-.devimage
+/Dockerfile*
+/.testimage
+/.devimage

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4b75a8c21bd2d59666e8e5298a0d54c",
+    "content-hash": "b43b18f4d7b118c5e5a58f5f317e2154",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -960,6 +960,55 @@
             "time": "2020-12-14T15:30:53+00:00"
         },
         {
+            "name": "mediawiki/minus-x",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wikimedia/mediawiki-tools-minus-x.git",
+                "reference": "74b1fce4acbe6be1f9b4a0775287e09e0e3f6af2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-tools-minus-x/zipball/74b1fce4acbe6be1f9b4a0775287e09e0e3f6af2",
+                "reference": "74b1fce4acbe6be1f9b4a0775287e09e0e3f6af2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.9",
+                "symfony/console": "^3.3.5 || ^4 || ^5"
+            },
+            "require-dev": {
+                "mediawiki/mediawiki-codesniffer": "34.0.0",
+                "php-parallel-lint/php-console-highlighter": "0.5.0",
+                "php-parallel-lint/php-parallel-lint": "1.2.0"
+            },
+            "bin": [
+                "bin/minus-x"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MediaWiki\\MinusX\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Kunal Mehta",
+                    "email": "legoktm@member.fsf.org"
+                }
+            ],
+            "description": "Removes executable bit from files that shouldn't be executable",
+            "homepage": "https://www.mediawiki.org/wiki/MinusX",
+            "support": {
+                "source": "https://github.com/wikimedia/mediawiki-tools-minus-x/tree/1.1.1"
+            },
+            "time": "2021-01-06T01:11:18+00:00"
+        },
+        {
             "name": "mediawiki/phan-taint-check-plugin",
             "version": "3.2.1",
             "source": {
@@ -1215,6 +1264,56 @@
                 "php"
             ],
             "time": "2021-07-21T10:44:31+00:00"
+        },
+        {
+            "name": "ockcyp/covers-validator",
+            "version": "v1.3.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/oradwell/covers-validator.git",
+                "reference": "4cbf1ce7a08746de6d226bc8f95b6900560470e1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/oradwell/covers-validator/zipball/4cbf1ce7a08746de6d226bc8f95b6900560470e1",
+                "reference": "4cbf1ce7a08746de6d226bc8f95b6900560470e1",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0 || ^8.0",
+                "phpunit/phpunit": "^6.0 || ^7.0 || ^8.0 || ^9.0",
+                "symfony/console": "^2.7 || ^3.0 || ^4.0 || ^5.0"
+            },
+            "bin": [
+                "covers-validator"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "OckCyp\\CoversValidator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Radwell",
+                    "email": "oliver.radwell@gmail.com"
+                }
+            ],
+            "description": "Validates @covers tags in PHPUnit tests",
+            "support": {
+                "issues": "https://github.com/oradwell/covers-validator/issues",
+                "source": "https://github.com/oradwell/covers-validator/tree/v1.3.3"
+            },
+            "time": "2020-12-17T09:55:05+00:00"
         },
         {
             "name": "phan/phan",
@@ -4002,7 +4101,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.2",
+        "php": ">=7.2.9",
         "ext-hash": "*",
         "ext-json": "*"
     },
@@ -4010,5 +4109,5 @@
     "platform-overrides": {
         "php": "7.2.22"
     },
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.1.0"
 }

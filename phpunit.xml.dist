@@ -1,0 +1,16 @@
+<!-- disable result caching due to permission errors -->
+<phpunit colors="true"
+	cacheResult="false"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+	beStrictAboutOutputDuringTests="true">
+	<testsuites>
+		<testsuite name="Tests">
+			<directory>./tests</directory>
+		</testsuite>
+	</testsuites>
+	<filter>
+		<whitelist addUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">./src</directory>
+		</whitelist>
+	</filter>
+</phpunit>
