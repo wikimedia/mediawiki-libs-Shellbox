@@ -20,3 +20,5 @@ pipelines:
         publish:
           image:
             tags: [score]
+        promote:
+          - chart: shellbox
