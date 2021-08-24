@@ -88,3 +88,6 @@ variants:
         - fluid-soundfont-gs
         - fluid-soundfont-gm
         - lame
+        # Fonts for lyrics
+        - fonts-noto
+        - fonts-noto-cjk
