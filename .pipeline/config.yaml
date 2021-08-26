@@ -24,3 +24,9 @@ pipelines:
             tags: [score]
         promote:
           - chart: shellbox
+      # Shellbox with Timeline packages
+      - name: timeline
+        build: timeline
+        publish:
+          image:
+            tags: [timeline]

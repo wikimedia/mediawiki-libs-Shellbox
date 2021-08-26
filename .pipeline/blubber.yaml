@@ -91,3 +91,34 @@ variants:
         # Fonts for lyrics
         - fonts-noto
         - fonts-noto-cjk
+  # Copy 2 specific fonts out of Git
+  fontprep:
+    base: docker-registry.wikimedia.org/bullseye:latest
+    apt:
+      packages:
+        - git
+        - ca-certificates
+    builder:
+      command:
+        - git
+        - clone
+        - "https://gerrit.wikimedia.org/r/operations/mediawiki-config/fonts"
+        - "/srv/app/fonts"
+  timeline:
+    copies:
+      - from: prod
+        source: /srv/app
+        destination: /srv/app
+      - from: fontprep
+        source: /srv/app/fonts/FreeSansWMF.ttf
+        destination: /srv/app/fonts/FreeSansWMF.ttf
+      - from: fontprep
+        source: /srv/app/fonts/unifont-5.1.20080907.ttf
+        destination: /srv/app/fonts/unifont-5.1.20080907.ttf
+    apt:
+      packages:
+        - perl
+        - ploticus
+        - librsvg2-bin
+        - fonts-noto
+        - fonts-noto-cjk
