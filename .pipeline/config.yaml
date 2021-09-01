@@ -30,3 +30,5 @@ pipelines:
         publish:
           image:
             tags: [timeline]
+        promote:
+          - chart: shellbox-timeline
