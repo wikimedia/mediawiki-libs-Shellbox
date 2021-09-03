@@ -91,6 +91,15 @@ variants:
         # Fonts for lyrics
         - fonts-noto
         - fonts-noto-cjk
+  syntaxhighlight:
+    copies: [prod]
+    apt:
+      sources:
+        - url: http://apt.wikimedia.org/wikimedia
+          distribution: buster-wikimedia
+          components: [component/pygments]
+      packages:
+        - python3-pygments
   # Copy 2 specific fonts out of Git
   fontprep:
     base: docker-registry.wikimedia.org/bullseye:latest

@@ -24,6 +24,12 @@ pipelines:
             tags: [score]
         promote:
           - chart: shellbox
+      # Shellbox with SyntaxHighlight packages
+      - name: syntaxhighlight
+        build: syntaxhighlight
+        publish:
+          image:
+            tags: [syntaxhighlight]
       # Shellbox with Timeline packages
       - name: timeline
         build: timeline
