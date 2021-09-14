@@ -2,6 +2,7 @@
 
 namespace Shellbox\Tests;
 
+use RuntimeException;
 use Shellbox\Shellbox;
 use Shellbox\TempDirManager;
 
@@ -46,7 +47,7 @@ class BuiltinServerManager {
 		$sock = @fsockopen( 'localhost', $this->port, $errno, $errstr, 1 );
 		if ( $sock ) {
 			fclose( $sock );
-			throw new \RuntimeException( "Found another server running on port {$this->port}" );
+			throw new RuntimeException( "Found another server running on port {$this->port}" );
 		}
 
 		// Start the server
@@ -80,7 +81,7 @@ class BuiltinServerManager {
 		$pipes = [];
 		$this->proc = proc_open( $cmd, $desc, $pipes, $wdPath, null, $options );
 		if ( !$this->proc ) {
-			throw new \RuntimeException( "Unable to create server process" );
+			throw new RuntimeException( "Unable to create server process" );
 		}
 
 		// Wait for the socket
@@ -106,13 +107,13 @@ class BuiltinServerManager {
 			if ( !$procStatus['running'] ) {
 				// phpcs:ignore Generic.PHP.NoSilencedErrors
 				$stdout = @file_get_contents( $this->getTempDirManager()->getPath( 'server-out' ) );
-				throw new \RuntimeException( "CLI server exited with " .
+				throw new RuntimeException( "CLI server exited with " .
 					"status \"{$procStatus['exitcode']}\": $stdout\n" );
 			} else {
 				if ( $this->pid ) {
 					$this->stop();
 				}
-				throw new \RuntimeException( "Gave up waiting for server to start." );
+				throw new RuntimeException( "Gave up waiting for server to start." );
 			}
 		}
 
@@ -136,19 +137,19 @@ class BuiltinServerManager {
 	 * Check if the server is still running. If it's not, throw an exception.
 	 * If setPid() has not been called yet, the PID is set here as a last resort.
 	 *
-	 * @throws \RuntimeException
+	 * @throws RuntimeException
 	 */
 	public function checkIfRunning() {
 		$status = proc_get_status( $this->proc );
 		if ( !$status ) {
 			$this->clearProc();
-			throw new \RuntimeException( 'Unable to get server status' );
+			throw new RuntimeException( 'Unable to get server status' );
 		}
 		if ( !$status['running'] ) {
 			fseek( $this->outputFile, 0 );
 			$output = stream_get_contents( $this->outputFile );
 			$this->clearProc();
-			throw new \RuntimeException(
+			throw new RuntimeException(
 				"Server terminated with status {$status['exitcode']}: " .
 				$output
 			);
@@ -179,7 +180,7 @@ class BuiltinServerManager {
 	public function stop() {
 		if ( $this->proc ) {
 			if ( !$this->pid ) {
-				throw new \RuntimeException( 'Can\'t kill the server if we don\'t know its PID' );
+				throw new RuntimeException( 'Can\'t kill the server if we don\'t know its PID' );
 			}
 			if ( PHP_OS_FAMILY === 'Windows' ) {
 				$result = Shellbox::createUnboxedExecutor()->createCommand()
@@ -187,7 +188,7 @@ class BuiltinServerManager {
 					->includeStderr()
 					->execute();
 				if ( $result->getExitCode() ) {
-					throw new \RuntimeException( "taskkill failed with status " .
+					throw new RuntimeException( "taskkill failed with status " .
 						"\"{$result->getExitCode()}\": {$result->getStdout()}" );
 				}
 
