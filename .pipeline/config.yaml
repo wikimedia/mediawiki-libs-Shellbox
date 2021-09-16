@@ -16,6 +16,12 @@ pipelines:
             tags: [php-rpc]
         promote:
           - chart: shellbox-constraints
+      # Shellbox with media handling packages
+      - name: media
+        build: media
+        publish:
+          image:
+            tags: [media]
       # Shellbox with Score packages
       - name: score
         build: score

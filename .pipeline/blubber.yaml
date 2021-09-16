@@ -75,6 +75,16 @@ variants:
       - from: local
         source: .pipeline/entrypoint
         destination: index.php
+  media:
+    copies: [prod]
+    apt:
+      packages:
+        # core's DjVu support
+        - djvulibre-bin
+        # tiffinfo, for PagedTiffHandler
+        - libtiff-tools
+        # PDF utils, for PdfHandler
+        - poppler-utils
   score:
     copies: [prod]
     apt:
