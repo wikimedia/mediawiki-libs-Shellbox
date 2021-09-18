@@ -8,6 +8,7 @@ use Shellbox\FileUtils;
 
 /**
  * @param array $argv
+ * @return never
  */
 function fakeShellMain( $argv ) {
 	if ( PHP_SAPI !== 'cli' ) {

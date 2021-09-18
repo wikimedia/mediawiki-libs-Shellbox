@@ -30,6 +30,9 @@ class ClientTest extends ClientServerTestCase {
 		$this->assertSame( 15, $result );
 	}
 
+	/**
+	 * @return never
+	 */
 	public static function exception() {
 		throw new RuntimeException( 'eee' );
 	}
@@ -40,6 +43,9 @@ class ClientTest extends ClientServerTestCase {
 		$this->callSelf( 'exception' );
 	}
 
+	/**
+	 * @return never
+	 */
 	public static function error() {
 		trigger_error( 'fff', E_USER_ERROR );
 	}
@@ -51,6 +57,9 @@ class ClientTest extends ClientServerTestCase {
 		$this->callSelf( 'error' );
 	}
 
+	/**
+	 * @return never
+	 */
 	public static function force500() {
 		header( 'HTTP/1.1 500 Internal Server Error' );
 		exit;
@@ -63,6 +72,9 @@ class ClientTest extends ClientServerTestCase {
 		$this->callSelf( 'force500' );
 	}
 
+	/**
+	 * @return never
+	 */
 	public static function forceBad200() {
 		exit;
 	}
@@ -74,6 +86,10 @@ class ClientTest extends ClientServerTestCase {
 		$this->callSelf( 'forceBad200' );
 	}
 
+	/**
+	 * @param string $disposition
+	 * @return never
+	 */
 	public static function badContentDisposition( $disposition ) {
 		$parts = [ [
 			'name' => 'unused',
