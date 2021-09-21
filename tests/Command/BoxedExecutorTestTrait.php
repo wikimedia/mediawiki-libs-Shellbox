@@ -215,4 +215,13 @@ trait BoxedExecutorTestTrait {
 			->getStdout();
 		Assert::assertSame( "a\nb\n", $output );
 	}
+
+	public function testBadLocale() {
+		$output = $this->createFakeShellCommand()
+			->environment( [ 'LC_CTYPE' => 'zh_CN.gbk' ] )
+			->params( 'env' )
+			->execute()
+			->getStdout();
+		Assert::assertStringNotContainsStringIgnoringCase( 'zh_CN.gbk', $output );
+	}
 }
