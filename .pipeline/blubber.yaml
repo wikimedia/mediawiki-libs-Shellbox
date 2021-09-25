@@ -129,6 +129,9 @@ variants:
         source: /srv/app
         destination: /srv/app
       - from: fontprep
+        source: /srv/app/fonts/FreeSans.ttf
+        destination: /srv/app/fonts/FreeSans.ttf
+      - from: fontprep
         source: /srv/app/fonts/FreeSansWMF.ttf
         destination: /srv/app/fonts/FreeSansWMF.ttf
       - from: fontprep
