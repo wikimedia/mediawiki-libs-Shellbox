@@ -136,7 +136,7 @@ variants:
         destination: /srv/app/fonts/FreeSansWMF.ttf
       - from: fontprep
         source: /srv/app/fonts/unifont-5.1.20080907.ttf
-        destination: /srv/app/fonts/unifont-5.1.20080907.ttf
+        destination: /srv/app/fonts/unifont.ttf
     apt:
       packages:
         - perl
