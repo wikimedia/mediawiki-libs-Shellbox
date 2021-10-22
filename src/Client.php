@@ -4,6 +4,7 @@ namespace Shellbox;
 
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerInterface;
@@ -18,8 +19,8 @@ use Shellbox\RPC\RpcClient;
 /**
  * A generic client which executes actions on the Shellbox server
  */
-class Client implements RpcClient {
-	/** @var HttpClientInterface */
+class Client implements RPCClient {
+	/** @var ClientInterface */
 	private $httpClient;
 	/** @var UriInterface */
 	private $uri;
@@ -29,12 +30,18 @@ class Client implements RpcClient {
 	private $logger;
 
 	/**
-	 * @param HttpClientInterface $httpClient An object which requests an HTTP
-	 *   resource
+	 * @param ClientInterface $httpClient An object which requests an HTTP resource.
+	 *   It is permissible to throw an exception for propagation back to the
+	 *   caller. However, a successfully received response with a status code
+	 *   of >=400 should ideally be returned to Shellbox as a ResponseInterface,
+	 *   so that Shellbox can parse and rethrow its own error messages. With Guzzle
+	 *   this could be achieved by passing setting RequestOptions::HTTP_ERROR option
+	 *   to false when creating the client.
+	 *
 	 * @param UriInterface $uri The base URI of the server
 	 * @param string $key The key for HMAC authentication
 	 */
-	public function __construct( HttpClientInterface $httpClient, UriInterface $uri, $key ) {
+	public function __construct( ClientInterface $httpClient, UriInterface $uri, $key ) {
 		$this->httpClient = $httpClient;
 		$this->uri = $uri;
 		$this->key = $key;
@@ -152,7 +159,7 @@ class Client implements RpcClient {
 			$bodyStream
 		);
 
-		$response = $this->httpClient->send( $request );
+		$response = $this->httpClient->sendRequest( $request );
 		$contentType = $response->getHeaderLine( 'Content-Type' );
 		if ( $response->getStatusCode() !== 200 ) {
 			if ( $contentType === 'application/json' ) {

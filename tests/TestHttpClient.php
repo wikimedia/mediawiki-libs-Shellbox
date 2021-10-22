@@ -3,11 +3,12 @@
 namespace Shellbox\Tests;
 
 use GuzzleHttp;
+use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Shellbox\GuzzleHttpClient;
 
-class TestHttpClient extends GuzzleHttpClient {
+class TestHttpClient implements ClientInterface {
 	/** @var callable|null */
 	private $coverCallback;
 
@@ -38,8 +39,19 @@ class TestHttpClient extends GuzzleHttpClient {
 		return $response;
 	}
 
-	protected function createClient( RequestInterface $request ) {
+	public function sendRequest( RequestInterface $request ): ResponseInterface {
+		$request = $this->modifyRequest( $request );
 		$xdebug = boolval( ini_get( 'xdebug.remote_enable' ) );
-		return new GuzzleHttp\Client( [ 'timeout' => $xdebug ? 0 : 5 ] );
+		$guzzleClient = new GuzzleHttp\Client( [ 'timeout' => $xdebug ? 0 : 5 ] );
+		try {
+			$response = $guzzleClient->send( $request );
+		} catch ( RequestException $e ) {
+			if ( $e->getResponse() ) {
+				$response = $e->getResponse();
+			} else {
+				throw $e;
+			}
+		}
+		return $this->modifyResponse( $response );
 	}
 }
