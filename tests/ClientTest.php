@@ -7,8 +7,11 @@ use RuntimeException;
 use Shellbox\Multipart\MultipartReader;
 use Shellbox\Shellbox;
 use Shellbox\ShellboxError;
+use Shellbox\Tests\RPC\RpcClientTests;
 
 class ClientTest extends ClientServerTestCase {
+	use RpcClientTests;
+
 	public function testSimpleCall() {
 		$client = $this->createClient();
 		$result = $client->call( 'test', 'pow', [ 2, 3 ] );
