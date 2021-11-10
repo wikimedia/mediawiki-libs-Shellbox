@@ -1,6 +1,6 @@
 # rebuildCounter: 3
 version: v4
-base: docker-registry.wikimedia.org/php7.2-fpm:latest
+base: docker-registry.wikimedia.org/php7.4-fpm:latest
 
 lives:
   as: "composer"
@@ -16,26 +16,20 @@ runs:
 variants:
   build:
     # Build is the base composer build for production deployments.
-    base: docker-registry.wikimedia.org/releng/composer-php72:latest
+    base: docker-registry.wikimedia.org/releng/composer-php74:latest
     php:
       requirements: [composer.json, composer.lock]
       production: true
   # Test is directly used for CI, but also to build the base for the dev env image
   test:
     copies: [local]
-    base: docker-registry.wikimedia.org/releng/composer-package-php72:latest
+    base: docker-registry.wikimedia.org/releng/composer-package-php74:latest
     php:
       requirements: [composer.json, composer.lock]
       production: false
     runs:
       insecurely: true
     entrypoint: [composer, test]
-  test-php73:
-    includes: [test]
-    base: docker-registry.wikimedia.org/releng/composer-package-php73:latest
-  test-php74:
-    includes: [test]
-    base: docker-registry.wikimedia.org/releng/composer-package-php74:latest
   dev:
     copies: [test]
     builder:
@@ -76,6 +70,7 @@ variants:
       - from: local
         source: .pipeline/entrypoint
         destination: index.php
+
   media:
     copies: [prod]
     apt:

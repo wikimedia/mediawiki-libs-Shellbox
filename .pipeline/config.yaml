@@ -3,8 +3,6 @@ pipelines:
     blubberfile: blubber.yaml
     stages:
       - name: test
-      - name: test-php73
-      - name: test-php74
   publish:
     blubberfile: blubber.yaml
     stages:
