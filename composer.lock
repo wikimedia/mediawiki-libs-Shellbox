@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ee530711a4da2ad8f5fa470506d26e65",
+    "content-hash": "78e25825775c93a0f18fbb7bce105e0c",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -1118,16 +1118,16 @@
         },
         {
             "name": "mediawiki/mediawiki-phan-config",
-            "version": "0.11.0",
+            "version": "0.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/mediawiki-phan-config.git",
-                "reference": "e1891169976e0f8062a06c851687b32cf91b980e"
+                "reference": "3607eb30343615149e7c767dfcff6b8cb9054833"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-phan-config/zipball/e1891169976e0f8062a06c851687b32cf91b980e",
-                "reference": "e1891169976e0f8062a06c851687b32cf91b980e",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-phan-config/zipball/3607eb30343615149e7c767dfcff6b8cb9054833",
+                "reference": "3607eb30343615149e7c767dfcff6b8cb9054833",
                 "shasum": ""
             },
             "require": {
@@ -1136,11 +1136,11 @@
                 "php": ">=7.2.0"
             },
             "require-dev": {
-                "mediawiki/mediawiki-codesniffer": "37.0.0",
+                "mediawiki/mediawiki-codesniffer": "38.0.0",
                 "mediawiki/minus-x": "1.1.1",
                 "ockcyp/covers-validator": "1.3.3",
                 "php-parallel-lint/php-console-highlighter": "0.5.0",
-                "php-parallel-lint/php-parallel-lint": "1.3.0",
+                "php-parallel-lint/php-parallel-lint": "1.3.1",
                 "phpunit/phpunit": "^8.5"
             },
             "type": "library",
@@ -1162,9 +1162,9 @@
             "description": "Standard MediaWiki phan configuration",
             "homepage": "https://www.mediawiki.org/wiki/Continuous_integration/Phan",
             "support": {
-                "source": "https://github.com/wikimedia/mediawiki-phan-config/tree/0.11.0"
+                "source": "https://github.com/wikimedia/mediawiki-phan-config/tree/0.11.1"
             },
-            "time": "2021-08-27T20:36:52+00:00"
+            "time": "2021-11-08T15:50:23+00:00"
         },
         {
             "name": "mediawiki/minus-x",
