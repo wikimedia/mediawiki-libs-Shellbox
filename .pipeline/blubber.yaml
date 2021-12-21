@@ -22,7 +22,7 @@ variants:
   # Test is directly used for CI, but also to build the base for the dev env image
   test:
     copies: [local]
-    base: docker-registry.wikimedia.org/releng/composer-php72:latest
+    base: docker-registry.wikimedia.org/releng/composer-package-php72:latest
     php:
       requirements: [composer.json, composer.lock]
       production: false
@@ -31,10 +31,10 @@ variants:
     entrypoint: [composer, test]
   test-php73:
     includes: [test]
-    base: docker-registry.wikimedia.org/releng/composer-php73:latest
+    base: docker-registry.wikimedia.org/releng/composer-package-php73:latest
   test-php74:
     includes: [test]
-    base: docker-registry.wikimedia.org/releng/composer-php74:latest
+    base: docker-registry.wikimedia.org/releng/composer-package-php74:latest
   dev:
     copies: [test]
     builder:
