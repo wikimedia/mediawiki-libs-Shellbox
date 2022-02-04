@@ -1,4 +1,4 @@
-# rebuildCounter: 2
+# rebuildCounter: 3
 version: v4
 base: docker-registry.wikimedia.org/php7.2-fpm:latest
 
