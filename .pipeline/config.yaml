@@ -14,8 +14,6 @@ pipelines:
         publish:
           image:
             tags: [php-rpc]
-        promote:
-          - chart: shellbox-constraints
       # Shellbox with media handling packages
       - name: media
         build: media
@@ -28,8 +26,6 @@ pipelines:
         publish:
           image:
             tags: [score]
-        promote:
-          - chart: shellbox
       # Shellbox with SyntaxHighlight packages
       - name: syntaxhighlight
         build: syntaxhighlight
@@ -42,5 +38,3 @@ pipelines:
         publish:
           image:
             tags: [timeline]
-        promote:
-          - chart: shellbox-timeline
