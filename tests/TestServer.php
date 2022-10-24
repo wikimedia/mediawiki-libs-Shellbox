@@ -2,7 +2,14 @@
 
 namespace Shellbox\Tests;
 
+use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeCoverage\Driver\Driver;
+use SebastianBergmann\CodeCoverage\Driver\PcovDriver;
+use SebastianBergmann\CodeCoverage\Driver\PhpdbgDriver;
+use SebastianBergmann\CodeCoverage\Driver\Xdebug2Driver;
+use SebastianBergmann\CodeCoverage\Filter;
+use SebastianBergmann\Environment\Runtime;
 use Shellbox\FileUtils;
 use Shellbox\Server;
 use Shellbox\Shellbox;
@@ -25,7 +32,8 @@ class TestServer {
 			$suffix = Shellbox::getUniqueString();
 			$coverPath = "$tempDir/sb-cover-$suffix";
 			header( "X-Shellbox-Cover: $suffix" );
-			$coverage = new CodeCoverage;
+			$coverageFilter = new Filter();
+			$coverage = new CodeCoverage( self::selectDriver( $coverageFilter ), $coverageFilter );
 			// This ID will be discarded when the data is appended to the
 			// client's coverage object
 			$coverage->start( 'server' );
@@ -35,5 +43,31 @@ class TestServer {
 		} else {
 			Server::main( $configPath );
 		}
+	}
+
+	/**
+	 * cf https://github.com/sebastianbergmann/php-code-coverage/blob/8.0.2/src/CodeCoverage.php#L888-L908
+	 *
+	 * @param Filter $filter
+	 *
+	 * @return Driver
+	 */
+	private static function selectDriver( Filter $filter ): Driver {
+		$runtime = new Runtime;
+
+		if ( $runtime->hasPHPDBGCodeCoverage() ) {
+			return new PhpdbgDriver();
+		}
+
+		if ( $runtime->hasPCOV() ) {
+			return new PcovDriver( $filter );
+		}
+
+		if ( $runtime->hasXdebug() ) {
+			// TODO: XDebug3Driver is also available
+			return new Xdebug2Driver( $filter );
+		}
+
+		throw new RuntimeException( 'No code coverage driver available' );
 	}
 }
