@@ -1,5 +1,11 @@
 # Release History
 
+## 4.0.0 (2022-11-10)
+* Require PHP >=7.4.3, up from 7.2.9.
+* Fix OOM in MultipartAction when handling a large request body.
+* Compatibility with php8.1: Use ENT_COMPAT on htmlspecialchars.
+* Allow the use of wikimedia/wikipeg 3.0.0.
+
 ## 3.0.0 (2021-11-04)
 * Add RpcClient interface for remote code execution and a LocalRpcClient
   implementation to be used as fallback when Shellbox server is not
