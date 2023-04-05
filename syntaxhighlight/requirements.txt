@@ -1,0 +1,2 @@
+Pygments==2.15.1  \
+  --hash=sha256:db2db3deb4b4179f399a09054b023b6a586b76499d36965813c71aa8ed7b5fd1

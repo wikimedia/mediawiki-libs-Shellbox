@@ -100,12 +100,15 @@ variants:
   syntaxhighlight:
     copies: [prod]
     apt:
-      sources:
-        - url: http://apt.wikimedia.org/wikimedia
-          distribution: buster-wikimedia
-          components: [component/pygments]
       packages:
-        - python3-pygments
+        - python3
+        - python3-pip
+    python:
+      version: python3
+      requirements:
+        - from: local
+          source: syntaxhighlight/requirements.txt
+          destination: requirements.txt
     builder:
       requirements:
         - from: local
@@ -113,6 +116,12 @@ variants:
           destination: pygmentize
       command:
         - "chmod ugo=rx /srv/app/pygmentize"
+    runs:
+      environment:
+        PYTHONUNBUFFERED: "1"
+        PYTHONDONTWRITEBYTECODE: "1"
+        PIP_NO_CACHE_DIR: "off"
+        PIP_DISABLE_PIP_VERSION_CHECK: "on"
   # Copy 2 specific fonts out of Git
   fontprep:
     base: docker-registry.wikimedia.org/bullseye:latest
