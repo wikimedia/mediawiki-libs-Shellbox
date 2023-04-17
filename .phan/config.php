@@ -1,14 +1,8 @@
 <?php
 
-$cfg = require __DIR__ . '/../vendor/mediawiki/mediawiki-phan-config/src/config.php';
+$cfg = require __DIR__ . '/../vendor/mediawiki/mediawiki-phan-config/src/config-library.php';
 
-$cfg['directory_list'] = [
-	'src',
-	'vendor',
-	'tests'
-];
-
-$cfg['exclude_analysis_directory_list'][] = 'vendor';
+$cfg['directory_list'][] = 'tests';
 
 // Remove the exclusion of phpunit/php-code-coverage, which is needed here
 $cfg['exclude_file_regex'] = preg_replace(
