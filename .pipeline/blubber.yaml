@@ -106,6 +106,13 @@ variants:
           components: [component/pygments]
       packages:
         - python3-pygments
+    builder:
+      requirements:
+        - from: local
+          source: syntaxhighlight/pygmentize
+          destination: pygmentize
+      command:
+        - "chmod ugo=rx /srv/app/pygmentize"
   # Copy 2 specific fonts out of Git
   fontprep:
     base: docker-registry.wikimedia.org/bullseye:latest
