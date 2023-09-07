@@ -36,3 +36,9 @@ pipelines:
         publish:
           image:
             tags: [timeline]
+      # Shellbox with php7.4 ICU67 packages
+      - name: icu67
+        build: icu67
+        publish:
+          image:
+            tags: [icu67]
