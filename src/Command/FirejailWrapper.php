@@ -99,7 +99,9 @@ class FirejailWrapper extends Wrapper {
 		}
 
 		foreach ( $command->getEnvironment() as $name => $value ) {
-			$cmd[] = "--env=$name=$value";
+			if ( (string)$value !== '' ) {
+				$cmd[] = "--env=$name=$value";
+			}
 		}
 
 		$builtCmd = Shellbox::escape( $cmd );
