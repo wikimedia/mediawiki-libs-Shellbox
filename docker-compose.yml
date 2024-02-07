@@ -4,7 +4,7 @@ services:
   httpd:
     image: "docker-registry.wikimedia.org/httpd-fcgi:latest"
     ports:
-      - "8080:8080"
+      - "${SHELLBOX_HTTP_PORT:-8080}:8080"
     volumes:
       - fcgi_socket:/run/shared/:rw
     environment:

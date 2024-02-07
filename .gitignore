@@ -3,6 +3,8 @@
 /vendor/
 /.idea
 /.phpunit.result.cache
+/.env
+/docker-compose.override.yml
 
 # Shellbox-specific
 /config/config.json
