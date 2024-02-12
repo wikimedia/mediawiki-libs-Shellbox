@@ -159,3 +159,11 @@ variants:
   icu67:
     copies: [prod]
     base: docker-registry.wikimedia.org/php7.4-fpm-icu67:latest
+  video:
+    copies: [prod]
+    apt:
+      packages:
+        - ffmpeg
+        - fluidsynth
+        - fluid-soundfont-gm
+        - fluid-soundfont-gs
