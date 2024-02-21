@@ -7,6 +7,3 @@
 # Shellbox-specific
 /config/config.json
 /config/test-config.json
-/Dockerfile*
-/.testimage
-/.devimage

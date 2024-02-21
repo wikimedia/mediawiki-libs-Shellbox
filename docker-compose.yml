@@ -13,7 +13,8 @@ services:
   fcgi:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: .pipeline/blubber.yaml
+      target: dev
     volumes:
       - fcgi_socket:/run/shared/:rw
       - ./src:/srv/app/src:ro
