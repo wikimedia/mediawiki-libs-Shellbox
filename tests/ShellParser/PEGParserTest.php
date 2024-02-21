@@ -97,7 +97,7 @@ class PEGParserTest extends ShellboxTestCase {
 
 			[ '{ a; }', '<program><complete_command><brace_group><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></brace_group></complete_command></program>' ],
 			[ "{ a\n}", '<program><complete_command><brace_group><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></brace_group></complete_command></program>' ],
-			[ '{ a }' , 'SyntaxError' ],
+			[ '{ a }', 'SyntaxError' ],
 			[ '{ a; } >out', '<program><complete_command><brace_group><simple_command><word><unquoted_literal>a</unquoted_literal></word></simple_command></brace_group><io_redirect><output><word><unquoted_literal>out</unquoted_literal></word></output></io_redirect></complete_command></program>' ],
 
 			[ 'for p in a; do b; done', '<program><complete_command><for>p<in><word><unquoted_literal>a</unquoted_literal></word></in><do><simple_command><word><unquoted_literal>b</unquoted_literal></word></simple_command></do></for></complete_command></program>' ],

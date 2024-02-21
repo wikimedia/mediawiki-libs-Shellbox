@@ -24,8 +24,7 @@ trait RpcClientTests {
 				'sources' => [
 					__DIR__ . '/sample_script.php',
 				],
-			]
-			,
+			],
 			'expected' => 'test_aaa',
 		];
 		yield 'Function call using autoloaded class' => [

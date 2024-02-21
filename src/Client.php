@@ -183,7 +183,7 @@ class Client implements RPCClient {
 		$data = [];
 		$outputStrings = [];
 		$partIndex = 0;
-		// phpcs:ignore MediaWiki.ControlStructures.AssignmentInControlStructures
+		// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 		while ( ( $headers = $multipartReader->readPartHeaders() ) !== false ) {
 			if ( !isset( $headers['content-disposition'] ) ) {
 				throw new ShellboxError( "Part #$partIndex has no Content-Disposition" );
