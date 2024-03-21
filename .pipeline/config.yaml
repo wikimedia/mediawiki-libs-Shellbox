@@ -36,6 +36,12 @@ pipelines:
         publish:
           image:
             tags: [timeline]
+      # Shellbox with audio+video handling packages
+      - name: video
+        build: video
+        publish:
+          image:
+            tags: [video]
       # Shellbox with php7.4 ICU67 packages
       - name: icu67
         build: icu67
