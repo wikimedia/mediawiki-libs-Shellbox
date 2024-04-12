@@ -251,6 +251,11 @@ class UnboxedExecutor {
 			throw new ShellboxError( 'proc_open() failed' );
 		}
 
+		$this->logger->info( "Started process {pid} for {cmd}", [
+			'pid' => proc_get_status( $proc )['pid'],
+			'cmd' => $cmd
+		] );
+
 		$buffers = [
 			0 => $command->getStdin(), // input
 			1 => '', // stdout
