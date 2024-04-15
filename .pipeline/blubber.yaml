@@ -85,10 +85,13 @@ variants:
   score:
     copies: [prod]
     apt:
+      sources:
+        - url: http://apt.wikimedia.org/wikimedia
+          distribution: buster-wikimedia
+          components: [main, component/lilypond]
       packages:
-        - lilypond/buster-backports
-        # Help apt use the right version of -data
-        - lilypond-data/buster-backports
+        - lilypond
+        - lilypond-data
         - imagemagick
         - ghostscript
         - fluidsynth
