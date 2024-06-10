@@ -160,9 +160,6 @@ variants:
         - librsvg2-bin
         - fonts-noto
         - fonts-noto-cjk
-  icu67:
-    copies: [prod]
-    base: docker-registry.wikimedia.org/php7.4-fpm-icu67:latest
   video:
     copies: [prod]
     apt:
