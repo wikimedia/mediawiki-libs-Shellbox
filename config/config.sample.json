@@ -17,6 +17,12 @@
 	"useFirejail": null,
 	"firejailPath": "/usr/bin/firejail",
 	"firejailProfile": null,
+	"allowUrlFiles": false,
+	"urlFileConcurrency": 5,
+	"urlFileConnectTimeout": 3,
+	"urlFileRequestTimeout": 600,
+	"urlFileUploadAttempts": 3,
+	"urlFileRetryDelay": 1,
 	"routeSpecs": {
 		"example-echo": {
 			"__": "echo abc",

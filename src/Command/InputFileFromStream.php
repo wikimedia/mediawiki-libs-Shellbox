@@ -6,10 +6,14 @@ use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\StreamInterface;
 use Shellbox\FileUtils;
 
-class InputFileFromStream extends InputFile {
+class InputFileFromStream extends InputFileWithContents {
 	/** @var StreamInterface */
 	private $stream;
 
+	/**
+	 * @internal
+	 * @param StreamInterface $stream
+	 */
 	public function __construct( StreamInterface $stream ) {
 		$this->stream = $stream;
 	}

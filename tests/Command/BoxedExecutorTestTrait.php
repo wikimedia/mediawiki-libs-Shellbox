@@ -5,6 +5,7 @@ namespace Shellbox\Tests\Command;
 use GuzzleHttp\Psr7\Utils;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
+use Monolog\Processor\PsrLogMessageProcessor;
 use PHPUnit\Framework\Assert;
 use Psr\Log\LoggerInterface;
 use Shellbox\Command\BoxedCommand;
@@ -26,13 +27,24 @@ trait BoxedExecutorTestTrait {
 
 	abstract protected function createExecutor( LoggerInterface $logger = null ): BoxedExecutor;
 
+	abstract protected function getFileServerUrl( $path ): string;
+
 	/**
+	 * @param LoggerInterface|null $logger
 	 * @return BoxedCommand
 	 */
-	private function createFakeShellCommand() {
-		return $this->createExecutor()->createCommand()
+	private function createFakeShellCommand( LoggerInterface $logger = null ) {
+		return $this->createExecutor( $logger )->createCommand()
 			->routeName( 'test' )
 			->params( $this->getFakeShellParams() );
+	}
+
+	private function createTestLogger() {
+		$logger = new Logger( 'shellbox' );
+		$logger->pushProcessor( new PsrLogMessageProcessor );
+		$handler = new TestHandler;
+		$logger->pushHandler( $handler );
+		return [ $logger, $handler ];
 	}
 
 	public function testExecuteEcho() {
@@ -109,6 +121,31 @@ trait BoxedExecutorTestTrait {
 		Assert::assertSame( 0, $result->getExitCode() );
 	}
 
+	public function testInputFileFromUrl() {
+		$result = $this->createFakeShellCommand()
+			->inputFileFromUrl( 'input', $this->getFileServerUrl( 'download/hello' ) )
+			->params( 'cat', 'input' )
+			->execute();
+		Assert::assertSame( 'hello', $result->getStdout() );
+		Assert::assertSame( '', $result->getStderr() );
+		Assert::assertSame( 0, $result->getExitCode() );
+	}
+
+	public function testInputFileFromUrlWithHeaders() {
+		[ $logger, $handler ] = $this->createTestLogger();
+		$cmd = $this->createFakeShellCommand( $logger );
+		$cmd
+			->inputFile(
+				'input',
+				$cmd->newInputFileFromUrl( $this->getFileServerUrl( 'validate-headers/input1' ) )
+					->headers( [ 'foo' => 'bar' ] )
+			)
+			->params( 'echo' )
+			->execute();
+		Assert::assertTrue( $handler->hasRecordThatContains(
+			'/validate-headers/input1 -> 200', Logger::INFO ) );
+	}
+
 	public function testOutputFileToFile() {
 		$manager = new TempDirManager(
 			sys_get_temp_dir() . '/test-' . Shellbox::getUniqueString() );
@@ -122,6 +159,37 @@ trait BoxedExecutorTestTrait {
 		Assert::assertSame( 0, $result->getExitCode() );
 		Assert::assertSame( "test\n", file_get_contents( $outPath ) );
 		Assert::assertSame( "test\n", $result->getFileContents( 'server-out' ) );
+	}
+
+	public function testOutputFileToUrl() {
+		[ $logger, $handler ] = $this->createTestLogger();
+		$result = $this->createFakeShellCommand( $logger )
+			->inputFileFromString( 'input', 'hello' )
+			->outputFileToUrl( 'output', $this->getFileServerUrl( 'upload/hello' ) )
+			->unsafeParams( 'cp input output' )
+			->execute();
+		Assert::assertSame( 0, $result->getExitCode() );
+		Assert::assertTrue( $handler->hasRecordThatContains(
+			'/upload/hello -> 204', Logger::INFO ) );
+	}
+
+	public function testOutputFileToUrlWithHeaders() {
+		[ $logger, $handler ] = $this->createTestLogger();
+		$cmd = $this->createFakeShellCommand( $logger );
+		$result = $cmd
+			->inputFileFromString( 'input', 'hello' )
+			->outputFile(
+				'output',
+				$cmd
+					->newOutputFileToUrl( $this->getFileServerUrl( 'validate-headers/output1' ) )
+					->enableMwContentHash()
+					->headers( [ 'foo' => 'bar' ] )
+			)
+			->unsafeParams( 'cp input output' )
+			->execute();
+		Assert::assertSame( 0, $result->getExitCode() );
+		Assert::assertTrue( $handler->hasRecordThatContains(
+			'/validate-headers/output1 -> 202', Logger::INFO ) );
 	}
 
 	public function testOutputGlobToFile() {
@@ -139,6 +207,21 @@ trait BoxedExecutorTestTrait {
 		Assert::assertSame( "test\n", $result->getFileContents( 'out1.txt' ) );
 	}
 
+	public function testOutputGlobToUrl() {
+		[ $logger, $handler ] = $this->createTestLogger();
+		$result = $this->createFakeShellCommand( $logger )
+			->inputFileFromString( 'inputs/f1.txt', 'out/f1.txt' )
+			->inputFileFromString( 'inputs/f2.txt', 'out/f2.txt' )
+			->outputGlobToUrl( 'outputs/f', 'txt', $this->getFileServerUrl( 'upload/out/' ) )
+			->unsafeParams( 'cp inputs/f1.txt inputs/f2.txt outputs/' )
+			->execute();
+		Assert::assertSame( 0, $result->getExitCode() );
+		Assert::assertTrue( $handler->hasRecordThatContains(
+			'/upload/out/f1.txt -> 204', Logger::INFO ) );
+		Assert::assertTrue( $handler->hasRecordThatContains(
+			'/upload/out/f2.txt -> 204', Logger::INFO ) );
+	}
+
 	public function testMissingOutput() {
 		$result = $this->createFakeShellCommand()
 			->outputFileToString( 'dest' )
@@ -148,6 +231,37 @@ trait BoxedExecutorTestTrait {
 		Assert::assertSame( '', $result->getStderr() );
 		Assert::assertSame( 0, $result->getExitCode() );
 		Assert::assertSame( null, $result->getFileContents( 'dest' ) );
+	}
+
+	public function testInputIsOutput() {
+		$command = $this->createFakeShellCommand();
+		$result = $command
+			->inputFileFromString( 'dest', 'hello' )
+			->outputFile(
+				'dest',
+				$command->newOutputFileToString()
+			)
+			->outputFileToString( 'dest' )
+			->params( 'echo' )
+			->execute();
+		Assert::assertSame( 0, $result->getExitCode() );
+		Assert::assertSame( true, $result->wasReceived( 'dest' ) );
+		Assert::assertSame( 'hello', $result->getFileContents( 'dest' ) );
+	}
+
+	public function testRequiredExitCode() {
+		$command = $this->createFakeShellCommand();
+		$result = $command
+			->inputFileFromString( 'dest', 'hello' )
+			->outputFile(
+				'dest',
+				$command->newOutputFileToString()
+					->requireExitCode( 0 )
+			)
+			->params( 'false' )
+			->execute();
+		Assert::assertSame( 1, $result->getExitCode() );
+		Assert::assertSame( false, $result->wasReceived( 'dest' ) );
 	}
 
 	public function testStdin() {
@@ -193,10 +307,7 @@ trait BoxedExecutorTestTrait {
 	}
 
 	public function testLogStderr() {
-		$logger = new Logger( 'shellbox' );
-
-		$handler = new TestHandler;
-		$logger->pushHandler( $handler );
+		[ $logger, $handler ] = $this->createTestLogger();
 		$executor = $this->createExecutor( $logger );
 		$command = $executor->createCommand()
 			->routeName( 'test' )

@@ -21,6 +21,10 @@ class ClientServerTestCase extends ShellboxTestCase {
 	private static $url;
 	/** @var BuiltinServerManager|null */
 	private static $server;
+	/** @var BuiltinServerManager|null */
+	private static $fileServer;
+	/** @var string|null */
+	private static $fileServerUrl;
 
 	protected function getAndDestroyServerCoverage() {
 		if ( $this->serverCoveragePath !== null && file_exists( $this->serverCoveragePath ) ) {
@@ -51,7 +55,8 @@ class ClientServerTestCase extends ShellboxTestCase {
 		return new Client(
 			$this->createHttpClient(),
 			new Uri( self::$url ),
-			(string)( $key ?? self::$secretKey )
+			(string)( $key ?? self::$secretKey ),
+			[ 'allowUrlFiles' => true ]
 		);
 	}
 
@@ -136,5 +141,56 @@ PHP
 		}
 		self::$server->stop();
 		self::$server = null;
+	}
+
+	/**
+	 * phpcs:ignore MediaWiki.Commenting.FunctionAnnotations -- works for me
+	 * @beforeClass
+	 */
+	public static function fileServerSetUpBeforeClass() {
+		$port = self::getConfig( 'fileServerPort' );
+		self::$fileServer = new BuiltinServerManager(
+			$port,
+			self::getConfig( 'tempDir' ) );
+		self::$fileServerUrl = "http://localhost:$port/file-server.php/!";
+
+		$tempManager = self::$fileServer->getTempDirManager();
+
+		$fileServerEntryPath = $tempManager->preparePath( 'file-server.php' );
+		$encAutoloadPath = var_export( __DIR__ . '/../vendor/autoload.php', true );
+		FileUtils::putContents( $fileServerEntryPath, <<<PHP
+<?php
+require $encAutoloadPath;
+\Shellbox\Tests\FileServer::main();
+PHP
+		);
+
+		self::$fileServer->start();
+		$client = new \GuzzleHttp\Client;
+		$response = $client->request( 'GET', self::$fileServerUrl . "/healthz" );
+		self::$fileServer->setPid( (int)$response->getBody()->getContents() );
+	}
+
+	/**
+	 * @after
+	 */
+	public function fileServerTearDown() {
+		self::$fileServer->checkIfRunning();
+	}
+
+	/**
+	 * phpcs:ignore MediaWiki.Commenting.FunctionAnnotations -- works for me
+	 * @afterClass
+	 */
+	public static function fileServerTearDownAfterClass() {
+		if ( !self::$fileServer ) {
+			return;
+		}
+		self::$fileServer->stop();
+		self::$fileServer = null;
+	}
+
+	protected function getFileServerUrl( $path ): string {
+		return self::$fileServerUrl . '/' . $path;
 	}
 }
