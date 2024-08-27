@@ -15,10 +15,15 @@ class InputFileFromStream extends InputFile {
 	}
 
 	public function copyTo( $destPath ) {
+		// Rewind for consistency with getStreamOrString()
+		$this->stream->rewind();
 		Utils::copyToStream( $this->stream, FileUtils::openOutputFileStream( $destPath ) );
 	}
 
 	public function getStreamOrString() {
+		// The client needs to read it twice.
+		// Rewind, otherwise we may get different results each time.
+		$this->stream->rewind();
 		return $this->stream;
 	}
 }
