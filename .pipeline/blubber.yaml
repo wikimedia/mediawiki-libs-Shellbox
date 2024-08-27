@@ -163,6 +163,10 @@ variants:
   video:
     copies: [prod]
     apt:
+      sources:
+        - url: http://apt.wikimedia.org/wikimedia
+          distribution: buster-wikimedia
+          components: [main, component/ffmpeg]
       packages:
         - ffmpeg
         - fluidsynth
