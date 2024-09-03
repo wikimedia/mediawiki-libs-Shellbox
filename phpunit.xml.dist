@@ -1,16 +1,20 @@
+<?xml version="1.0"?>
 <!-- disable result caching due to permission errors -->
-<phpunit colors="true"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+	colors="true"
 	cacheResult="false"
 	beStrictAboutTestsThatDoNotTestAnything="true"
-	beStrictAboutOutputDuringTests="true">
+	beStrictAboutOutputDuringTests="true"
+>
 	<testsuites>
 		<testsuite name="Tests">
 			<directory>./tests</directory>
 		</testsuite>
 	</testsuites>
-	<filter>
-		<whitelist addUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">./src</directory>
-		</whitelist>
-	</filter>
+	<coverage includeUncoveredFiles="true">
+	<include>
+		<directory suffix=".php">./src</directory>
+	</include>
+  </coverage>
 </phpunit>
