@@ -2,6 +2,7 @@
 
 namespace Shellbox\Tests\Command;
 
+use GuzzleHttp\Psr7\Utils;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Assert;
@@ -89,6 +90,18 @@ trait BoxedExecutorTestTrait {
 		file_put_contents( $inputPath, 'hello' );
 		$result = $this->createFakeShellCommand()
 			->inputFileFromFile( 'input', $inputPath )
+			->params( 'cat', 'input' )
+			->execute();
+		Assert::assertSame( 'hello', $result->getStdout() );
+		Assert::assertSame( '', $result->getStderr() );
+		Assert::assertSame( 0, $result->getExitCode() );
+	}
+
+	public function testInputFileFromStream() {
+		$stream = Utils::streamFor( fopen( 'php://memory', 'w+' ) );
+		$stream->write( 'hello' );
+		$result = $this->createFakeShellCommand()
+			->inputFileFromStream( 'input', $stream )
 			->params( 'cat', 'input' )
 			->execute();
 		Assert::assertSame( 'hello', $result->getStdout() );
