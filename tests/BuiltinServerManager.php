@@ -221,10 +221,16 @@ class BuiltinServerManager {
 		if ( !extension_loaded( 'xdebug' ) ) {
 			return [];
 		}
-		$settings = [
-			'xdebug.remote_enable', 'xdebug.remote_handler', 'xdebug.remote_mode',
-			'xdebug.remote_host', 'xdebug.remote_port',
-		];
+		if ( version_compare( phpversion( 'xdebug' ), '3.0.0', '>' ) ) {
+			$settings = [
+				'xdebug.mode', 'xdebug.client_host', 'xdebug.client_port'
+			];
+		} else {
+			$settings = [
+				'xdebug.remote_enable', 'xdebug.remote_handler', 'xdebug.remote_mode',
+				'xdebug.remote_host', 'xdebug.remote_port',
+			];
+		}
 		$args = [ '-dzend_extension=xdebug.so' ];
 
 		foreach ( $settings as $name ) {
