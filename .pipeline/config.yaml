@@ -30,6 +30,12 @@ pipelines:
         publish:
           image:
             tags: [syntaxhighlight]
+      # Shellbox with SyntaxHighlight packages (PHP 8.1)
+      - name: syntaxhighlight81
+        build: syntaxhighlight81
+        publish:
+          image:
+            tags: [syntaxhighlight81]
       # Shellbox with Timeline packages
       - name: timeline
         build: timeline
