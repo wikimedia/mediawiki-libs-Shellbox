@@ -172,3 +172,143 @@ variants:
         - fluidsynth
         - fluid-soundfont-gm
         - fluid-soundfont-gs
+
+  # Start of PHP 8.1 migration variants. Note that fontprep is shared with the
+  # 7.4 variants above.
+  build81:
+    base: docker-registry.wikimedia.org/releng/composer-php81:latest
+    php:
+      requirements: [composer.json, composer.lock]
+      production: true
+  test81:
+    copies: [local]
+    base: docker-registry.wikimedia.org/releng/composer-package-php81:latest
+    php:
+      requirements: [composer.json, composer.lock]
+      production: false
+    runs:
+      insecurely: true
+    entrypoint: [composer, test]
+  dev81:
+    copies: [test]
+    builder:
+      requirements:
+        - from: local
+          source: .pipeline/entrypoint
+          destination: index.php
+        - from: local
+          source: config/dev-config.json
+          destination: config/config.json
+      # Make sure the file can only be read, but not modified by the running
+      # user
+      command:
+        - "chmod 0444 /srv/app/config/config.json"
+    runs:
+      environment:
+        PHP__opcache__enable: "0"
+        FPM__pm__max_children: "4"
+        FPM__log_level: notice
+        PHP__display_errors: "stderr"
+        PHP__error_log: "/dev/stdout"
+        PHP__apc__shm_size: "150M"
+        PHP__error_reporting: "E_ALL"
+
+  prod81:
+    copies:
+      - from: build81
+        source: /srv/app/vendor
+        destination: /srv/app/vendor
+      - from: local
+        source: src
+        destination: src
+      - from: local
+        source: .pipeline/entrypoint
+        destination: index.php
+    base: docker-registry.wikimedia.org/php8.1-fpm:latest
+
+  media81:
+    copies: [prod81]
+    base: docker-registry.wikimedia.org/php8.1-fpm:latest
+    apt:
+      packages:
+        # core's DjVu support
+        - djvulibre-bin
+        # tiffinfo, for PagedTiffHandler
+        - libtiff-tools
+        # PDF utils, for PdfHandler
+        - poppler-utils
+  score81:
+    copies: [prod81]
+    base: docker-registry.wikimedia.org/php8.1-fpm:latest
+    apt:
+      # Note: the php8.1-fpm base image is bullseye, which obviates the custom
+      # lilypond backport component.
+      packages:
+        - lilypond
+        - lilypond-data
+        - imagemagick
+        - ghostscript
+        - fluidsynth
+        - fluid-soundfont-gs
+        - fluid-soundfont-gm
+        - lame
+        # Fonts for lyrics
+        - fonts-noto
+        - fonts-noto-cjk
+  syntaxhighlight81:
+    copies: [prod81]
+    base: docker-registry.wikimedia.org/php8.1-fpm:latest
+    apt:
+      packages:
+        - python3
+        - python3-pip
+    python:
+      version: python3
+      requirements:
+        - from: local
+          source: syntaxhighlight/requirements.txt
+          destination: requirements.txt
+    builder:
+      requirements:
+        - from: local
+          source: syntaxhighlight/pygmentize
+          destination: pygmentize
+      command:
+        - "chmod ugo=rx /srv/app/pygmentize"
+    runs:
+      environment:
+        PYTHONUNBUFFERED: "1"
+        PYTHONDONTWRITEBYTECODE: "1"
+        PIP_NO_CACHE_DIR: "off"
+        PIP_DISABLE_PIP_VERSION_CHECK: "on"
+  timeline81:
+    copies:
+      - from: prod81
+        source: /srv/app
+        destination: /srv/app
+      - from: fontprep
+        source: /srv/app/fonts/FreeSans.ttf
+        destination: /srv/app/fonts/FreeSans.ttf
+      - from: fontprep
+        source: /srv/app/fonts/FreeSansWMF.ttf
+        destination: /srv/app/fonts/FreeSansWMF.ttf
+      - from: fontprep
+        source: /srv/app/fonts/unifont-5.1.20080907.ttf
+        destination: /srv/app/fonts/unifont.ttf
+    base: docker-registry.wikimedia.org/php8.1-fpm:latest
+    apt:
+      packages:
+        - perl
+        - ploticus
+        - librsvg2-bin
+        - fonts-noto
+        - fonts-noto-cjk
+  video81:
+    copies: [prod81]
+    base: docker-registry.wikimedia.org/php8.1-fpm:latest
+    apt:
+      packages:
+        - ffmpeg
+        - fluidsynth
+        - fluid-soundfont-gm
+        - fluid-soundfont-gs
