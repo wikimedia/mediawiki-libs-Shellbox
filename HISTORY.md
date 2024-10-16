@@ -1,6 +1,6 @@
 # Release History
 
-## 4.1.0 (unreleased)
+## 4.1.0 (2024-10-17)
 * Add remote download/upload support for large file performance (T292322). The
   feature is off by default. Once the server is updated and has allowUrlFiles
   enabled, the client can enable allowUrlFiles to fully enable the feature for
