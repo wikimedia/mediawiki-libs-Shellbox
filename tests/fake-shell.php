@@ -94,6 +94,9 @@ function fakeShellMain( $argv ) {
 			fwrite( STDERR, $argv[1] . "\n" );
 			exit( 0 );
 
+		case 'false':
+			exit( 1 );
+
 		default:
 			fwrite( STDERR, "Unrecognised command\n" );
 			exit( 1 );

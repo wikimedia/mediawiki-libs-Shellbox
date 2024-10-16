@@ -36,7 +36,9 @@ class ShellboxTestCase extends TestCase {
 			$defaults = [
 				'tempDir' => sys_get_temp_dir(),
 				'port' => 8033,
-				'firejailProfile' => ''
+				'fileServerPort' => 8034,
+				'firejailProfile' => '',
+				'allowUrlFiles' => true,
 			];
 			if ( file_exists( $configPath ) ) {
 				self::$config = Shellbox::jsonDecode( FileUtils::getContents( $configPath ) )
