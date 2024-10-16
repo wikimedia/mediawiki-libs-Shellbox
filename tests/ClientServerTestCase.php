@@ -28,7 +28,7 @@ class ClientServerTestCase extends ShellboxTestCase {
 
 	protected function getAndDestroyServerCoverage() {
 		if ( $this->serverCoveragePath !== null && file_exists( $this->serverCoveragePath ) ) {
-			$data = Shellbox::jsonDecode( FileUtils::getContents( $this->serverCoveragePath ) );
+			$data = unserialize( FileUtils::getContents( $this->serverCoveragePath ) );
 			// phpcs:ignore Generic.PHP.NoSilencedErrors
 			@unlink( $this->serverCoveragePath );
 			$this->serverCoveragePath = null;

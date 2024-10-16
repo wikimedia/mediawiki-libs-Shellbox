@@ -8,6 +8,7 @@ use SebastianBergmann\CodeCoverage\Driver\Driver;
 use SebastianBergmann\CodeCoverage\Driver\PcovDriver;
 use SebastianBergmann\CodeCoverage\Driver\PhpdbgDriver;
 use SebastianBergmann\CodeCoverage\Driver\Xdebug2Driver;
+use SebastianBergmann\CodeCoverage\Driver\Xdebug3Driver;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\Environment\Runtime;
 use Shellbox\FileUtils;
@@ -39,7 +40,7 @@ class TestServer {
 			$coverage->start( 'server' );
 			Server::main( $configPath );
 			$data = $coverage->stop();
-			FileUtils::putContents( $coverPath, Shellbox::jsonEncode( $data ) );
+			FileUtils::putContents( $coverPath, serialize( $data ) );
 		} else {
 			Server::main( $configPath );
 		}
@@ -64,7 +65,9 @@ class TestServer {
 		}
 
 		if ( $runtime->hasXdebug() ) {
-			// TODO: XDebug3Driver is also available
+			if ( version_compare( phpversion( 'xdebug' ), '3.0.0', '>' ) ) {
+				return new Xdebug3Driver( $filter );
+			}
 			return new Xdebug2Driver( $filter );
 		}
 
