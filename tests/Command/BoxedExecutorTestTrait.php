@@ -25,7 +25,7 @@ trait BoxedExecutorTestTrait {
 		return [ PHP_BINARY, '-d', 'variables_order=EGPCS', dirname( __DIR__ ) . '/fake-shell.php' ];
 	}
 
-	abstract protected function createExecutor( LoggerInterface $logger = null ): BoxedExecutor;
+	abstract protected function createExecutor( ?LoggerInterface $logger = null ): BoxedExecutor;
 
 	abstract protected function getFileServerUrl( $path ): string;
 
@@ -33,7 +33,7 @@ trait BoxedExecutorTestTrait {
 	 * @param LoggerInterface|null $logger
 	 * @return BoxedCommand
 	 */
-	private function createFakeShellCommand( LoggerInterface $logger = null ) {
+	private function createFakeShellCommand( ?LoggerInterface $logger = null ) {
 		return $this->createExecutor( $logger )->createCommand()
 			->routeName( 'test' )
 			->params( $this->getFakeShellParams() );
