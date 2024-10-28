@@ -11,7 +11,7 @@ use Shellbox\Tests\ShellboxTestCase;
 class LocalBoxedExecutorTest extends ShellboxTestCase {
 	use BoxedExecutorTestTrait;
 
-	protected function createExecutor( LoggerInterface $logger = null ): BoxedExecutor {
+	protected function createExecutor( ?LoggerInterface $logger = null ): BoxedExecutor {
 		return Shellbox::createBoxedExecutor( $this->getAllConfig(), $logger, new MockFileClient );
 	}
 
