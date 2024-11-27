@@ -59,6 +59,11 @@ class BuiltinServerManager {
 			'-t', $wdPath
 		);
 
+		$pcovArgs = $this->getPcovArgs();
+		if ( $pcovArgs ) {
+			$cmd .= ' ' . Shellbox::escape( $pcovArgs );
+		}
+
 		$xdebugArgs = $this->getXDebugArgs();
 		if ( $xdebugArgs ) {
 			$cmd .= ' ' . Shellbox::escape( $xdebugArgs );
@@ -211,6 +216,20 @@ class BuiltinServerManager {
 	 */
 	public function getTempDirManager() {
 		return $this->tempDirManager;
+	}
+
+	/**
+	 * Get pcov settings to pass on to child process.
+	 * @return string[]
+	 */
+	private function getPcovArgs() {
+		if ( !extension_loaded( 'pcov' ) ) {
+			return [];
+		}
+		return [
+			'-dextension=pcov.so',
+			'-dpcov.enable=1',
+		];
 	}
 
 	/**
