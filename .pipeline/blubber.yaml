@@ -172,6 +172,7 @@ variants:
         - fluidsynth
         - fluid-soundfont-gm
         - fluid-soundfont-gs
+        - wmf-certificates
 
   # Start of PHP 8.1 migration variants. Note that fontprep is shared with the
   # 7.4 variants above.
@@ -312,3 +313,4 @@ variants:
         - fluidsynth
         - fluid-soundfont-gm
         - fluid-soundfont-gs
+        - wmf-certificates
