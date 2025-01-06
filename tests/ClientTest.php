@@ -60,6 +60,16 @@ class ClientTest extends ClientServerTestCase {
 		$this->callSelf( 'error' );
 	}
 
+	public static function suppressedWarning() {
+		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		@trigger_error( 'ignorable warning', E_USER_WARNING );
+	}
+
+	public function testCallSuppressedWarning() {
+		$this->expectNotToPerformAssertions();
+		$this->callSelf( 'suppressedWarning' );
+	}
+
 	/**
 	 * @return never
 	 */
