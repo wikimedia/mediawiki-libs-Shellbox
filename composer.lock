@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d922ee75db3773a9b6fc8bc4c7b541a6",
+    "content-hash": "7958b8afb729e1be96f7e39d070e705f",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -706,12 +706,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "2.5-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
@@ -881,13 +881,13 @@
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-main": "3.x-dev"
-                },
                 "phpstan": {
                     "includes": [
                         "extension.neon"
                     ]
+                },
+                "branch-alias": {
+                    "dev-main": "3.x-dev"
                 }
             },
             "autoload": {
@@ -1454,16 +1454,16 @@
         },
         {
             "name": "mediawiki/mediawiki-phan-config",
-            "version": "0.15.0",
+            "version": "0.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/mediawiki-tools-phan.git",
-                "reference": "aca76ab5e7ceb3f1fc5ff938a7adaafd9b47a7b9"
+                "reference": "fa343ed8d1b3229f922ba7af6f5e8631bc312687"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-tools-phan/zipball/aca76ab5e7ceb3f1fc5ff938a7adaafd9b47a7b9",
-                "reference": "aca76ab5e7ceb3f1fc5ff938a7adaafd9b47a7b9",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-tools-phan/zipball/fa343ed8d1b3229f922ba7af6f5e8631bc312687",
+                "reference": "fa343ed8d1b3229f922ba7af6f5e8631bc312687",
                 "shasum": ""
             },
             "require": {
@@ -1498,9 +1498,9 @@
             "description": "Standard MediaWiki phan configuration",
             "homepage": "https://www.mediawiki.org/wiki/Continuous_integration/Phan",
             "support": {
-                "source": "https://github.com/wikimedia/mediawiki-tools-phan/tree/0.15.0"
+                "source": "https://github.com/wikimedia/mediawiki-tools-phan/tree/0.15.1"
             },
-            "time": "2024-12-09T16:11:47+00:00"
+            "time": "2025-01-09T21:22:46+00:00"
         },
         {
             "name": "mediawiki/minus-x",
@@ -4890,12 +4890,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "2.5-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
