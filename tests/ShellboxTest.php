@@ -4,6 +4,9 @@ namespace Shellbox\Tests;
 
 use Shellbox\Shellbox;
 
+/**
+ * @coversNothing
+ */
 class ShellboxTest extends ShellboxTestCase {
 	public static function provideEscape() {
 		return [

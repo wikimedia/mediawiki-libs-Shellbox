@@ -6,6 +6,9 @@ use Shellbox\Command\Command;
 use Shellbox\Shellbox;
 use Shellbox\Tests\ShellboxTestCase;
 
+/**
+ * @coversNothing
+ */
 class CommandTest extends ShellboxTestCase {
 	/**
 	 * Test that null values are skipped by params() and unsafeParams()

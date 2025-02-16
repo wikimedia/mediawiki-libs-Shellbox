@@ -8,6 +8,9 @@ use Shellbox\Shellbox;
 use Shellbox\Tests\MockFileClient;
 use Shellbox\Tests\ShellboxTestCase;
 
+/**
+ * @coversNothing
+ */
 class LocalBoxedExecutorTest extends ShellboxTestCase {
 	use BoxedExecutorTestTrait;
 

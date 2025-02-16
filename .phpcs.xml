@@ -23,10 +23,6 @@
 	<rule ref="MediaWiki.Usage.ForbiddenFunctions.proc_open">
 		<severity>0</severity>
 	</rule>
-	<!-- Mostly doing integration tests -->
-	<rule ref="MediaWiki.Commenting.MissingCovers.MissingCovers">
-		<severity>0</severity>
-	</rule>
 	<!-- Seems harmless -->
 	<rule ref="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment">
 		<severity>0</severity>

@@ -8,6 +8,9 @@ use Shellbox\Tests\ShellboxTestCase;
 use Wikimedia\WikiPEG\SyntaxError;
 
 // phpcs:disable Generic.Files.LineLength.TooLong
+/**
+ * @coversNothing
+ */
 class PEGParserTest extends ShellboxTestCase {
 	public static function provideParse() {
 		return [

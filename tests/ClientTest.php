@@ -9,6 +9,9 @@ use Shellbox\Shellbox;
 use Shellbox\ShellboxError;
 use Shellbox\Tests\RPC\RpcClientTests;
 
+/**
+ * @coversNothing
+ */
 class ClientTest extends ClientServerTestCase {
 	use RpcClientTests;
 

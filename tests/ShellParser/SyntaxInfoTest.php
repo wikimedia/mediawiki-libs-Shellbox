@@ -5,6 +5,9 @@ namespace Shellbox\Tests\ShellParser;
 use PHPUnit\Framework\TestCase;
 use Shellbox\ShellParser\ShellParser;
 
+/**
+ * @coversNothing
+ */
 class SyntaxInfoTest extends TestCase {
 	public static function provideGetFeatureList() {
 		return [

@@ -7,6 +7,9 @@ use Shellbox\Command\BoxedCommand;
 use Shellbox\Command\ValidationError;
 use Shellbox\Command\Validator;
 
+/**
+ * @coversNothing
+ */
 class ValidatorTest extends TestCase {
 	public static function provideValidate() {
 		return [

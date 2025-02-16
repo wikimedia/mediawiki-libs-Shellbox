@@ -7,6 +7,9 @@ use Shellbox\Command\BoxedExecutor;
 use Shellbox\Command\RemoteBoxedExecutor;
 use Shellbox\Tests\ClientServerTestCase;
 
+/**
+ * @coversNothing
+ */
 class RemoteBoxedExecutorTest extends ClientServerTestCase {
 	use BoxedExecutorTestTrait;
 
