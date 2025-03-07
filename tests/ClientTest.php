@@ -78,7 +78,7 @@ class ClientTest extends ClientServerTestCase {
 	 */
 	public static function force500() {
 		header( 'HTTP/1.1 500 Internal Server Error' );
-		exit;
+		exit( 0 );
 	}
 
 	public function testForce500() {
@@ -92,7 +92,7 @@ class ClientTest extends ClientServerTestCase {
 	 * @return never
 	 */
 	public static function forceBad200() {
-		exit;
+		exit( 0 );
 	}
 
 	public function testForceBad200() {
@@ -116,7 +116,7 @@ class ClientTest extends ClientServerTestCase {
 		$stream = new MultipartStream( $parts, $boundary );
 		header( "Content-Type: multipart/mixed; boundary=\"$boundary\"" );
 		echo $stream->getContents();
-		exit;
+		exit( 0 );
 	}
 
 	public function testBadContentDisposition() {
