@@ -4,6 +4,7 @@ namespace Shellbox;
 
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -172,7 +173,11 @@ class Client implements RPCClient {
 			$bodyStream
 		);
 
-		$response = $this->httpClient->sendRequest( $request );
+		try {
+			$response = $this->httpClient->sendRequest( $request );
+		} catch ( ClientExceptionInterface $e ) {
+			throw new ShellboxError( 'Shellbox network error', 0, $e );
+		}
 		$contentType = $response->getHeaderLine( 'Content-Type' );
 		if ( $response->getStatusCode() !== 200 ) {
 			if ( $contentType === 'application/json' ) {

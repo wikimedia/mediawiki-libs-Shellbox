@@ -3,7 +3,11 @@
 namespace Shellbox\Tests;
 
 use GuzzleHttp\Psr7\MultipartStream;
+use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 use RuntimeException;
+use Shellbox\Client;
 use Shellbox\Multipart\MultipartReader;
 use Shellbox\Shellbox;
 use Shellbox\ShellboxError;
@@ -164,6 +168,23 @@ class ClientTest extends ClientServerTestCase {
 		$client = $this->createClient( 'fake key' );
 		$client->call( 'test', [ self::class, 'identity' ],
 			[ 1 ], [ 'classes' => [ self::class ] ] );
+	}
+
+	public function testCatchClientException() {
+		$exception = $this->createMock( ClientExceptionInterface::class );
+		'@phan-var ClientExceptionInterface $exception';
+		$httpClient = $this->createMock( ClientInterface::class );
+		$httpClient->method( 'sendRequest' )
+			->willThrowException( $exception );
+		'@phan-var ClientInterface $httpClient';
+		$client = new Client(
+			$httpClient,
+			new Uri( 'http://localhost/' ),
+			'no key'
+		);
+
+		$this->expectException( ShellboxError::class );
+		$client->call( 'test', [ self::class, 'testCatchClientException' ] );
 	}
 
 }
