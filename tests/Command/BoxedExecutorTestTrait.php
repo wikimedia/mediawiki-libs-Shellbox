@@ -27,6 +27,9 @@ trait BoxedExecutorTestTrait {
 
 	abstract protected function createExecutor( ?LoggerInterface $logger = null ): BoxedExecutor;
 
+	/**
+	 * @param string $path
+	 */
 	abstract protected function getFileServerUrl( $path ): string;
 
 	/**
@@ -39,7 +42,7 @@ trait BoxedExecutorTestTrait {
 			->params( $this->getFakeShellParams() );
 	}
 
-	private function createTestLogger() {
+	private function createTestLogger(): array {
 		$logger = new Logger( 'shellbox' );
 		$logger->pushProcessor( new PsrLogMessageProcessor );
 		$handler = new TestHandler;
