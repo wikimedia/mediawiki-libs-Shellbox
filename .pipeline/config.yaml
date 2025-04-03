@@ -2,76 +2,41 @@ pipelines:
   test:
     blubberfile: blubber.yaml
     stages:
-      - name: test
+      # Builds and runs the test81 image variant.
+      - name: test81
   publish:
     blubberfile: blubber.yaml
     stages:
-      # Plain Shellbox with just PHP for RPC
-      - name: php-rpc
-        build: prod
-        publish:
-          image:
-            tags: [php-rpc]
       # Plain Shellbox with just PHP for RPC (PHP 8.1)
       - name: php-rpc81
         build: prod81
         publish:
           image:
             tags: [php-rpc81]
-      # Shellbox with media handling packages
-      - name: media
-        build: media
-        publish:
-          image:
-            tags: [media]
       # Shellbox with media handling packages (PHP 8.1)
       - name: media81
         build: media81
         publish:
           image:
             tags: [media81]
-      # Shellbox with Score packages
-      - name: score
-        build: score
-        publish:
-          image:
-            tags: [score]
       # Shellbox with Score packages (PHP 8.1)
       - name: score81
         build: score81
         publish:
           image:
             tags: [score81]
-      # Shellbox with SyntaxHighlight packages
-      - name: syntaxhighlight
-        build: syntaxhighlight
-        publish:
-          image:
-            tags: [syntaxhighlight]
       # Shellbox with SyntaxHighlight packages (PHP 8.1)
       - name: syntaxhighlight81
         build: syntaxhighlight81
         publish:
           image:
             tags: [syntaxhighlight81]
-      # Shellbox with Timeline packages
-      - name: timeline
-        build: timeline
-        publish:
-          image:
-            tags: [timeline]
       # Shellbox with Timeline packages (PHP 8.1)
       - name: timeline81
         build: timeline81
         publish:
           image:
             tags: [timeline81]
-      # Shellbox with audio+video handling packages
-      - name: video
-        build: video
-        publish:
-          image:
-            tags: [video]
       # Shellbox with audio+video handling packages (PHP 8.1)
       - name: video81
         build: video81
