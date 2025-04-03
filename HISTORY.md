@@ -1,6 +1,6 @@
 # Release History
 
-## 4.2.0 (2025-03-24)
+## 4.2.0 (2025-03-27)
 * build: Updating mediawiki/mediawiki-phan-config to 0.15.1
 * Replace call_user_func_array with dynamic function call
 * tests: Use coversNothing annotation
