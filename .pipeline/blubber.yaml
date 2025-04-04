@@ -1,7 +1,7 @@
 # syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v0.21.1
 # rebuildCounter: 3
 version: v4
-base: docker-registry.wikimedia.org/php7.4-fpm:latest
+base: docker-registry.wikimedia.org/php8.1-fpm:latest
 
 lives:
   as: "composer"
@@ -15,24 +15,24 @@ runs:
   insecurely: false
 
 variants:
-  build:
-    # Build is the base composer build for production deployments.
-    base: docker-registry.wikimedia.org/releng/composer-php74:latest
+  build81:
+    # build81 is the base composer build for production deployments.
+    base: docker-registry.wikimedia.org/releng/composer-php81:latest
     php:
       requirements: [composer.json, composer.lock]
       production: true
-  # Test is directly used for CI, but also to build the base for the dev env image
-  test:
+  # test81 is directly used for CI, but also to build the base for the dev env image
+  test81:
     copies: [local]
-    base: docker-registry.wikimedia.org/releng/composer-package-php74:latest
+    base: docker-registry.wikimedia.org/releng/composer-package-php81:latest
     php:
       requirements: [composer.json, composer.lock]
       production: false
     runs:
       insecurely: true
     entrypoint: [composer, test]
-  dev:
-    copies: [test]
+  dev81:
+    copies: [test81]
     builder:
       requirements:
         # Copy the entrypoint
@@ -43,8 +43,8 @@ variants:
         - from: local
           source: config/dev-config.json
           destination: config/config.json
-      # Make sure the file can only be read, but not modified
-      # by the running user
+      # Make sure the file can only be read, but not modified by the running
+      # user
       command:
         - "chmod 0444 /srv/app/config/config.json"
     runs:
@@ -56,11 +56,10 @@ variants:
         PHP__error_log: "/dev/stdout"
         PHP__apc__shm_size: "150M"
         PHP__error_reporting: "E_ALL"
-
-  prod:
+  prod81:
     copies:
       # the vendor directory from build
-      - from: build
+      - from: build81
         source: /srv/app/vendor
         destination: /srv/app/vendor
       # the code (not the tests) from the build context
@@ -71,9 +70,8 @@ variants:
       - from: local
         source: .pipeline/entrypoint
         destination: index.php
-
-  media:
-    copies: [prod]
+  media81:
+    copies: [prod81]
     apt:
       packages:
         # core's DjVu support
@@ -82,13 +80,9 @@ variants:
         - libtiff-tools
         # PDF utils, for PdfHandler
         - poppler-utils
-  score:
-    copies: [prod]
+  score81:
+    copies: [prod81]
     apt:
-      sources:
-        - url: http://apt.wikimedia.org/wikimedia
-          distribution: buster-wikimedia
-          components: [main, component/lilypond]
       packages:
         - lilypond
         - lilypond-data
@@ -101,8 +95,8 @@ variants:
         # Fonts for lyrics
         - fonts-noto
         - fonts-noto-cjk
-  syntaxhighlight:
-    copies: [prod]
+  syntaxhighlight81:
+    copies: [prod81]
     apt:
       packages:
         - python3
@@ -139,149 +133,6 @@ variants:
         - clone
         - "https://gerrit.wikimedia.org/r/operations/mediawiki-config/fonts"
         - "/srv/app/fonts"
-  timeline:
-    copies:
-      - from: prod
-        source: /srv/app
-        destination: /srv/app
-      - from: fontprep
-        source: /srv/app/fonts/FreeSans.ttf
-        destination: /srv/app/fonts/FreeSans.ttf
-      - from: fontprep
-        source: /srv/app/fonts/FreeSansWMF.ttf
-        destination: /srv/app/fonts/FreeSansWMF.ttf
-      - from: fontprep
-        source: /srv/app/fonts/unifont-5.1.20080907.ttf
-        destination: /srv/app/fonts/unifont.ttf
-    apt:
-      packages:
-        - perl
-        - ploticus
-        - librsvg2-bin
-        - fonts-noto
-        - fonts-noto-cjk
-  video:
-    copies: [prod]
-    apt:
-      sources:
-        - url: http://apt.wikimedia.org/wikimedia
-          distribution: buster-wikimedia
-          components: [main, component/ffmpeg]
-      packages:
-        - ffmpeg
-        - fluidsynth
-        - fluid-soundfont-gm
-        - fluid-soundfont-gs
-        - wmf-certificates
-
-  # Start of PHP 8.1 migration variants. Note that fontprep is shared with the
-  # 7.4 variants above.
-  build81:
-    base: docker-registry.wikimedia.org/releng/composer-php81:latest
-    php:
-      requirements: [composer.json, composer.lock]
-      production: true
-  test81:
-    copies: [local]
-    base: docker-registry.wikimedia.org/releng/composer-package-php81:latest
-    php:
-      requirements: [composer.json, composer.lock]
-      production: false
-    runs:
-      insecurely: true
-    entrypoint: [composer, test]
-  dev81:
-    copies: [test]
-    builder:
-      requirements:
-        - from: local
-          source: .pipeline/entrypoint
-          destination: index.php
-        - from: local
-          source: config/dev-config.json
-          destination: config/config.json
-      # Make sure the file can only be read, but not modified by the running
-      # user
-      command:
-        - "chmod 0444 /srv/app/config/config.json"
-    runs:
-      environment:
-        PHP__opcache__enable: "0"
-        FPM__pm__max_children: "4"
-        FPM__log_level: notice
-        PHP__display_errors: "stderr"
-        PHP__error_log: "/dev/stdout"
-        PHP__apc__shm_size: "150M"
-        PHP__error_reporting: "E_ALL"
-
-  prod81:
-    copies:
-      - from: build81
-        source: /srv/app/vendor
-        destination: /srv/app/vendor
-      - from: local
-        source: src
-        destination: src
-      - from: local
-        source: .pipeline/entrypoint
-        destination: index.php
-    base: docker-registry.wikimedia.org/php8.1-fpm:latest
-
-  media81:
-    copies: [prod81]
-    base: docker-registry.wikimedia.org/php8.1-fpm:latest
-    apt:
-      packages:
-        # core's DjVu support
-        - djvulibre-bin
-        # tiffinfo, for PagedTiffHandler
-        - libtiff-tools
-        # PDF utils, for PdfHandler
-        - poppler-utils
-  score81:
-    copies: [prod81]
-    base: docker-registry.wikimedia.org/php8.1-fpm:latest
-    apt:
-      # Note: the php8.1-fpm base image is bullseye, which obviates the custom
-      # lilypond backport component.
-      packages:
-        - lilypond
-        - lilypond-data
-        - imagemagick
-        - ghostscript
-        - fluidsynth
-        - fluid-soundfont-gs
-        - fluid-soundfont-gm
-        - lame
-        # Fonts for lyrics
-        - fonts-noto
-        - fonts-noto-cjk
-  syntaxhighlight81:
-    copies: [prod81]
-    base: docker-registry.wikimedia.org/php8.1-fpm:latest
-    apt:
-      packages:
-        - python3
-        - python3-pip
-    python:
-      version: python3
-      requirements:
-        - from: local
-          source: syntaxhighlight/requirements.txt
-          destination: requirements.txt
-    builder:
-      requirements:
-        - from: local
-          source: syntaxhighlight/pygmentize
-          destination: pygmentize
-      command:
-        - "chmod ugo=rx /srv/app/pygmentize"
-    runs:
-      environment:
-        PYTHONUNBUFFERED: "1"
-        PYTHONDONTWRITEBYTECODE: "1"
-        PIP_NO_CACHE_DIR: "off"
-        PIP_DISABLE_PIP_VERSION_CHECK: "on"
   timeline81:
     copies:
       - from: prod81
@@ -296,7 +147,6 @@ variants:
       - from: fontprep
         source: /srv/app/fonts/unifont-5.1.20080907.ttf
         destination: /srv/app/fonts/unifont.ttf
-    base: docker-registry.wikimedia.org/php8.1-fpm:latest
     apt:
       packages:
         - perl
@@ -306,7 +156,6 @@ variants:
         - fonts-noto-cjk
   video81:
     copies: [prod81]
-    base: docker-registry.wikimedia.org/php8.1-fpm:latest
     apt:
       packages:
         - ffmpeg
