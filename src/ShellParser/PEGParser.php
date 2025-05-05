@@ -10,6 +10,12 @@ namespace Shellbox\ShellParser;
 	use Wikimedia\WikiPEG\InternalError;
 	// @phan-file-suppress PhanUnusedGotoLabel
 	// @phan-file-suppress PhanNoopSwitchCases
+	// @phan-file-suppress PhanImpossibleTypeComparison
+	// @phan-file-suppress PhanImpossibleTypeComparisonInLoop
+	// @phan-file-suppress PhanTypeMismatchArgumentNullable
+	// @phan-file-suppress PhanTypeMismatchArgumentNullableInternal
+	// @phan-file-suppress PhanTypeArraySuspiciousNullable
+	// @phan-file-suppress PhanTypeMismatchDimFetchNullable
 
 
 
