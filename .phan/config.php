@@ -11,6 +11,9 @@ $cfg['exclude_file_regex'] = preg_replace(
 	$cfg['exclude_file_regex']
 );
 
+// Exclude peg-generated output
+$cfg['exclude_file_list'][] = "src/ShellParser/PEGParser.php";
+
 $cfg['suppress_issue_types'] = array_merge( $cfg['suppress_issue_types'], [
 	// It's a library, methods don't have to be called
 	'PhanUnreferencedPublicMethod',
