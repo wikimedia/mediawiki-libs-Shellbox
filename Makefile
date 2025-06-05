@@ -1,5 +1,5 @@
 test:
-	docker buildx build . -f .pipeline/blubber.yaml --target test -t shellbox-test:local
+	docker buildx build . -f .pipeline/blubber.yaml --target test81 -t shellbox-test:local
 	docker run -v $(CURDIR)/src:/srv/app/src -v $(CURDIR)/tests:/srv/app/tests --rm shellbox-test:local
 
 run:
