@@ -79,7 +79,6 @@ class ClientServerTestCase extends ShellboxTestCase {
 	}
 
 	/**
-	 * phpcs:ignore MediaWiki.Commenting.FunctionAnnotations -- works for me
 	 * @beforeClass
 	 */
 	public static function clientServerSetUpBeforeClass() {
@@ -132,7 +131,6 @@ PHP
 	}
 
 	/**
-	 * phpcs:ignore MediaWiki.Commenting.FunctionAnnotations -- works for me
 	 * @afterClass
 	 */
 	public static function clientServerTearDownAfterClass() {
@@ -144,7 +142,6 @@ PHP
 	}
 
 	/**
-	 * phpcs:ignore MediaWiki.Commenting.FunctionAnnotations -- works for me
 	 * @beforeClass
 	 */
 	public static function fileServerSetUpBeforeClass() {
@@ -179,7 +176,6 @@ PHP
 	}
 
 	/**
-	 * phpcs:ignore MediaWiki.Commenting.FunctionAnnotations -- works for me
 	 * @afterClass
 	 */
 	public static function fileServerTearDownAfterClass() {
