@@ -4,6 +4,12 @@ $cfg = require __DIR__ . '/../vendor/mediawiki/mediawiki-phan-config/src/config-
 
 $cfg['directory_list'][] = 'tests';
 
+$cfg['exception_classes_with_optional_throws_phpdoc'] = [
+	...$cfg['exception_classes_with_optional_throws_phpdoc'],
+	\Shellbox\ShellboxError::class,
+	\Shellbox\Multipart\MultipartError::class,
+];
+
 // Remove the exclusion of phpunit/php-code-coverage, which is needed here
 $cfg['exclude_file_regex'] = preg_replace(
 	'@\|(?:phpunit/php-code-coverage)@',

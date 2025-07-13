@@ -352,7 +352,7 @@ class UnboxedExecutor {
 						unset( $pipes[$fd] );
 					}
 				} elseif ( $isWrite ) {
-					$buffers[$fd] = (string)substr( $buffers[$fd], $res );
+					$buffers[$fd] = substr( $buffers[$fd], $res );
 					if ( $buffers[$fd] === '' ) {
 						fclose( $pipes[$fd] );
 						unset( $pipes[$fd] );
