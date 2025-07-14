@@ -1,5 +1,5 @@
 # syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v0.21.1
-# rebuildCounter: 3
+# rebuildCounter: 4
 version: v4
 base: docker-registry.wikimedia.org/php8.1-fpm:latest
 
