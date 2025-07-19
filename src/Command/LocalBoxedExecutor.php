@@ -306,7 +306,7 @@ class LocalBoxedExecutor extends BoxedExecutor {
 			$prefixPath = $this->tempDirManager->getPath( $glob->getPrefix() );
 			foreach ( glob( "$prefixPath*.{$glob->getExtension()}" ) as $path ) {
 				$base = basename( $path );
-				if ( strpos( $glob->getPrefix(), '/' ) === false ) {
+				if ( !str_contains( $glob->getPrefix(), '/' ) ) {
 					$boxedName = $base;
 				} else {
 					$boxedName = dirname( $glob->getPrefix() ) . '/' . $base;

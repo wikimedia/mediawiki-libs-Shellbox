@@ -97,7 +97,7 @@ class Server {
 		if ( $base[-1] !== '/' ) {
 			$base .= '/';
 		}
-		if ( substr_compare( $url, $base, 0, strlen( $base ) ) !== 0 ) {
+		if ( !str_starts_with( $url, $base ) ) {
 			throw new ShellboxError( "Request URL does not match configured base path", 404 );
 		}
 		$baseLength = strlen( $base );

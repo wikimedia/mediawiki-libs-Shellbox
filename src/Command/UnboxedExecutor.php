@@ -359,7 +359,7 @@ class UnboxedExecutor {
 					}
 				} else {
 					$buffers[$fd] .= $res;
-					if ( $fd === 3 && strpos( $res, "\n" ) !== false ) {
+					if ( $fd === 3 && str_contains( $res, "\n" ) ) {
 						// For the log FD, every line is a separate log entry.
 						$lines = explode( "\n", $buffers[3] );
 						$buffers[3] = array_pop( $lines );
