@@ -7,3 +7,7 @@
 # Shellbox-specific
 /config/config.json
 /config/test-config.json
+
+# Docker compose local config
+/docker-compose.override.yml
+/.env
