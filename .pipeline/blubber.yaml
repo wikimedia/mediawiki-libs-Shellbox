@@ -15,6 +15,22 @@ runs:
   insecurely: false
 
 variants:
+  ## Begin common variants that do not depend on PHP version
+  # Copy 2 specific fonts out of Git
+  fontprep:
+    base: docker-registry.wikimedia.org/bullseye:latest
+    apt:
+      packages:
+        - git
+        - ca-certificates
+    builder:
+      command:
+        - git
+        - clone
+        - "https://gerrit.wikimedia.org/r/operations/mediawiki-config/fonts"
+        - "/srv/app/fonts"
+
+  ## Begin PHP 8.1 variants
   build81:
     # build81 is the base composer build for production deployments.
     base: docker-registry.wikimedia.org/releng/composer-php81:latest
@@ -120,19 +136,6 @@ variants:
         PYTHONDONTWRITEBYTECODE: "1"
         PIP_NO_CACHE_DIR: "off"
         PIP_DISABLE_PIP_VERSION_CHECK: "on"
-  # Copy 2 specific fonts out of Git
-  fontprep:
-    base: docker-registry.wikimedia.org/bullseye:latest
-    apt:
-      packages:
-        - git
-        - ca-certificates
-    builder:
-      command:
-        - git
-        - clone
-        - "https://gerrit.wikimedia.org/r/operations/mediawiki-config/fonts"
-        - "/srv/app/fonts"
   timeline81:
     copies:
       - from: prod81
@@ -156,6 +159,150 @@ variants:
         - fonts-noto-cjk
   video81:
     copies: [prod81]
+    apt:
+      packages:
+        - ffmpeg
+        - fluidsynth
+        - fluid-soundfont-gm
+        - fluid-soundfont-gs
+        - wmf-certificates
+
+  ## Begin PHP 8.3 variants
+  build83:
+    # build83 is the base composer build for production deployments.
+    base: docker-registry.wikimedia.org/releng/composer-php83:latest
+    php:
+      requirements: [composer.json, composer.lock]
+      production: true
+  # test83 is directly used for CI, but also to build the base for the dev env image
+  test83:
+    copies: [local]
+    base: docker-registry.wikimedia.org/releng/composer-package-php83:latest
+    php:
+      requirements: [composer.json, composer.lock]
+      production: false
+    runs:
+      insecurely: true
+    entrypoint: [composer, test]
+  dev83:
+    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    copies: [test83]
+    builder:
+      requirements:
+        # Copy the entrypoint
+        - from: local
+          source: .pipeline/entrypoint
+          destination: index.php
+        # Copy the sample configuration
+        - from: local
+          source: config/dev-config.json
+          destination: config/config.json
+      # Make sure the file can only be read, but not modified by the running
+      # user
+      command:
+        - "chmod 0444 /srv/app/config/config.json"
+    runs:
+      environment:
+        PHP__opcache__enable: "0"
+        FPM__pm__max_children: "4"
+        FPM__log_level: notice
+        PHP__display_errors: "stderr"
+        PHP__error_log: "/dev/stdout"
+        PHP__apc__shm_size: "150M"
+        PHP__error_reporting: "E_ALL"
+  prod83:
+    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    copies:
+      # the vendor directory from build
+      - from: build83
+        source: /srv/app/vendor
+        destination: /srv/app/vendor
+      # the code (not the tests) from the build context
+      - from: local
+        source: src
+        destination: src
+      # the entrypoint, also from the build context
+      - from: local
+        source: .pipeline/entrypoint
+        destination: index.php
+  media83:
+    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    copies: [prod83]
+    apt:
+      packages:
+        # core's DjVu support
+        - djvulibre-bin
+        # tiffinfo, for PagedTiffHandler
+        - libtiff-tools
+        # PDF utils, for PdfHandler
+        - poppler-utils
+  score83:
+    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    copies: [prod83]
+    apt:
+      packages:
+        - lilypond
+        - lilypond-data
+        - imagemagick
+        - ghostscript
+        - fluidsynth
+        - fluid-soundfont-gs
+        - fluid-soundfont-gm
+        - lame
+        # Fonts for lyrics
+        - fonts-noto
+        - fonts-noto-cjk
+  syntaxhighlight83:
+    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    copies: [prod83]
+    apt:
+      packages:
+        - python3
+        - python3-pip
+    python:
+      version: python3
+      requirements:
+        - from: local
+          source: syntaxhighlight/requirements.txt
+          destination: requirements.txt
+    builder:
+      requirements:
+        - from: local
+          source: syntaxhighlight/pygmentize
+          destination: pygmentize
+      command:
+        - "chmod ugo=rx /srv/app/pygmentize"
+    runs:
+      environment:
+        PYTHONUNBUFFERED: "1"
+        PYTHONDONTWRITEBYTECODE: "1"
+        PIP_NO_CACHE_DIR: "off"
+        PIP_DISABLE_PIP_VERSION_CHECK: "on"
+  timeline83:
+    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    copies:
+      - from: prod83
+        source: /srv/app
+        destination: /srv/app
+      - from: fontprep
+        source: /srv/app/fonts/FreeSans.ttf
+        destination: /srv/app/fonts/FreeSans.ttf
+      - from: fontprep
+        source: /srv/app/fonts/FreeSansWMF.ttf
+        destination: /srv/app/fonts/FreeSansWMF.ttf
+      - from: fontprep
+        source: /srv/app/fonts/unifont-5.1.20080907.ttf
+        destination: /srv/app/fonts/unifont.ttf
+    apt:
+      packages:
+        - perl
+        - ploticus
+        - librsvg2-bin
+        - fonts-noto
+        - fonts-noto-cjk
+  video83:
+    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    copies: [prod83]
     apt:
       packages:
         - ffmpeg
