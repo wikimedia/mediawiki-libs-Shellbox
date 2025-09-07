@@ -21,7 +21,6 @@ use Throwable;
  *
  *   require __DIR__ . '/vendor/autoload.php';
  *   Shellbox\Server::main();
- *
  */
 class Server {
 	/** @var array */
