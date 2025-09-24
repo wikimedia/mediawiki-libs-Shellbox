@@ -83,7 +83,7 @@ class UnboxedExecutor {
 	 *
 	 * @param LoggerInterface $logger
 	 */
-	public function setLogger( LoggerInterface $logger ) {
+	public function setLogger( LoggerInterface $logger ): void {
 		$this->logger = $logger;
 		foreach ( $this->wrappers as $wrapper ) {
 			$wrapper->setLogger( $logger );
