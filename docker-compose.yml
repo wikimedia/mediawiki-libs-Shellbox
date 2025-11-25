@@ -13,7 +13,7 @@ services:
     build:
       context: .
       dockerfile: .pipeline/blubber.yaml
-      target: dev81
+      target: dev83
     volumes:
       - fcgi_socket:/run/shared/:rw
       - ./src:/srv/app/src:ro
