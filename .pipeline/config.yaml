@@ -2,50 +2,11 @@ pipelines:
   test:
     blubberfile: blubber.yaml
     stages:
-      # Builds and runs the test81 and test83 image variants.
-      - name: test81
+      # Builds and runs the test83 image variant
       - name: test83
   publish:
     blubberfile: blubber.yaml
     stages:
-      ## Begin PHP 8.1 stages
-      # Plain Shellbox with just PHP for RPC (PHP 8.1)
-      - name: php-rpc81
-        build: prod81
-        publish:
-          image:
-            tags: [php-rpc81]
-      # Shellbox with media handling packages (PHP 8.1)
-      - name: media81
-        build: media81
-        publish:
-          image:
-            tags: [media81]
-      # Shellbox with Score packages (PHP 8.1)
-      - name: score81
-        build: score81
-        publish:
-          image:
-            tags: [score81]
-      # Shellbox with SyntaxHighlight packages (PHP 8.1)
-      - name: syntaxhighlight81
-        build: syntaxhighlight81
-        publish:
-          image:
-            tags: [syntaxhighlight81]
-      # Shellbox with Timeline packages (PHP 8.1)
-      - name: timeline81
-        build: timeline81
-        publish:
-          image:
-            tags: [timeline81]
-      # Shellbox with audio+video handling packages (PHP 8.1)
-      - name: video81
-        build: video81
-        publish:
-          image:
-            tags: [video81]
-
       ## Begin PHP 8.3 stages
       # Plain Shellbox with just PHP for RPC (PHP 8.3)
       - name: php-rpc83
