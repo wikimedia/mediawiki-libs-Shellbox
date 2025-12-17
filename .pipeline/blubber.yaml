@@ -1,4 +1,4 @@
-# syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v0.21.1
+# syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v1.6.0
 # rebuildCounter: 7
 version: v4
 base: docker-registry.wikimedia.org/php8.3-fpm:latest
@@ -120,8 +120,7 @@ variants:
     copies: [prod83]
     apt:
       packages:
-        - python3
-        - python3-pip
+        - python3-venv
     python:
       version: python3
       requirements:
