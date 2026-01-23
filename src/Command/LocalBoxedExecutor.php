@@ -3,7 +3,7 @@
 namespace Shellbox\Command;
 
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
@@ -213,7 +213,7 @@ class LocalBoxedExecutor extends BoxedExecutor {
 							'Failed to download input file' );
 					}
 				},
-				'rejected' => static function ( RequestException $reason, $boxedName ) {
+				'rejected' => static function ( TransferException $reason, $boxedName ) {
 					// @phan-suppress-previous-line PhanPluginNeverReturnFunction
 					throw new ShellboxError(
 						"Failed to download input file \"$boxedName\": " .
@@ -386,7 +386,7 @@ class LocalBoxedExecutor extends BoxedExecutor {
 		];
 
 		$shouldRetry = function ( $retries, Request $request, ?Response $response,
-			?RequestException $exception ) use ( $likelyPermanent )
+			?TransferException $exception ) use ( $likelyPermanent )
 		{
 			if ( $retries + 1 >= $this->uploadAttempts ) {
 				return false;
@@ -424,7 +424,7 @@ class LocalBoxedExecutor extends BoxedExecutor {
 							'Failed to upload output file' );
 					}
 				},
-				'rejected' => static function ( RequestException $ex, $boxedName ) {
+				'rejected' => static function ( TransferException $ex, $boxedName ) {
 					// @phan-suppress-previous-line PhanPluginNeverReturnFunction
 					throw new ShellboxError(
 						"Failed to upload output file \"$boxedName\": " .
