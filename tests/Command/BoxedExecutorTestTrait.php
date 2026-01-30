@@ -4,6 +4,7 @@ namespace Shellbox\Tests\Command;
 
 use GuzzleHttp\Psr7\Utils;
 use Monolog\Handler\TestHandler;
+use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 use PHPUnit\Framework\Assert;
@@ -145,8 +146,12 @@ trait BoxedExecutorTestTrait {
 			)
 			->params( 'echo' )
 			->execute();
-		Assert::assertTrue( $handler->hasRecordThatContains(
-			'/validate-headers/input1 -> 200', Logger::INFO ) );
+		Assert::assertTrue(
+			$handler->hasRecordThatContains(
+				'/validate-headers/input1 -> 200',
+				Level::Info
+			)
+		);
 	}
 
 	public function testOutputFileToFile() {
@@ -172,8 +177,12 @@ trait BoxedExecutorTestTrait {
 			->unsafeParams( 'cp input output' )
 			->execute();
 		Assert::assertSame( 0, $result->getExitCode() );
-		Assert::assertTrue( $handler->hasRecordThatContains(
-			'/upload/hello -> 204', Logger::INFO ) );
+		Assert::assertTrue(
+			$handler->hasRecordThatContains(
+				'/upload/hello -> 204',
+				Level::Info
+			)
+		);
 	}
 
 	public function testOutputFileToUrlWithHeaders() {
@@ -191,8 +200,12 @@ trait BoxedExecutorTestTrait {
 			->unsafeParams( 'cp input output' )
 			->execute();
 		Assert::assertSame( 0, $result->getExitCode() );
-		Assert::assertTrue( $handler->hasRecordThatContains(
-			'/validate-headers/output1 -> 202', Logger::INFO ) );
+		Assert::assertTrue(
+			$handler->hasRecordThatContains(
+				'/validate-headers/output1 -> 202',
+				Level::Info
+			)
+		);
 	}
 
 	public function testOutputGlobToFile() {
@@ -219,10 +232,19 @@ trait BoxedExecutorTestTrait {
 			->unsafeParams( 'cp inputs/f1.txt inputs/f2.txt outputs/' )
 			->execute();
 		Assert::assertSame( 0, $result->getExitCode() );
-		Assert::assertTrue( $handler->hasRecordThatContains(
-			'/upload/out/f1.txt -> 204', Logger::INFO ) );
-		Assert::assertTrue( $handler->hasRecordThatContains(
-			'/upload/out/f2.txt -> 204', Logger::INFO ) );
+
+		Assert::assertTrue(
+			$handler->hasRecordThatContains(
+				'/upload/out/f1.txt -> 204',
+				Level::Info
+			)
+		);
+		Assert::assertTrue(
+			$handler->hasRecordThatContains(
+				'/upload/out/f2.txt -> 204',
+				Level::Info
+			)
+		);
 	}
 
 	public function testMissingOutput() {
@@ -319,12 +341,16 @@ trait BoxedExecutorTestTrait {
 			->unsafeParams( '1>&2' );
 
 		$command->execute();
-		Assert::assertFalse( $handler->hasRecords( Logger::ERROR ) );
+		Assert::assertFalse( $handler->hasRecords( Level::Error ) );
 
 		$command->logStderr();
 		$command->execute();
-		Assert::assertTrue( $handler->hasRecordThatContains(
-			'Error running', Logger::ERROR ) );
+		Assert::assertTrue(
+			$handler->hasRecordThatContains(
+				'Error running',
+				Level::Error
+			)
+		);
 		$found = false;
 		foreach ( $handler->getRecords() as $record ) {
 			if ( ( $record['context']['error'] ?? '' ) === "this is stderr\n" ) {
