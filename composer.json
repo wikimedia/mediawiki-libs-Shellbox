@@ -35,7 +35,7 @@
 		"wikimedia/base-convert": "2.0.2"
 	},
 	"require-dev": {
-		"mediawiki/mediawiki-codesniffer": "48.0.0",
+		"mediawiki/mediawiki-codesniffer": "49.0.0",
 		"mediawiki/mediawiki-phan-config": "0.18.0",
 		"mediawiki/minus-x": "2.0.1",
 		"ockcyp/covers-validator": "1.7.0",
