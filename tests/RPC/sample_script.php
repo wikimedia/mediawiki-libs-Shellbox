@@ -20,8 +20,7 @@ function wfTestFunctionUsingNonAutoloadedClass( string $parameter ) {
 	return $parameter . '_' . NotAutoloadedClass::test();
 }
 
+/** @return never */
 function wfError() {
-	$array = [];
-	// @phan-suppress-next-line PhanTypeInvalidDimOffset
-	echo $array[1];
+	throw new InvalidArgumentException( 'test error' );
 }

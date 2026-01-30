@@ -6,9 +6,7 @@ use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Driver\Driver;
 use SebastianBergmann\CodeCoverage\Driver\PcovDriver;
-use SebastianBergmann\CodeCoverage\Driver\PhpdbgDriver;
-use SebastianBergmann\CodeCoverage\Driver\Xdebug2Driver;
-use SebastianBergmann\CodeCoverage\Driver\Xdebug3Driver;
+use SebastianBergmann\CodeCoverage\Driver\XdebugDriver;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\Environment\Runtime;
 use Shellbox\FileUtils;
@@ -47,7 +45,7 @@ class TestServer {
 	}
 
 	/**
-	 * cf https://github.com/sebastianbergmann/php-code-coverage/blob/8.0.2/src/CodeCoverage.php#L888-L908
+	 * originally cf https://github.com/sebastianbergmann/php-code-coverage/blob/8.0.2/src/CodeCoverage.php#L888-L908
 	 *
 	 * @param Filter $filter
 	 *
@@ -56,19 +54,12 @@ class TestServer {
 	private static function selectDriver( Filter $filter ): Driver {
 		$runtime = new Runtime;
 
-		if ( $runtime->hasPHPDBGCodeCoverage() ) {
-			return new PhpdbgDriver();
-		}
-
 		if ( $runtime->hasPCOV() ) {
 			return new PcovDriver( $filter );
 		}
 
 		if ( $runtime->hasXdebug() ) {
-			if ( version_compare( phpversion( 'xdebug' ), '3.0.0', '>' ) ) {
-				return new Xdebug3Driver( $filter );
-			}
-			return new Xdebug2Driver( $filter );
+			return new XdebugDriver( $filter );
 		}
 
 		throw new RuntimeException( 'No code coverage driver available' );

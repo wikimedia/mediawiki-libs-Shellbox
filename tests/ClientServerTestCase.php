@@ -3,8 +3,6 @@
 namespace Shellbox\Tests;
 
 use GuzzleHttp\Psr7\Uri;
-use PHPUnit\Framework\TestResult;
-use PHPUnit\Util\Test as TestUtil;
 use RuntimeException;
 use Shellbox\Client;
 use Shellbox\FileUtils;
@@ -26,18 +24,6 @@ class ClientServerTestCase extends ShellboxTestCase {
 	/** @var string|null */
 	private static $fileServerUrl;
 
-	protected function getAndDestroyServerCoverage() {
-		if ( $this->serverCoveragePath !== null && file_exists( $this->serverCoveragePath ) ) {
-			$data = unserialize( FileUtils::getContents( $this->serverCoveragePath ) );
-			// phpcs:ignore Generic.PHP.NoSilencedErrors
-			@unlink( $this->serverCoveragePath );
-			$this->serverCoveragePath = null;
-			return $data;
-		} else {
-			return null;
-		}
-	}
-
 	protected function createHttpClient() {
 		return new TestHttpClient( $this->collectCodeCoverage ?
 			function ( $suffix ) {
@@ -58,24 +44,6 @@ class ClientServerTestCase extends ShellboxTestCase {
 			(string)( $key ?? self::$secretKey ),
 			[ 'allowUrlFiles' => true ]
 		);
-	}
-
-	public function run( ?TestResult $result = null ): TestResult {
-		if ( $result === null ) {
-			$result = $this->createResult();
-		}
-		$coverage = $result->getCodeCoverage();
-		$this->collectCodeCoverage = $coverage !== null &&
-			TestUtil::requiresCodeCoverageDataCollection( $this );
-
-		$result = parent::run( $result );
-		if ( $this->collectCodeCoverage ) {
-			$data = $this->getAndDestroyServerCoverage();
-			if ( $data ) {
-				$coverage->append( $data, $this );
-			}
-		}
-		return $result;
 	}
 
 	/**

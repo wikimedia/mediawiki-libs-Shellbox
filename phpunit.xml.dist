@@ -1,8 +1,17 @@
 <?xml version="1.0"?>
 <!-- disable result caching due to permission errors -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
 	colors="true"
+	displayDetailsOnTestsThatTriggerDeprecations="true"
+	displayDetailsOnTestsThatTriggerErrors="true"
+	displayDetailsOnTestsThatTriggerNotices="true"
+	displayDetailsOnTestsThatTriggerWarnings="true"
+	displayDetailsOnPhpunitDeprecations="true"
+	failOnDeprecation="true"
+	failOnPhpunitDeprecation="true"
+	failOnNotice="true"
+	requireCoverageMetadata="true"
 	cacheResult="false"
 	beStrictAboutTestsThatDoNotTestAnything="true"
 	beStrictAboutOutputDuringTests="true"
@@ -12,9 +21,9 @@
 			<directory>./tests</directory>
 		</testsuite>
 	</testsuites>
-	<coverage includeUncoveredFiles="true">
-	<include>
-		<directory suffix=".php">./src</directory>
-	</include>
-  </coverage>
+	<source>
+		<include>
+			<directory suffix=".php">./src</directory>
+		</include>
+	</source>
 </phpunit>
