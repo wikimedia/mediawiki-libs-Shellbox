@@ -53,7 +53,7 @@ class ClientTest extends ClientServerTestCase {
 	 * @return never
 	 */
 	public static function error() {
-		trigger_error( 'fff', E_USER_ERROR );
+		trigger_error( 'fff' );
 	}
 
 	public function testCallError() {
