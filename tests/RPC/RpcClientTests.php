@@ -10,7 +10,7 @@ use Shellbox\ShellboxError;
  */
 trait RpcClientTests {
 
-	public function provideTestRpcClient() {
+	public static function provideTestRpcClient() {
 		yield 'No sources' => [
 			'functionName' => 'str_repeat',
 			'params' => [ 'a', 3 ],
