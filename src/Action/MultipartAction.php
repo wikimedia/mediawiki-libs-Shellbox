@@ -172,10 +172,6 @@ abstract class MultipartAction {
 		if ( $auth === null ) {
 			$this->error( 'An Authorization header is required' );
 		}
-		// Phan doesn't understand functions that always throw, so thinks that
-		// $auth could still be null. Maybe fixable -- see comment in
-		// BlockExitStatusChecker::computeStatusOfCall().
-		// @phan-suppress-next-line PhanTypeMismatchArgumentNullableInternal
 		if ( !preg_match( '/^sha256 ([0-9a-z]+)$/', $auth, $m ) ) {
 			$this->error( 'Invalid Authorization header' );
 		}

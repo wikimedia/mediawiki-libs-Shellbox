@@ -89,7 +89,6 @@ class MultipartReader {
 		do {
 			$this->buffer = '';
 			$this->refillBuffer();
-			// @phan-suppress-next-line PhanSuspiciousValueComparison
 		} while ( $this->buffer !== '' );
 		$this->atStreamEnd = true;
 	}
