@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1a9a46cb81687e30475f7f9d5d70144e",
+    "content-hash": "a73c241d00bd99b9d329dce5ecbf6d70",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -810,16 +810,16 @@
         },
         {
             "name": "wikimedia/wikipeg",
-            "version": "6.0.0",
+            "version": "6.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/wikipeg.git",
-                "reference": "b5f77b8027e73375942a250c6665f7efc4318d6a"
+                "reference": "b1921560cea1eacf9265e61382fe823af9fdcf05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/wikipeg/zipball/b5f77b8027e73375942a250c6665f7efc4318d6a",
-                "reference": "b5f77b8027e73375942a250c6665f7efc4318d6a",
+                "url": "https://api.github.com/repos/wikimedia/wikipeg/zipball/b1921560cea1eacf9265e61382fe823af9fdcf05",
+                "reference": "b1921560cea1eacf9265e61382fe823af9fdcf05",
                 "shasum": ""
             },
             "require": {
@@ -828,13 +828,13 @@
                 "php": ">=8.1"
             },
             "require-dev": {
-                "mediawiki/mediawiki-codesniffer": "47.0.0",
-                "mediawiki/mediawiki-phan-config": "0.17.0",
+                "mediawiki/mediawiki-codesniffer": "48.0.0",
+                "mediawiki/mediawiki-phan-config": "0.19.0",
                 "mediawiki/minus-x": "1.1.3",
-                "ockcyp/covers-validator": "1.6.0",
+                "ockcyp/covers-validator": "1.7.0",
                 "php-parallel-lint/php-console-highlighter": "1.0.0",
                 "php-parallel-lint/php-parallel-lint": "1.4.0",
-                "phpunit/phpunit": "9.6.21",
+                "phpunit/phpunit": "10.5.63",
                 "wikimedia/update-history": "^1.0"
             },
             "type": "library",
@@ -849,9 +849,9 @@
             ],
             "description": "Parser generator for JavaScript and PHP",
             "support": {
-                "source": "https://github.com/wikimedia/wikipeg/tree/6.0.0"
+                "source": "https://github.com/wikimedia/wikipeg/tree/6.1.1"
             },
-            "time": "2025-08-14T21:46:18+00:00"
+            "time": "2026-02-14T20:36:39+00:00"
         }
     ],
     "packages-dev": [
@@ -1348,16 +1348,16 @@
         },
         {
             "name": "mediawiki/mediawiki-codesniffer",
-            "version": "v49.0.0",
+            "version": "v50.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/mediawiki-tools-codesniffer.git",
-                "reference": "15219ac40cd18f259a7170270165c0a7b47af10a"
+                "reference": "8f8ba0099b59f26c908f8d3b299ba01fb9a0e1dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-tools-codesniffer/zipball/15219ac40cd18f259a7170270165c0a7b47af10a",
-                "reference": "15219ac40cd18f259a7170270165c0a7b47af10a",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-tools-codesniffer/zipball/8f8ba0099b59f26c908f8d3b299ba01fb9a0e1dc",
+                "reference": "8f8ba0099b59f26c908f8d3b299ba01fb9a0e1dc",
                 "shasum": ""
             },
             "require": {
@@ -1372,10 +1372,10 @@
             "require-dev": {
                 "ext-dom": "*",
                 "mediawiki/mediawiki-phan-config": "0.18.0",
-                "mediawiki/minus-x": "1.1.3",
+                "mediawiki/minus-x": "2.0.1",
                 "php-parallel-lint/php-console-highlighter": "1.0.0",
                 "php-parallel-lint/php-parallel-lint": "1.4.0",
-                "phpunit/phpunit": "10.5.58"
+                "phpunit/phpunit": "10.5.63"
             },
             "type": "phpcodesniffer-standard",
             "autoload": {
@@ -1394,9 +1394,9 @@
                 "mediawiki"
             ],
             "support": {
-                "source": "https://github.com/wikimedia/mediawiki-tools-codesniffer/tree/v49.0.0"
+                "source": "https://github.com/wikimedia/mediawiki-tools-codesniffer/tree/v50.0.0"
             },
-            "time": "2026-01-11T00:02:41+00:00"
+            "time": "2026-02-10T11:49:03+00:00"
         },
         {
             "name": "mediawiki/mediawiki-phan-config",
@@ -4321,16 +4321,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v6.4.32",
+            "version": "v6.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "0bc2199c6c1f05276b05956f1ddc63f6d7eb5fc3"
+                "reference": "7b1f1c37eff5910ddda2831345467e593a5120ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/0bc2199c6c1f05276b05956f1ddc63f6d7eb5fc3",
-                "reference": "0bc2199c6c1f05276b05956f1ddc63f6d7eb5fc3",
+                "url": "https://api.github.com/repos/symfony/console/zipball/7b1f1c37eff5910ddda2831345467e593a5120ad",
+                "reference": "7b1f1c37eff5910ddda2831345467e593a5120ad",
                 "shasum": ""
             },
             "require": {
@@ -4395,7 +4395,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v6.4.32"
+                "source": "https://github.com/symfony/console/tree/v6.4.34"
             },
             "funding": [
                 {
@@ -4415,7 +4415,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-01-13T08:45:59+00:00"
+            "time": "2026-02-23T15:42:15+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -4841,16 +4841,16 @@
         },
         {
             "name": "symfony/string",
-            "version": "v7.4.4",
+            "version": "v7.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "1c4b10461bf2ec27537b5f36105337262f5f5d6f"
+                "reference": "9f209231affa85aa930a5e46e6eb03381424b30b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/1c4b10461bf2ec27537b5f36105337262f5f5d6f",
-                "reference": "1c4b10461bf2ec27537b5f36105337262f5f5d6f",
+                "url": "https://api.github.com/repos/symfony/string/zipball/9f209231affa85aa930a5e46e6eb03381424b30b",
+                "reference": "9f209231affa85aa930a5e46e6eb03381424b30b",
                 "shasum": ""
             },
             "require": {
@@ -4908,7 +4908,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v7.4.4"
+                "source": "https://github.com/symfony/string/tree/v7.4.6"
             },
             "funding": [
                 {
@@ -4928,20 +4928,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-01-12T10:54:30+00:00"
+            "time": "2026-02-09T09:33:46+00:00"
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v7.4.4",
+            "version": "v7.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "0e4769b46a0c3c62390d124635ce59f66874b282"
+                "reference": "045321c440ac18347b136c63d2e9bf28a2dc0291"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/0e4769b46a0c3c62390d124635ce59f66874b282",
-                "reference": "0e4769b46a0c3c62390d124635ce59f66874b282",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/045321c440ac18347b136c63d2e9bf28a2dc0291",
+                "reference": "045321c440ac18347b136c63d2e9bf28a2dc0291",
                 "shasum": ""
             },
             "require": {
@@ -4995,7 +4995,7 @@
                 "dump"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-dumper/tree/v7.4.4"
+                "source": "https://github.com/symfony/var-dumper/tree/v7.4.6"
             },
             "funding": [
                 {
@@ -5015,7 +5015,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-01-01T22:13:48+00:00"
+            "time": "2026-02-15T10:53:20+00:00"
         },
         {
             "name": "theseer/tokenizer",
@@ -5069,16 +5069,16 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "2.1.2",
+            "version": "2.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozarts/assert.git",
-                "reference": "ce6a2f100c404b2d32a1dd1270f9b59ad4f57649"
+                "reference": "ff31ad6efc62e66e518fbab1cde3453d389bcdc8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/assert/zipball/ce6a2f100c404b2d32a1dd1270f9b59ad4f57649",
-                "reference": "ce6a2f100c404b2d32a1dd1270f9b59ad4f57649",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/ff31ad6efc62e66e518fbab1cde3453d389bcdc8",
+                "reference": "ff31ad6efc62e66e518fbab1cde3453d389bcdc8",
                 "shasum": ""
             },
             "require": {
@@ -5125,9 +5125,9 @@
             ],
             "support": {
                 "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/2.1.2"
+                "source": "https://github.com/webmozarts/assert/tree/2.1.6"
             },
-            "time": "2026-01-13T14:02:24+00:00"
+            "time": "2026-02-27T10:28:38+00:00"
         }
     ],
     "aliases": [],
@@ -5144,5 +5144,5 @@
     "platform-overrides": {
         "php": "8.2.29"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
