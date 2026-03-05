@@ -40,7 +40,7 @@ variants:
   # test83 is directly used for CI, but also to build the base for the dev env image
   test83:
     copies: [local]
-    base: docker-registry.wikimedia.org/releng/composer-package-php83:latest
+    base: docker-registry.wikimedia.org/releng/composer-php83:latest
     php:
       requirements: [composer.json, composer.lock]
       production: false
