@@ -172,3 +172,6 @@ variants:
         - fluid-soundfont-gm
         - fluid-soundfont-gs
         - wmf-certificates
+  icu72:
+    base: docker-registry.wikimedia.org/php8.3-icu72-fpm:latest
+    copies: [prod83]
