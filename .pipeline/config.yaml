@@ -44,3 +44,9 @@ pipelines:
         publish:
           image:
             tags: [video83]
+      # Shellbox with ICU 72 packages (PHP 8.3)
+      - name: icu72
+        build: icu72
+        publish:
+          image:
+            tags: [icu72]
