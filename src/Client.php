@@ -179,15 +179,17 @@ class Client implements RPCClient {
 		$response = $this->httpClient->sendRequest( $request );
 		$contentType = $response->getHeaderLine( 'Content-Type' );
 		if ( $response->getStatusCode() !== 200 ) {
+			$bodyContent = $response->getBody()->getContents();
 			if ( $contentType === 'application/json' ) {
-				$data = Shellbox::jsonDecode( $response->getBody()->getContents() );
+				$data = Shellbox::jsonDecode( $bodyContent );
 				if ( isset( $data['message'] ) && isset( $data['log'] ) ) {
 					$this->forwardLog( $data['log'] );
 					throw new ShellboxError( 'Shellbox server error: ' . $data['message'] );
 				}
 			}
+			$truncatedBody = substr( strip_tags( $bodyContent ), 0, 100 );
 			throw new ShellboxError( "Shellbox server returned status code " .
-				$response->getStatusCode() );
+				$response->getStatusCode() . ( $truncatedBody !== '' ? ' (' . $truncatedBody . ')' : '' ) );
 		}
 
 		$boundary = MultipartUtils::extractBoundary( $contentType );
