@@ -1,4 +1,5 @@
 <?php
+declare( strict_types = 1 );
 
 /*
  * This entry point is enabled when config/config.json exists.

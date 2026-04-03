@@ -1,4 +1,5 @@
 <?php
+declare( strict_types = 1 );
 
 function wfTestFunction( string $parameter ) {
 	return 'test_' . $parameter;
