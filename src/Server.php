@@ -227,12 +227,12 @@ class Server {
 		$formatter = new LineFormatter( $this->getConfig( 'logFormat' ) );
 		$jsonFormatter = new JsonFormatter( JsonFormatter::BATCH_MODE_NEWLINES );
 
-		if ( strlen( $this->getConfig( 'logFile' ) ) ) {
+		if ( $this->getConfig( 'logFile' ) ) {
 			$handler = new StreamHandler( $this->getConfig( 'logFile' ) );
 			$handler->setFormatter( $formatter );
 			$this->logger->pushHandler( $handler );
 		}
-		if ( strlen( $this->getConfig( 'jsonLogFile' ) ) ) {
+		if ( $this->getConfig( 'jsonLogFile' ) ) {
 			$handler = new StreamHandler( $this->getConfig( 'jsonLogFile' ) );
 			$handler->setFormatter( $jsonFormatter );
 			$this->logger->pushHandler( $handler );
