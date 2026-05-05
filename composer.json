@@ -34,7 +34,7 @@
 		"wikimedia/base-convert": "2.0.2"
 	},
 	"require-dev": {
-		"mediawiki/mediawiki-codesniffer": "50.0.0",
+		"mediawiki/mediawiki-codesniffer": "51.0.0",
 		"mediawiki/mediawiki-phan-config": "0.20.0",
 		"mediawiki/minus-x": "2.0.1",
 		"ockcyp/covers-validator": "1.7.0",
@@ -56,8 +56,8 @@
 		"phan": "phan --allow-polyfill-parser",
 		"cover": "phpunit --coverage-html coverage",
 		"fix": [
-			"phpcbf",
-			"minus-x fix ."
+			"minus-x fix .",
+			"phpcbf"
 		],
 		"phpcs": "phpcs -sp"
 	},
