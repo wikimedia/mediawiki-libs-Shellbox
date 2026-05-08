@@ -3,28 +3,23 @@ declare( strict_types = 1 );
 
 namespace Shellbox\Tests;
 
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Uri;
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Shellbox\Client;
 use Shellbox\FileUtils;
+use Shellbox\RPC\RpcClient;
 use Shellbox\Shellbox;
 
 class ClientServerTestCase extends ShellboxTestCase {
-	/** @var bool */
-	private $collectCodeCoverage = false;
-	/** @var string|null */
-	private static $serverCoveragePath;
-	/** @var string|null */
-	private static $secretKey;
-	/** @var string|null */
-	private static $url;
-	/** @var BuiltinServerManager|null */
-	private static $server;
-	/** @var BuiltinServerManager|null */
-	private static $fileServer;
-	/** @var string|null */
-	private static $fileServerUrl;
+	private bool $collectCodeCoverage = false;
+	private static ?string $serverCoveragePath;
+	private static ?string $secretKey;
+	private static string $url = '';
+	private static ?BuiltinServerManager $server;
+	private static ?BuiltinServerManager $fileServer;
+	private static ?string $fileServerUrl;
 
 	public static function collectAndMergeServerCoverage( CodeCoverage $coverage ): void {
 		if ( self::$serverCoveragePath !== null && file_exists( self::$serverCoveragePath ) ) {
@@ -38,7 +33,7 @@ class ClientServerTestCase extends ShellboxTestCase {
 		}
 	}
 
-	protected function createHttpClient() {
+	protected function createHttpClient(): TestHttpClient {
 		return new TestHttpClient( $this->collectCodeCoverage ?
 			function ( $suffix ) {
 				self::$serverCoveragePath = self::getConfig( 'tempDir' ) .
@@ -51,7 +46,7 @@ class ClientServerTestCase extends ShellboxTestCase {
 	 * @param string|null $key Override the client secret key to cause auth errors
 	 * @return Client
 	 */
-	protected function createClient( $key = null ) {
+	protected function createClient( ?string $key = null ): RpcClient {
 		return new Client(
 			$this->createHttpClient(),
 			new Uri( self::$url ),
@@ -63,7 +58,7 @@ class ClientServerTestCase extends ShellboxTestCase {
 	/**
 	 * @beforeClass
 	 */
-	public static function clientServerSetUpBeforeClass() {
+	public static function clientServerSetUpBeforeClass(): void {
 		$port = self::getConfig( 'port' );
 		self::$server = new BuiltinServerManager(
 			$port,
@@ -94,7 +89,7 @@ PHP
 
 		self::$server->start();
 
-		$client = new \GuzzleHttp\Client;
+		$client = new GuzzleClient;
 		$response = $client->request( 'GET',
 			self::$url . "/healthz" );
 		$ctype = $response->getHeaderLine( 'Content-Type' );
@@ -108,14 +103,14 @@ PHP
 	/**
 	 * @after
 	 */
-	public function clientServerTearDown() {
+	public function clientServerTearDown(): void {
 		self::$server->checkIfRunning();
 	}
 
 	/**
 	 * @afterClass
 	 */
-	public static function clientServerTearDownAfterClass() {
+	public static function clientServerTearDownAfterClass(): void {
 		if ( !self::$server ) {
 			return;
 		}
@@ -130,7 +125,7 @@ PHP
 	/**
 	 * @beforeClass
 	 */
-	public static function fileServerSetUpBeforeClass() {
+	public static function fileServerSetUpBeforeClass(): void {
 		$port = self::getConfig( 'fileServerPort' );
 		self::$fileServer = new BuiltinServerManager(
 			$port,
@@ -149,7 +144,7 @@ PHP
 		);
 
 		self::$fileServer->start();
-		$client = new \GuzzleHttp\Client;
+		$client = new GuzzleClient;
 		$response = $client->request( 'GET', self::$fileServerUrl . "/healthz" );
 		self::$fileServer->setPid( (int)$response->getBody()->getContents() );
 	}
@@ -157,14 +152,14 @@ PHP
 	/**
 	 * @after
 	 */
-	public function fileServerTearDown() {
+	public function fileServerTearDown(): void {
 		self::$fileServer->checkIfRunning();
 	}
 
 	/**
 	 * @afterClass
 	 */
-	public static function fileServerTearDownAfterClass() {
+	public static function fileServerTearDownAfterClass(): void {
 		if ( !self::$fileServer ) {
 			return;
 		}

@@ -18,10 +18,8 @@ use Shellbox\ShellboxError;
 class TestServer {
 	/**
 	 * Test server entry point
-	 *
-	 * @param string $configPath
 	 */
-	public static function main( $configPath ) {
+	public static function main( string $configPath ): void {
 		if ( isset( $_SERVER['HTTP_X_SHELLBOX_COVER'] ) ) {
 			$json = FileUtils::getContents( $configPath );
 			$config = Shellbox::jsonDecode( $json );
@@ -53,10 +51,6 @@ class TestServer {
 
 	/**
 	 * originally cf https://github.com/sebastianbergmann/php-code-coverage/blob/8.0.2/src/CodeCoverage.php#L888-L908
-	 *
-	 * @param Filter $filter
-	 *
-	 * @return Driver
 	 */
 	private static function selectDriver( Filter $filter ): Driver {
 		$runtime = new Runtime;

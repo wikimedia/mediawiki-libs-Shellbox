@@ -9,16 +9,12 @@ use Shellbox\Shellbox;
 use Shellbox\ShellboxError;
 
 class ShellboxTestCase extends TestCase {
-	/** @var array */
-	private static $config;
+	private static ?array $config = null;
 
 	/**
 	 * Get a configuration variable from test-config.json
-	 *
-	 * @param string $name
-	 * @return mixed
 	 */
-	protected static function getConfig( $name ) {
+	protected static function getConfig( string $name ): mixed {
 		$config = self::getAllConfig();
 		if ( !isset( $config[$name] ) ) {
 			throw new ShellboxError( "The configuration variable $name must be present in test-config.json" );
@@ -28,10 +24,8 @@ class ShellboxTestCase extends TestCase {
 
 	/**
 	 * Get all config from test-config.json
-	 *
-	 * @return array
 	 */
-	protected static function getAllConfig() {
+	protected static function getAllConfig(): array {
 		if ( self::$config === null ) {
 			$configPath = __DIR__ . '/../config/test-config.json';
 			$defaults = [

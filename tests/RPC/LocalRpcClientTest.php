@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 namespace Shellbox\Tests\RPC;
 
 use Shellbox\RPC\LocalRpcClient;
+use Shellbox\RPC\RpcClient;
 use Shellbox\Tests\ShellboxTestCase;
 
 /**
@@ -12,7 +13,7 @@ use Shellbox\Tests\ShellboxTestCase;
 class LocalRpcClientTest extends ShellboxTestCase {
 	use RpcClientTests;
 
-	protected function createClient( $key = null ) {
+	protected function createClient( ?string $key = null ): RpcClient {
 		return new LocalRpcClient();
 	}
 }

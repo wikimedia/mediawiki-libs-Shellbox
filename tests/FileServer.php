@@ -18,7 +18,7 @@ use Psr\Http\Message\ResponseInterface;
  * for a mock HTTP client.
  */
 class FileServer {
-	public static function main() {
+	public static function main(): void {
 		$request = ServerRequest::fromGlobals();
 		$response = ( new self )->respond( $request );
 		foreach ( $response->getHeaders() as $name => $values ) {
@@ -30,11 +30,7 @@ class FileServer {
 		echo $response->getBody()->getContents();
 	}
 
-	/**
-	 * @param RequestInterface $request
-	 * @return ResponseInterface
-	 */
-	public function respond( RequestInterface $request ) {
+	public function respond( RequestInterface $request ): ResponseInterface {
 		if ( !preg_match( '#/!/([^/]+)(?:/(.*))?$#', $request->getUri()->getPath(), $m ) ) {
 			return $this->error( 404, $request->getUri()->getPath() );
 		}
@@ -84,19 +80,10 @@ class FileServer {
 		}
 	}
 
-	/**
-	 * @param int $code
-	 * @param string $message
-	 * @return Response
-	 */
 	private function error( int $code, string $message = '' ): Response {
 		return new Response( $code, [], "Error: $code\n" . $message );
 	}
 
-	/**
-	 * @param string $body
-	 * @return Response
-	 */
 	private function success( string $body ): Response {
 		return new Response( 200, [], $body );
 	}

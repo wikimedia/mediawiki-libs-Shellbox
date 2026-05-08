@@ -3,6 +3,7 @@ declare( strict_types = 1 );
 
 namespace Shellbox\Tests\RPC;
 
+use Shellbox\RPC\RpcClient;
 use Shellbox\ShellboxError;
 
 /**
@@ -99,5 +100,5 @@ trait RpcClientTests {
 		);
 	}
 
-	abstract protected function createClient( $key = null );
+	abstract protected function createClient( ?string $key = null ): RpcClient;
 }

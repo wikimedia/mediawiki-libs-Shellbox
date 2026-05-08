@@ -26,8 +26,7 @@ class TestHttpClient implements ClientInterface {
 		if ( $this->coverCallback ) {
 			$request = $request->withHeader( 'X-Shellbox-Cover', '1' );
 		}
-		$request = $request->withHeader( 'User-Agent', 'Shellbox test client' );
-		return $request;
+		return $request->withHeader( 'User-Agent', 'Shellbox test client' );
 	}
 
 	protected function modifyResponse( ResponseInterface $response ): ResponseInterface {
