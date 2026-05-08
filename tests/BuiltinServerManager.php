@@ -8,12 +8,9 @@ use Shellbox\Shellbox;
 use Shellbox\TempDirManager;
 
 class BuiltinServerManager {
-	/** @var int */
-	private $port;
 	/** @var resource|null */
 	private $proc;
-	/** @var TempDirManager */
-	private $tempDirManager;
+	private TempDirManager $tempDirManager;
 	/** @var resource|null */
 	private $outputFile;
 	/** @var int|null */
@@ -24,8 +21,10 @@ class BuiltinServerManager {
 	 * @param string $tempDirBase The directory in which a server root
 	 *   directory will be created
 	 */
-	public function __construct( $port, $tempDirBase ) {
-		$this->port = $port;
+	public function __construct(
+		private readonly int $port,
+		string $tempDirBase,
+	) {
 		$this->tempDirManager = new TempDirManager(
 			$tempDirBase . '/sb-test-server-' . Shellbox::getUniqueString() );
 	}
@@ -41,8 +40,8 @@ class BuiltinServerManager {
 	/**
 	 * Start the server
 	 */
-	public function start() {
-		// Make sure we can't connect to the server before we start it, that
+	public function start(): void {
+		// Make sure we can't connect to the server before we start it. That
 		// indicates a server is still running from a previous invocation
 		// phpcs:ignore Generic.PHP.NoSilencedErrors
 		$sock = @fsockopen( 'localhost', $this->port, $errno, $errstr, 1 );
@@ -130,12 +129,12 @@ class BuiltinServerManager {
 	 * Set the PID. It's difficult to determine the PID of the server as
 	 * opposed to the controlling terminal, so ClientServerTestCase sends a
 	 * healthz request to the server to determine the PID. This class is
-	 * supposed to be independent of the Shellbox protocol so we don't
+	 * supposed to be independent of the Shellbox protocol, so we don't
 	 * implement the healthz ping here.
 	 *
 	 * @param int $pid
 	 */
-	public function setPid( $pid ) {
+	public function setPid( int $pid ): void {
 		$this->pid = $pid;
 	}
 
@@ -145,7 +144,7 @@ class BuiltinServerManager {
 	 *
 	 * @throws RuntimeException
 	 */
-	public function checkIfRunning() {
+	public function checkIfRunning(): void {
 		$status = proc_get_status( $this->proc );
 		if ( !$status ) {
 			$this->clearProc();
@@ -168,7 +167,7 @@ class BuiltinServerManager {
 	/**
 	 * Clear status variables related to a running process
 	 */
-	private function clearProc() {
+	private function clearProc(): void {
 		$this->proc = null;
 		$this->outputFile = null;
 		$this->pid = null;
@@ -183,7 +182,7 @@ class BuiltinServerManager {
 	 *
 	 * proc_terminate() is completely non-functional per https://bugs.php.net/bug.php?id=33505
 	 */
-	public function stop() {
+	public function stop(): void {
 		if ( $this->proc ) {
 			if ( !$this->pid ) {
 				throw new RuntimeException( 'Can\'t kill the server if we don\'t know its PID' );
@@ -212,18 +211,16 @@ class BuiltinServerManager {
 
 	/**
 	 * Get the TempDirManager used to manage the server root
-	 *
-	 * @return TempDirManager
 	 */
-	public function getTempDirManager() {
+	public function getTempDirManager(): TempDirManager {
 		return $this->tempDirManager;
 	}
 
 	/**
-	 * Get pcov settings to pass on to child process.
+	 * Get pcov settings to pass on to the child process.
 	 * @return string[]
 	 */
-	private function getPcovArgs() {
+	private function getPcovArgs(): array {
 		if ( !extension_loaded( 'pcov' ) ) {
 			return [];
 		}
@@ -234,23 +231,16 @@ class BuiltinServerManager {
 	}
 
 	/**
-	 * Get xdebug settings to pass on to child process.
+	 * Get xdebug settings to pass on to the child process.
 	 * @return string[]
 	 */
-	private function getXDebugArgs() {
+	private function getXDebugArgs(): array {
 		if ( !extension_loaded( 'xdebug' ) ) {
 			return [];
 		}
-		if ( version_compare( phpversion( 'xdebug' ), '3.0.0', '>' ) ) {
-			$settings = [
-				'xdebug.mode', 'xdebug.client_host', 'xdebug.client_port'
-			];
-		} else {
-			$settings = [
-				'xdebug.remote_enable', 'xdebug.remote_handler', 'xdebug.remote_mode',
-				'xdebug.remote_host', 'xdebug.remote_port',
-			];
-		}
+		$settings = [
+			'xdebug.mode', 'xdebug.client_host', 'xdebug.client_port'
+		];
 		$args = [ '-dzend_extension=xdebug.so' ];
 
 		foreach ( $settings as $name ) {
