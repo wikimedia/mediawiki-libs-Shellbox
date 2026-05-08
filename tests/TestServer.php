@@ -34,11 +34,17 @@ class TestServer {
 			header( "X-Shellbox-Cover: $suffix" );
 			$coverageFilter = new Filter();
 			$coverage = new CodeCoverage( self::selectDriver( $coverageFilter ), $coverageFilter );
+			// @phan-suppress-next-line PhanDeprecatedFunction
+			$coverageFilter->includeDirectory( dirname( __DIR__ ) . '/src' );
 			// This ID will be discarded when the data is appended to the
 			// client's coverage object
 			$coverage->start( 'server' );
 			Server::main( $configPath );
-			$data = $coverage->stop();
+			$coverage->stop();
+			$data = [
+				'codeCoverage' => $coverage->getData( true ),
+				'testResults' => $coverage->getTests(),
+			];
 			FileUtils::putContents( $coverPath, serialize( $data ) );
 		} else {
 			Server::main( $configPath );

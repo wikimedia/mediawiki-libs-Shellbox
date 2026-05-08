@@ -226,7 +226,8 @@ class BuiltinServerManager {
 		}
 		return [
 			'-dextension=pcov.so',
-			'-dpcov.enable=1',
+			'-dpcov.enabled=1',
+			'-dpcov.directory=' . dirname( __DIR__ ) . '/src',
 		];
 	}
 

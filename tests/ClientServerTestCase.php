@@ -5,6 +5,7 @@ namespace Shellbox\Tests;
 
 use GuzzleHttp\Psr7\Uri;
 use RuntimeException;
+use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Shellbox\Client;
 use Shellbox\FileUtils;
 use Shellbox\Shellbox;
@@ -13,7 +14,7 @@ class ClientServerTestCase extends ShellboxTestCase {
 	/** @var bool */
 	private $collectCodeCoverage = false;
 	/** @var string|null */
-	private $serverCoveragePath;
+	private static $serverCoveragePath;
 	/** @var string|null */
 	private static $secretKey;
 	/** @var string|null */
@@ -25,10 +26,22 @@ class ClientServerTestCase extends ShellboxTestCase {
 	/** @var string|null */
 	private static $fileServerUrl;
 
+	public static function collectAndMergeServerCoverage( CodeCoverage $coverage ): void {
+		if ( self::$serverCoveragePath !== null && file_exists( self::$serverCoveragePath ) ) {
+			$data = unserialize( FileUtils::getContents( self::$serverCoveragePath ) );
+			unlink( self::$serverCoveragePath );
+			self::$serverCoveragePath = null;
+			if ( is_array( $data ) && isset( $data['codeCoverage'] ) ) {
+				$coverage->getData( true )->merge( $data['codeCoverage'] );
+				$coverage->setTests( array_merge( $coverage->getTests(), $data['testResults'] ) );
+			}
+		}
+	}
+
 	protected function createHttpClient() {
 		return new TestHttpClient( $this->collectCodeCoverage ?
 			function ( $suffix ) {
-				$this->serverCoveragePath = self::getConfig( 'tempDir' ) .
+				self::$serverCoveragePath = self::getConfig( 'tempDir' ) .
 					'/sb-cover-' . $suffix;
 			} : null
 		);
@@ -108,6 +121,10 @@ PHP
 		}
 		self::$server->stop();
 		self::$server = null;
+	}
+
+	protected function setUp(): void {
+		$this->collectCodeCoverage = extension_loaded( 'xdebug' ) || extension_loaded( 'pcov' );
 	}
 
 	/**

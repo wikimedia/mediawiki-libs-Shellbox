@@ -18,6 +18,14 @@ $cfg['exclude_file_regex'] = preg_replace(
 	$cfg['exclude_file_regex']
 );
 
+// Phan really does not want us referring to stuff in the Tests directory...
+// This is fragile, and probably prone to failure, and there's gotta be a better way...
+$cfg['exclude_file_regex'] = str_replace(
+	'|.*/[Tt]ests?',
+	'',
+	$cfg['exclude_file_regex']
+);
+
 // Exclude peg-generated output
 $cfg['exclude_file_list'][] = "src/ShellParser/PEGParser.php";
 
