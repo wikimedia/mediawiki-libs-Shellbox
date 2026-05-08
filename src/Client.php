@@ -23,16 +23,8 @@ use Shellbox\RPC\RpcClient;
  * A generic client which executes actions on the Shellbox server
  */
 class Client implements RPCClient {
-	/** @var ClientInterface */
-	private $httpClient;
-	/** @var UriInterface */
-	private $uri;
-	/** @var string */
-	private $key;
-	/** @var LoggerInterface */
-	private $logger;
-	/** @var bool */
-	private $allowUrlFiles;
+	private LoggerInterface $logger;
+	private bool $allowUrlFiles;
 
 	/**
 	 * @param ClientInterface $httpClient An object which requests an HTTP resource.
@@ -51,14 +43,11 @@ class Client implements RPCClient {
 	 *     the server configuration variable allowUrlFiles must also be set to true.
 	 */
 	public function __construct(
-		ClientInterface $httpClient,
-		UriInterface $uri,
-		string $key,
-		array $options = []
+		private readonly ClientInterface $httpClient,
+		private readonly UriInterface $uri,
+		private readonly string $key,
+		array $options = [],
 	) {
-		$this->httpClient = $httpClient;
-		$this->uri = $uri;
-		$this->key = $key;
 		$this->logger = new NullLogger;
 		$this->allowUrlFiles = $options['allowUrlFiles'] ?? false;
 	}

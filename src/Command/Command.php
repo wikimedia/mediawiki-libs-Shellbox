@@ -12,54 +12,30 @@ use Shellbox\ShellParser\SyntaxInfo;
  * The abstract base class for commands.
  */
 abstract class Command {
-	/** @var string */
-	private $command = '';
-	/** @var int|float|null */
-	private $cpuTimeLimit;
-	/** @var int|float|null */
-	private $wallTimeLimit;
-	/** @var int|float|null */
-	private $memoryLimit;
-	/** @var int|float|null */
-	private $fileSizeLimit;
-	/** @var string[] */
-	private $environment = [];
-	/** @var string */
-	private $stdin = '';
-	/** @var bool */
-	private $passStdin;
-	/** @var bool */
-	private $includeStderr;
-	/** @var bool */
-	private $logStderr = false;
-	/** @var bool */
-	private $forwardStderr = false;
-	/** @var bool */
-	private $useLogPipe = false;
-	/** @var string|null */
-	private $workingDirectory;
-	/** @var array */
-	private $procOpenOptions = [];
-	/** @var bool */
-	private $disableNetwork = false;
-	/** @var string[] */
-	private $disabledSyscalls = [];
-	/** @var bool */
-	private $firejailDefaultSeccomp = false;
-	/** @var bool */
-	private $noNewPrivs = false;
-	/** @var bool */
-	private $privateUserNamespace = false;
-	/** @var bool */
-	private $privateDev = false;
-	/** @var string[] */
-	private $allowedPaths = [];
-	/** @var string[] */
-	private $disallowedPaths = [];
-	/** @var bool */
-	private $disableSandbox = false;
-	/** @var SyntaxInfo|null */
-	private $syntaxInfo;
+	private string $command = '';
+	private int|float|null|string $cpuTimeLimit = null;
+	private int|float|null $wallTimeLimit = null;
+	private int|float|null $memoryLimit = null;
+	private int|float|null $fileSizeLimit = null;
+	private array $environment = [];
+	private string $stdin = '';
+	private bool $passStdin;
+	private bool $includeStderr = false;
+	private bool $logStderr = false;
+	private bool $forwardStderr = false;
+	private bool $useLogPipe = false;
+	private ?string $workingDirectory;
+	private array $procOpenOptions = [];
+	private bool $disableNetwork = false;
+	private array $disabledSyscalls = [];
+	private bool $firejailDefaultSeccomp = false;
+	private bool $noNewPrivs = false;
+	private bool $privateUserNamespace = false;
+	private bool $privateDev = false;
+	private array $allowedPaths = [];
+	private array $disallowedPaths = [];
+	private bool $disableSandbox = false;
+	private ?SyntaxInfo $syntaxInfo;
 
 	/**
 	 * Adds parameters to the command. All parameters are escaped via Shellbox::escape().
@@ -513,7 +489,7 @@ abstract class Command {
 	/**
 	 * Get the CPU limit
 	 *
-	 * @return int|float|null
+	 * @return int|float|null|string
 	 */
 	public function getCpuTimeLimit() {
 		return $this->cpuTimeLimit;

@@ -4,9 +4,6 @@ declare( strict_types = 1 );
 namespace Shellbox\ShellParser;
 
 class SyntaxInfo {
-	/** @var Node */
-	private $root;
-
 	/** @var string[]|null */
 	private $featureList;
 
@@ -25,11 +22,8 @@ class SyntaxInfo {
 
 	/**
 	 * @internal Use SyntaxTree::getInfo()
-	 *
-	 * @param Node $root
 	 */
-	public function __construct( $root ) {
-		$this->root = $root;
+	public function __construct( private readonly Node $root ) {
 	}
 
 	/**

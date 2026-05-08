@@ -7,16 +7,10 @@ namespace Shellbox\ShellParser;
  * A wrapper for the shell syntax tree, providing a higher-level API.
  */
 class SyntaxTree {
-	/** @var Node */
-	private $root;
-
 	/**
 	 * @internal Use ShellParser::parse()
-	 *
-	 * @param Node $root
 	 */
-	public function __construct( $root ) {
-		$this->root = $root;
+	public function __construct( private readonly Node $root ) {
 	}
 
 	/**

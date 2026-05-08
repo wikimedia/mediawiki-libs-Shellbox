@@ -22,34 +22,24 @@ use Shellbox\TempDirManager;
  * @todo Protocol documentation
  */
 abstract class MultipartAction {
-	/** @var TempDirManager */
-	protected $tempDirManager;
-	/** @var array */
-	private $structuredData;
+	protected TempDirManager $tempDirManager;
+	private array $structuredData;
 	/** @var string[] */
-	private $binaryData;
-	/** @var Server */
-	private $server;
+	private array $binaryData;
 	/** @var string[] */
-	private $headers;
-	/** @var LoggerInterface */
-	protected $logger;
+	private ?array $headers = null;
+	protected LoggerInterface $logger;
 	/** @var string[] */
-	private $inputFiles = [];
+	private array $inputFiles = [];
 
-	private const COPY_BUFFER_SIZE = 65536;
+	private const int COPY_BUFFER_SIZE = 65536;
 
-	/**
-	 * @param Server $server
-	 */
-	public function __construct( Server $server ) {
-		$this->server = $server;
+	public function __construct(
+		private readonly Server $server
+	) {
 		$this->logger = new NullLogger;
 	}
 
-	/**
-	 * @param LoggerInterface $logger
-	 */
 	public function setLogger( LoggerInterface $logger ): void {
 		$this->logger = $logger;
 	}
@@ -62,7 +52,8 @@ abstract class MultipartAction {
 	public function baseExecute( $pathParts ) {
 		try {
 			$this->tempDirManager = Shellbox::createTempDirManager(
-				$this->getConfig( 'tempDir' ) );
+				$this->getConfig( 'tempDir' )
+			);
 			$this->tempDirManager->setLogger( $this->logger );
 
 			$this->processInput();

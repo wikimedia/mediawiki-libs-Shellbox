@@ -14,17 +14,9 @@ use Shellbox\ShellboxError;
  * HTTP/HTTPS.
  */
 class RemoteBoxedExecutor extends BoxedExecutor {
-	/** @var Client */
-	private $client;
+	private LoggerInterface $logger;
 
-	/** @var LoggerInterface */
-	private $logger;
-
-	/**
-	 * @param Client $client
-	 */
-	public function __construct( Client $client ) {
-		$this->client = $client;
+	public function __construct( private readonly Client $client ) {
 		$this->logger = new NullLogger;
 	}
 

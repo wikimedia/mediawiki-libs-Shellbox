@@ -13,15 +13,8 @@ use Shellbox\TempDirManager;
  * initialised such an object.
  */
 class ServerUnboxedExecutor extends UnboxedExecutor {
-	/** @var TempDirManager */
-	private $tempDirManager;
-
-	/**
-	 * @param TempDirManager $tempDirManager
-	 */
-	public function __construct( TempDirManager $tempDirManager ) {
+	public function __construct( private readonly TempDirManager $tempDirManager ) {
 		parent::__construct();
-		$this->tempDirManager = $tempDirManager;
 	}
 
 	protected function getTempDirManager() {

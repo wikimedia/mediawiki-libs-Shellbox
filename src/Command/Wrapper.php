@@ -11,8 +11,7 @@ use Psr\Log\NullLogger;
  * UnboxedExecutor to implement restrictions.
  */
 abstract class Wrapper {
-	/** @var LoggerInterface */
-	protected $logger;
+	protected LoggerInterface $logger;
 
 	public function __construct() {
 		$this->logger = new NullLogger;

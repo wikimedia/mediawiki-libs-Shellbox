@@ -16,7 +16,7 @@ class BoxedResult extends UnboxedResult {
 	 *
 	 * @var OutputFile[]
 	 */
-	private $files = [];
+	private array $files = [];
 
 	/**
 	 * Add an output file to the result

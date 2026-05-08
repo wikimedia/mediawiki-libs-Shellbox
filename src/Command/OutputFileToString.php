@@ -11,8 +11,7 @@ use Shellbox\ShellboxError;
  * Encapsulation of an output file that is read into a string
  */
 class OutputFileToString extends OutputFileWithContents {
-	/** @var string */
-	private $contents;
+	private ?string $contents = null;
 
 	public function copyFromFile( $sourcePath ) {
 		$this->contents = FileUtils::getContents( $sourcePath );

@@ -10,15 +10,10 @@ use Shellbox\Multipart\MultipartReader;
  * Encapsulation of an output file that is copied to a local file
  */
 class OutputFileToFile extends OutputFileWithContents {
-	/** @var string */
-	private $path;
-
 	/**
 	 * @internal
-	 * @param string $path
 	 */
-	public function __construct( $path ) {
-		$this->path = $path;
+	public function __construct( private readonly string $path ) {
 	}
 
 	public function copyFromFile( $sourcePath ) {

@@ -26,18 +26,10 @@ use Shellbox\TempDirManager;
  * context of a Server.
  */
 class LocalBoxedExecutor extends BoxedExecutor {
-	/** @var UnboxedExecutor */
-	protected $unboxedExecutor;
-	/** @var TempDirManager */
-	protected $tempDirManager;
-	/** @var LoggerInterface */
-	protected $logger;
-	/** @var ClientInterface|null */
-	private $urlFileClient;
-	/** @var int */
-	private $urlFileConcurrency = 1;
-	/** @var int */
-	private $uploadAttempts = 3;
+	protected LoggerInterface $logger;
+	private ?ClientInterface $urlFileClient;
+	private int $urlFileConcurrency = 1;
+	private int $uploadAttempts = 3;
 	/** @var int|float */
 	private $retryDelay = 1.0;
 
@@ -48,11 +40,9 @@ class LocalBoxedExecutor extends BoxedExecutor {
 	 * @param TempDirManager $tempDirManager
 	 */
 	public function __construct(
-		UnboxedExecutor $unboxedExecutor,
-		TempDirManager $tempDirManager
+		protected readonly UnboxedExecutor $unboxedExecutor,
+		protected readonly TempDirManager $tempDirManager,
 	) {
-		$this->unboxedExecutor = $unboxedExecutor;
-		$this->tempDirManager = $tempDirManager;
 		$this->logger = new NullLogger;
 	}
 

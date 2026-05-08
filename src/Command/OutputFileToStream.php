@@ -12,15 +12,10 @@ use Shellbox\Multipart\MultipartReader;
  * Encapsulation of an output file that is copied to a stream
  */
 class OutputFileToStream extends OutputFileWithContents {
-	/** @var StreamInterface */
-	private $stream;
-
 	/**
 	 * @internal
-	 * @param StreamInterface $stream
 	 */
-	public function __construct( StreamInterface $stream ) {
-		$this->stream = $stream;
+	public function __construct( private readonly StreamInterface $stream ) {
 	}
 
 	public function copyFromFile( $sourcePath ) {

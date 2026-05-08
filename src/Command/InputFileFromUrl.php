@@ -9,22 +9,12 @@ use Psr\Http\Message\UriInterface;
  * @since 4.1.0
  */
 class InputFileFromUrl extends InputFile {
-	/**
-	 * @var UriInterface|string
-	 */
-	private $url;
-
-	/**
-	 * @var array
-	 */
-	private $headers = [];
+	private array $headers = [];
 
 	/**
 	 * @internal
-	 * @param UriInterface|string $url
 	 */
-	public function __construct( $url ) {
-		$this->url = $url;
+	public function __construct( private readonly UriInterface|string $url ) {
 	}
 
 	/**

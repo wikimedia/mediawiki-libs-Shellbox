@@ -7,7 +7,7 @@ class WindowsWrapper extends Wrapper {
 	/**
 	 * Windows should be the outermost wrapper because of its special quoting
 	 */
-	public const PRIORITY = 80;
+	public const int PRIORITY = 80;
 
 	public function wrap( Command $command ) {
 		// Windows Shell bypassed, but command run is "cmd.exe /C "{$cmd}"

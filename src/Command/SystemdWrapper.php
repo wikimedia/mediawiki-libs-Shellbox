@@ -14,7 +14,7 @@ class SystemdWrapper extends Wrapper {
 	 * Systemd needs to be an outer wrapper since it doesn't directly exec the
 	 * binary and doesn't inherit permissions
 	 */
-	public const PRIORITY = 60;
+	public const int PRIORITY = 60;
 
 	public function __construct() {
 		parent::__construct();

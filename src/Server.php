@@ -24,16 +24,13 @@ use Throwable;
  *   Shellbox\Server::main();
  */
 class Server {
-	/** @var array */
-	private $config;
+	private array $config;
 	/** @var bool[] */
-	private $forgottenConfig = [];
-	/** @var Logger */
-	private $logger;
-	/** @var ClientLogHandler|null */
-	private $clientLogHandler;
+	private array $forgottenConfig = [];
+	private Logger $logger;
+	private ?ClientLogHandler $clientLogHandler;
 
-	private const DEFAULT_CONFIG = [
+	private const array DEFAULT_CONFIG = [
 		'allowedActions' => [ 'call', 'shell' ],
 		'allowedRoutes' => null,
 		'routeSpecs' => [],

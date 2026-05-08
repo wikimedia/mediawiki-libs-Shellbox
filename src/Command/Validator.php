@@ -7,14 +7,11 @@ use Shellbox\Shellbox;
 use Shellbox\ShellboxError;
 
 class Validator {
-	/** @var array */
-	private $config;
-
 	/**
 	 * @var array Things that are in BoxedCommand::getClientData() but are not
 	 * "options" for validation purposes.
 	 */
-	private static $nonOptionDataKeys = [
+	private static array $nonOptionDataKeys = [
 		'routeName',
 		'inputFiles',
 		'outputFiles',
@@ -22,11 +19,7 @@ class Validator {
 		'command'
 	];
 
-	/**
-	 * @param array $config
-	 */
-	public function __construct( $config ) {
-		$this->config = $config;
+	public function __construct( private readonly array $config ) {
 	}
 
 	/**
