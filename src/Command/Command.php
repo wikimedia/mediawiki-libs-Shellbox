@@ -467,7 +467,13 @@ abstract class Command {
 					break;
 
 				case 'includeStderr':
-					$this->includeStderr = $value;
+					// T428013: Prior to shellbox 4.5.0, includeStderr was only initialized
+					// if set explicitly, resulting in cases where client data contains a null
+					// value for this property. This causes problems when data is provided by
+					// an older client to a 4.5.0 server, throwing TypeError upon assignment.
+					// As a workaround, take null to mean false, consistent with the behavior
+					// it has historically implied.
+					$this->includeStderr = (bool)$value;
 					break;
 
 				case 'logStderr':
