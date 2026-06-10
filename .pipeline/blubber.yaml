@@ -104,8 +104,9 @@ variants:
     copies: [prod83]
     apt:
       packages:
-        - lilypond
-        - lilypond-data
+        - lilypond/bookworm-backports
+        - lilypond-data/bookworm-backports
+        - lilypond-fonts/bookworm-backports
         - imagemagick
         - ghostscript
         - fluidsynth
