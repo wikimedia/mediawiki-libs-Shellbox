@@ -19,7 +19,7 @@ abstract class Command {
 	private int|float|null $fileSizeLimit = null;
 	private array $environment = [];
 	private string $stdin = '';
-	private bool $passStdin;
+	private bool $passStdin = false;
 	private bool $includeStderr = false;
 	private bool $logStderr = false;
 	private bool $forwardStderr = false;
@@ -35,7 +35,7 @@ abstract class Command {
 	private array $allowedPaths = [];
 	private array $disallowedPaths = [];
 	private bool $disableSandbox = false;
-	private ?SyntaxInfo $syntaxInfo;
+	private ?SyntaxInfo $syntaxInfo = null;
 
 	/**
 	 * Adds parameters to the command. All parameters are escaped via Shellbox::escape().
