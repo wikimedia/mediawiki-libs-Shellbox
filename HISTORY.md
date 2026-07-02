@@ -1,5 +1,12 @@
 # Release History
 
+# 4.5.1 (2026-07-03)
+* Command: Set defaults for more properties (Sam Reed)
+* Command: Treat null includeStderr as false in setClientData (Scott French)
+* Rebuild images for package updates (Scott French)
+* Rebuild score image with lilypond 2.24 (has cairo) (Raine Souček)
+* composer.lock: Update (Sam Reed)
+
 ## 4.5.0 (2026-05-12)
 * Raise guzzlehttp/guzzle to ^7.10.0 (James D. Forrester)
 * Cleanup and code modernisation (Sam Reed)
