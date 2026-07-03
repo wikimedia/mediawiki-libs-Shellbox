@@ -1,5 +1,8 @@
 # Release History
 
+# 4.5.2 (2026-07-03)
+* Command: Set default for $workingDirectory (Sam Reed)
+
 # 4.5.1 (2026-07-03)
 * Command: Set defaults for more properties (Sam Reed)
 * Command: Treat null includeStderr as false in setClientData (Scott French)
