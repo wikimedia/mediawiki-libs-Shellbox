@@ -24,7 +24,7 @@ abstract class Command {
 	private bool $logStderr = false;
 	private bool $forwardStderr = false;
 	private bool $useLogPipe = false;
-	private ?string $workingDirectory;
+	private ?string $workingDirectory = null;
 	private array $procOpenOptions = [];
 	private bool $disableNetwork = false;
 	private array $disabledSyscalls = [];
