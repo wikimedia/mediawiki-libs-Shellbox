@@ -45,7 +45,7 @@ class FileUtils {
 	 * @throws ShellboxError
 	 */
 	public static function putContents( string $path, string $contents ): void {
-		if ( !file_put_contents( $path, $contents ) ) {
+		if ( file_put_contents( $path, $contents ) === false ) {
 			throw new ShellboxError( "Unable to write " . basename( $path ) );
 		}
 	}
