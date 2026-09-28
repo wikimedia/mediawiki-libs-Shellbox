@@ -11,7 +11,7 @@ class ClientLogHandler extends AbstractHandler {
 
 	public function handle( LogRecord $record ): bool {
 		$this->records[] = [
-			'level' => $record->level->getName(),
+			'level' => $record->level->toPsrLogLevel(),
 			'message' => $record->message,
 			'context' => $record->context,
 		];
