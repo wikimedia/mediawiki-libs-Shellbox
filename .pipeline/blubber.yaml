@@ -1,7 +1,7 @@
 # syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v1.6.0
-# rebuildCounter: 12
+# rebuildCounter: 13
 version: v4
-base: &php83-fpm docker-registry.discovery.wmnet/restricted/php8.3-fpm:8.3.35-1-20261020-8
+base: &php83-fpm docker-registry.wikimedia.org/php8.3-fpm:latest
 
 lives:
   as: "composer"
