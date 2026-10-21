@@ -1,7 +1,7 @@
 # syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v1.6.0
 # rebuildCounter: 12
 version: v4
-base: docker-registry.discovery.wmnet/restricted/php8.3-fpm:latest
+base: &php83-fpm docker-registry.discovery.wmnet/restricted/php8.3-fpm:8.3.35-1-20261020-8
 
 lives:
   as: "composer"
@@ -48,7 +48,7 @@ variants:
       insecurely: true
     entrypoint: [composer, test]
   dev83:
-    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    base: *php83-fpm
     copies: [test83]
     builder:
       requirements:
@@ -74,7 +74,7 @@ variants:
         PHP__apc__shm_size: "150M"
         PHP__error_reporting: "E_ALL"
   prod83:
-    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    base: *php83-fpm
     copies:
       # the vendor directory from build
       - from: build83
@@ -89,7 +89,7 @@ variants:
         source: .pipeline/entrypoint
         destination: index.php
   media83:
-    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    base: *php83-fpm
     copies: [prod83]
     apt:
       packages:
@@ -100,7 +100,7 @@ variants:
         # PDF utils, for PdfHandler
         - poppler-utils
   score83:
-    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    base: *php83-fpm
     copies: [prod83]
     apt:
       packages:
@@ -117,7 +117,7 @@ variants:
         - fonts-noto
         - fonts-noto-cjk
   syntaxhighlight83:
-    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    base: *php83-fpm
     copies: [prod83]
     apt:
       packages:
@@ -142,7 +142,7 @@ variants:
         PIP_NO_CACHE_DIR: "off"
         PIP_DISABLE_PIP_VERSION_CHECK: "on"
   timeline83:
-    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    base: *php83-fpm
     copies:
       - from: prod83
         source: /srv/app
@@ -164,7 +164,7 @@ variants:
         - fonts-noto
         - fonts-noto-cjk
   video83:
-    base: docker-registry.wikimedia.org/php8.3-fpm:latest
+    base: *php83-fpm
     copies: [prod83]
     apt:
       packages:
