@@ -3,7 +3,6 @@ declare( strict_types = 1 );
 
 namespace Shellbox;
 
-use Exception;
 use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Shellbox\Command\LocalBoxedExecutor;
@@ -195,8 +194,6 @@ class Shellbox {
 
 	/**
 	 * Get a random string from a CSPRNG.
-	 *
-	 * @throws Exception
 	 */
 	public static function getUniqueString(): string {
 		return bin2hex( random_bytes( 8 ) );
