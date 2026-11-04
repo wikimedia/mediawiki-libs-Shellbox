@@ -27,10 +27,10 @@ class SyntaxInfo {
 	}
 
 	/**
-	 * @var array Node types used to identify features. Note that features do
+	 * Node types used to identify features. Note that features do
 	 *   not need to be mutually exclusive.
 	 */
-	private static $nodeTypesByFeature = [
+	private const NODE_TYPES_BY_FEATURE = [
 		'list' => [ 'list', 'and_if', 'or_if' ],
 		'background' => [ 'background' ],
 		'pipeline' => [ 'pipeline' ],
@@ -68,9 +68,9 @@ class SyntaxInfo {
 	];
 
 	/**
-	 * @var array Features by node type, compiled with compileFeaturesByNodeType().
+	 * Features by node type, compiled with compileFeaturesByNodeType().
 	 */
-	private static $featuresByNodeType = [
+	private const FEATURES_BY_NODE_TYPE = [
 		'and_if' => [ 'list' ],
 		'arithmetic_expansion' => [ 'exotic_expansion' ],
 		'assign_default' => [ 'exotic_expansion' ],
@@ -109,14 +109,14 @@ class SyntaxInfo {
 	];
 
 	/**
-	 * A function for use from a PHP CLI which inverts the $nodeTypesByFeature
+	 * A function for use from a PHP CLI which inverts the self::NODE_TYPES_BY_FEATURE
 	 * array to produce $featuresByNodeType.
 	 *
 	 * @return string
 	 */
 	public static function compileFeaturesByNodeType() {
 		$featuresByNodeType = [];
-		foreach ( self::$nodeTypesByFeature as $feature => $types ) {
+		foreach ( self::NODE_TYPES_BY_FEATURE as $feature => $types ) {
 			foreach ( $types as $type ) {
 				$featuresByNodeType[$type][] = $feature;
 			}
@@ -140,7 +140,7 @@ class SyntaxInfo {
 			$this->root->traverse(
 				static function ( $node ) use ( &$features ) {
 					if ( $node instanceof Node ) {
-						$newFeatures = self::$featuresByNodeType[$node->type] ?? [];
+						$newFeatures = self::FEATURES_BY_NODE_TYPE[$node->type] ?? [];
 						foreach ( $newFeatures as $feature ) {
 							$features[$feature] = true;
 						}

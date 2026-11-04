@@ -8,10 +8,10 @@ use Shellbox\ShellboxError;
 
 class Validator {
 	/**
-	 * @var array Things that are in BoxedCommand::getClientData() but are not
+	 * Things that are in BoxedCommand::getClientData() but are not
 	 * "options" for validation purposes.
 	 */
-	private static array $nonOptionDataKeys = [
+	private const NON_OPTION_DATA_KEYS = [
 		'routeName',
 		'inputFiles',
 		'outputFiles',
@@ -75,7 +75,7 @@ class Validator {
 
 				case 'options':
 					$options = array_filter( $command->getClientData() );
-					foreach ( self::$nonOptionDataKeys as $key ) {
+					foreach ( self::NON_OPTION_DATA_KEYS as $key ) {
 						unset( $options[$key] );
 					}
 					$this->validateOptions( $targetSpec, $options );
