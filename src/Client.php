@@ -22,7 +22,7 @@ use Shellbox\RPC\RpcClient;
 /**
  * A generic client which executes actions on the Shellbox server
  */
-class Client implements RPCClient {
+class Client implements RpcClient {
 	private LoggerInterface $logger;
 	private bool $allowUrlFiles;
 

@@ -7,7 +7,7 @@ use Shellbox\ShellboxError;
 use Throwable;
 
 /**
- * An implementation of RPCClient that executes the provided commands locally.
+ * An implementation of RpcClient that executes the provided commands locally.
  */
 class LocalRpcClient implements RpcClient {
 
