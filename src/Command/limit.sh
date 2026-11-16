@@ -57,6 +57,10 @@ if [ "$SB_CPU_LIMIT" -gt 0 ]; then
 	ulimit -t "$SB_CPU_LIMIT"
 fi
 if [ "$SB_MEM_LIMIT" -gt 0 ]; then
+	if [ -e /sys/fs/cgroup/cgroup.controllers ]; then
+		# This host uses cgroup v2 only. The cgroup code below supports only v1.
+		SB_CGROUP=""
+	fi
 	if [ -n "$SB_CGROUP" ]; then
 		# Create cgroup
 		if ! mkdir -m 0700 "$SB_CGROUP"/$$; then
